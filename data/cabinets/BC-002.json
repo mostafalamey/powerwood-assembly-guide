@@ -386,30 +386,15 @@
               },
               {
                 "name": "Leg_FL",
-                "visible": false,
-                "position": [
-                  0,
-                  -0.1,
-                  0
-                ]
+                "visible": false
               },
               {
                 "name": "Leg_BR",
-                "visible": false,
-                "position": [
-                  0,
-                  -0.1,
-                  0
-                ]
+                "visible": false
               },
               {
                 "name": "Leg_BL",
-                "visible": false,
-                "position": [
-                  0,
-                  -0.1,
-                  0
-                ]
+                "visible": false
               },
               {
                 "name": "LegCups",
@@ -451,10 +436,6 @@
                 ]
               },
               {
-                "name": "Leg_FR",
-                "visible": true
-              },
-              {
                 "name": "Leg_FL",
                 "visible": true,
                 "position": [
@@ -487,12 +468,7 @@
             "time": 5000,
             "objects": [
               {
-                "name": "Leg_FR",
-                "visible": true
-              },
-              {
                 "name": "Leg_FL",
-                "visible": true,
                 "position": [
                   0,
                   -0.1,
@@ -501,7 +477,6 @@
               },
               {
                 "name": "Leg_BR",
-                "visible": true,
                 "position": [
                   0,
                   -0.1,
@@ -510,7 +485,6 @@
               },
               {
                 "name": "Leg_BL",
-                "visible": true,
                 "position": [
                   0,
                   -0.1,
@@ -523,10 +497,56 @@
             "time": 6000,
             "objects": [
               {
+                "name": "Leg_BR",
+                "position": [
+                  0,
+                  -0.01,
+                  0
+                ]
+              },
+              {
+                "name": "Leg_BL",
+                "position": [
+                  0,
+                  -0.01,
+                  0
+                ]
+              },
+              {
                 "name": "Leg_FL",
                 "position": [
                   0,
+                  -0.01,
+                  0
+                ]
+              }
+            ],
+            "easing": "power2.out"
+          },
+          {
+            "time": 6400,
+            "objects": [
+              {
+                "name": "Leg_BR",
+                "position": [
                   0,
+                  -0.01,
+                  0
+                ]
+              },
+              {
+                "name": "Leg_BL",
+                "position": [
+                  0,
+                  -0.01,
+                  0
+                ]
+              },
+              {
+                "name": "Leg_FL",
+                "position": [
+                  0,
+                  -0.01,
                   0
                 ]
               }
@@ -538,6 +558,22 @@
             "objects": [
               {
                 "name": "Leg_BR",
+                "position": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "name": "Leg_BL",
+                "position": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              {
+                "name": "Leg_FL",
                 "position": [
                   0,
                   0,
@@ -555,19 +591,6 @@
                 "position": [
                   0,
                   -0.1,
-                  0
-                ],
-                "rotation": [
-                  3.14159,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_BL",
-                "position": [
-                  0,
-                  0,
                   0
                 ]
               }
@@ -676,36 +699,46 @@
             "time": 0,
             "objects": [
               {
-                "name": "BasePanel",
-                "visible": true
-              },
-              {
-                "name": "Leg_FR",
-                "visible": true
-              },
-              {
-                "name": "Leg_FL",
-                "visible": true
-              },
-              {
-                "name": "Leg_BR",
-                "visible": true
-              },
-              {
-                "name": "Leg_BL",
-                "visible": true
-              },
-              {
                 "name": "SidePanel_L",
                 "visible": true,
                 "position": [
                   0,
                   0.2,
-                  0
+                  0.35
                 ]
               },
               {
                 "name": "SidePanel_R",
+                "visible": true,
+                "position": [
+                  -0.6,
+                  0.2,
+                  -0.35
+                ],
+                "rotation": [
+                  0,
+                  3.14159,
+                  0
+                ]
+              },
+              {
+                "name": "BasePanel",
+                "visible": false
+              },
+              {
+                "name": "Leg_FR",
+                "visible": false
+              },
+              {
+                "name": "Leg_FL",
+                "visible": false
+              },
+              {
+                "name": "Leg_BR",
+                "visible": false
+              },
+              {
+                "name": "Leg_BL",
                 "visible": false
               },
               {
@@ -719,45 +752,97 @@
             ]
           },
           {
-            "time": 1000,
+            "time": 9500,
             "objects": [
               {
-                "name": "BasePanel",
-                "rotation": [
+                "name": "SidePanel_L",
+                "visible": true,
+                "position": [
                   0,
+                  0.2,
+                  0.35
+                ]
+              },
+              {
+                "name": "SidePanel_R",
+                "visible": false
+              }
+            ]
+          },
+          {
+            "time": 10500,
+            "objects": [
+              {
+                "name": "SidePanel_L",
+                "visible": true,
+                "position": [
                   0,
+                  0.2,
                   0
                 ]
+              }
+            ]
+          },
+          {
+            "time": 15000,
+            "objects": [
+              {
+                "name": "SidePanel_L",
+                "visible": true,
+                "position": [
+                  0,
+                  0.2,
+                  0
+                ]
+              },
+              {
+                "name": "BasePanel",
+                "visible": true
+              },
+              {
+                "name": "LegCups",
+                "visible": true
               },
               {
                 "name": "Leg_FR",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
+                "visible": true
               },
               {
                 "name": "Leg_FL",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
+                "visible": true
               },
               {
                 "name": "Leg_BR",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
+                "visible": true
               },
               {
                 "name": "Leg_BL",
+                "visible": true
+              }
+            ]
+          },
+          {
+            "time": 16000,
+            "objects": [
+              {
+                "name": "SidePanel_L",
+                "visible": true,
                 "position": [
                   0,
+                  0.2,
+                  0
+                ]
+              }
+            ]
+          },
+          {
+            "time": 18000,
+            "objects": [
+              {
+                "name": "SidePanel_L",
+                "position": [
                   0,
+                  0.01,
                   0
                 ]
               }
@@ -765,7 +850,7 @@
             "easing": "power2.out"
           },
           {
-            "time": 1600,
+            "time": 18100,
             "objects": [
               {
                 "name": "SidePanel_L",
@@ -776,7 +861,7 @@
                 ]
               }
             ],
-            "easing": "power2.out"
+            "easing": "linear"
           }
         ],
         "camera": {
@@ -785,12 +870,90 @@
               "time": 0,
               "position": [
                 4.5,
-                1.5,
+                0.7,
+                0
+              ],
+              "target": [
+                0,
+                0.7,
+                0
+              ]
+            },
+            {
+              "time": 13000,
+              "position": [
+                4.5,
+                0.7,
+                0
+              ],
+              "target": [
+                0,
+                0.7,
+                0
+              ]
+            },
+            {
+              "time": 15000,
+              "position": [
+                4.5,
+                1.2,
                 4.5
               ],
               "target": [
                 0,
-                0.5,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 22000,
+              "position": [
+                4.5,
+                1.2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 24000,
+              "position": [
+                1,
+                1.2,
+                1
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 26000,
+              "position": [
+                1,
+                1.2,
+                1
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 27000,
+              "position": [
+                4.5,
+                1.2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
                 0
               ]
             }
@@ -845,12 +1008,7 @@
               },
               {
                 "name": "SidePanel_R",
-                "visible": true,
-                "position": [
-                  0,
-                  0.2,
-                  0
-                ]
+                "visible": false
               },
               {
                 "name": "BackPanel",
@@ -863,53 +1021,14 @@
             ]
           },
           {
-            "time": 1000,
+            "time": 2000,
             "objects": [
               {
-                "name": "BasePanel",
-                "rotation": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_FR",
+                "name": "SidePanel_R",
+                "visible": true,
                 "position": [
                   0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_FL",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_BR",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_BL",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "SidePanel_L",
-                "position": [
-                  0,
-                  0,
+                  0.1,
                   0
                 ]
               }
@@ -917,7 +1036,35 @@
             "easing": "power2.out"
           },
           {
-            "time": 1600,
+            "time": 4500,
+            "objects": [
+              {
+                "name": "SidePanel_R",
+                "position": [
+                  0,
+                  0.1,
+                  0
+                ]
+              }
+            ],
+            "easing": "power2.out"
+          },
+          {
+            "time": 5900,
+            "objects": [
+              {
+                "name": "SidePanel_R",
+                "position": [
+                  0,
+                  0.01,
+                  0
+                ]
+              }
+            ],
+            "easing": "power2.out"
+          },
+          {
+            "time": 6000,
             "objects": [
               {
                 "name": "SidePanel_R",
@@ -928,7 +1075,7 @@
                 ]
               }
             ],
-            "easing": "power2.out"
+            "easing": "linear"
           }
         ],
         "camera": {
@@ -936,9 +1083,61 @@
             {
               "time": 0,
               "position": [
-                3.5,
+                4.5,
                 1.2,
-                3.5
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 3000,
+              "position": [
+                4.5,
+                1.2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 4500,
+              "position": [
+                1.7,
+                0.4,
+                1.5
+              ],
+              "target": [
+                0.2,
+                0.12,
+                0
+              ]
+            },
+            {
+              "time": 6500,
+              "position": [
+                1.7,
+                0.4,
+                1.5
+              ],
+              "target": [
+                0.2,
+                0.12,
+                0
+              ]
+            },
+            {
+              "time": 7500,
+              "position": [
+                4.5,
+                1.2,
+                4.5
               ],
               "target": [
                 0,
@@ -997,12 +1196,7 @@
               },
               {
                 "name": "BackPanel",
-                "visible": true,
-                "position": [
-                  0,
-                  0.2,
-                  0
-                ]
+                "visible": false
               },
               {
                 "name": "TopPanel",
@@ -1011,61 +1205,14 @@
             ]
           },
           {
-            "time": 1000,
+            "time": 6000,
             "objects": [
               {
-                "name": "BasePanel",
-                "rotation": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_FR",
+                "name": "BackPanel",
+                "visible": true,
                 "position": [
                   0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_FL",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_BR",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_BL",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "SidePanel_L",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "SidePanel_R",
-                "position": [
-                  0,
-                  0,
+                  0.2,
                   0
                 ]
               }
@@ -1073,7 +1220,21 @@
             "easing": "power2.out"
           },
           {
-            "time": 1600,
+            "time": 10000,
+            "objects": [
+              {
+                "name": "BackPanel",
+                "position": [
+                  0,
+                  0.2,
+                  0
+                ]
+              }
+            ],
+            "easing": "power2.out"
+          },
+          {
+            "time": 12000,
             "objects": [
               {
                 "name": "BackPanel",
@@ -1093,7 +1254,59 @@
               "time": 0,
               "position": [
                 4.5,
-                3,
+                1.2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 2000,
+              "position": [
+                4.5,
+                1.2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 5500,
+              "position": [
+                4.5,
+                2.4,
+                -4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 15000,
+              "position": [
+                4.5,
+                2.4,
+                -4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 17000,
+              "position": [
+                4.5,
+                1.2,
                 4.5
               ],
               "target": [
@@ -1157,79 +1370,19 @@
               },
               {
                 "name": "TopPanel",
-                "visible": true,
-                "position": [
-                  0,
-                  0.2,
-                  0
-                ]
+                "visible": false
               }
             ]
           },
           {
-            "time": 1000,
+            "time": 2000,
             "objects": [
               {
-                "name": "BasePanel",
-                "rotation": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_FR",
+                "name": "TopPanel",
+                "visible": true,
                 "position": [
                   0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_FL",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_BR",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "Leg_BL",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "SidePanel_L",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "SidePanel_R",
-                "position": [
-                  0,
-                  0,
-                  0
-                ]
-              },
-              {
-                "name": "BackPanel",
-                "position": [
-                  0,
-                  0,
+                  0.1,
                   0
                 ]
               }
@@ -1237,7 +1390,49 @@
             "easing": "power2.out"
           },
           {
-            "time": 1600,
+            "time": 6000,
+            "objects": [
+              {
+                "name": "TopPanel",
+                "position": [
+                  0,
+                  0.1,
+                  0
+                ]
+              }
+            ],
+            "easing": "power2.out"
+          },
+          {
+            "time": 8000,
+            "objects": [
+              {
+                "name": "TopPanel",
+                "position": [
+                  0,
+                  0.01,
+                  0
+                ]
+              }
+            ],
+            "easing": "power2.out"
+          },
+          {
+            "time": 9000,
+            "objects": [
+              {
+                "name": "TopPanel",
+                "position": [
+                  0,
+                  0.01,
+                  0
+                ]
+              }
+            ],
+            "easing": "power2.out"
+          },
+          {
+            "time": 9100,
             "objects": [
               {
                 "name": "TopPanel",
@@ -1258,6 +1453,84 @@
               "position": [
                 4.5,
                 2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 3000,
+              "position": [
+                4.5,
+                2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 5000,
+              "position": [
+                2,
+                2,
+                2
+              ],
+              "target": [
+                0,
+                0.8,
+                0
+              ]
+            },
+            {
+              "time": 10000,
+              "position": [
+                2,
+                2,
+                2
+              ],
+              "target": [
+                0,
+                0.8,
+                0
+              ]
+            },
+            {
+              "time": 12000,
+              "position": [
+                4.5,
+                2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 13000,
+              "position": [
+                4.5,
+                2,
+                4.5
+              ],
+              "target": [
+                0,
+                0.45,
+                0
+              ]
+            },
+            {
+              "time": 15000,
+              "position": [
+                -4.5,
+                0.3,
                 4.5
               ],
               "target": [
