@@ -1,0 +1,20 @@
+{
+  "cabinets": [
+    {
+      "id": "BC-002",
+      "name": {
+        "en": "2-Door Base Cabinet 36\"",
+        "ar": "خزانة أرضية بابين 36 بوصة"
+      },
+      "category": "base",
+      "estimatedTime": 25,
+      "image": "/images/cabinets/BC-002.png",
+      "model": "/models/BC_002.glb",
+      "description": {
+        "en": "Standard 2-door base cabinet with adjustable shelf",
+        "ar": "خزانة أرضية قياسية بابين مع رف قابل للتعديل"
+      },
+      "stepCount": 6
+    }
+  ]
+}

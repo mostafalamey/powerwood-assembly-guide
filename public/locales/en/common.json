@@ -1,0 +1,84 @@
+{
+  "appTitle": "PW Assembly Guide",
+  "appDescription": "Interactive 3D kitchen cabinet assembly instructions",
+  "welcome": "Welcome to PW Assembly Guide",
+  "homeDescription": "Follow step-by-step 3D instructions to assemble your kitchen cabinets with ease",
+  "scanQRCode": "Scan QR Code to Get Started",
+  "scanInstructions": "Use your phone camera to scan the QR code on your cabinet box",
+  "qrCodeLocation": "Look for the QR code sticker on the side of your cabinet packaging",
+  "browseCategories": "Browse by Category",
+  "features": "Key Features",
+  "feature3D": "Interactive 3D View",
+  "feature3DDescription": "Rotate, zoom, and explore assembly from every angle",
+  "featureMultilingual": "Multiple Languages",
+  "featureMultilingualDescription": "Instructions in English and Arabic",
+  "featureAudio": "Voice Narration",
+  "featureAudioDescription": "Listen to step-by-step audio instructions",
+  "categories": {
+    "base": "Base Cabinets",
+    "baseDescription": "Standard base cabinets for kitchen countertops",
+    "wall": "Wall Cabinets",
+    "wallDescription": "Upper wall-mounted cabinets",
+    "high": "High Cabinets",
+    "highDescription": "Tall wall cabinets",
+    "tall": "Tall Cabinets",
+    "tallDescription": "Full-height pantry and storage cabinets",
+    "cornerBase": "Corner Base",
+    "cornerBaseDescription": "Corner base cabinet solutions",
+    "cornerWall": "Corner Wall",
+    "cornerWallDescription": "Corner wall cabinet solutions",
+    "fillers": "Fillers",
+    "fillersDescription": "Filler strips and accessories"
+  },
+  "cabinet": {
+    "overview": "Cabinet Overview",
+    "estimatedTime": "Estimated Time",
+    "totalSteps": "Total Steps",
+    "requiredTools": "Required Tools",
+    "startAssembly": "Start Assembly",
+    "minutes": "minutes",
+    "steps": "steps"
+  },
+  "toolsRequired": "Tools Required",
+  "loading": "Loading...",
+  "navigation": {
+    "previous": "Previous",
+    "next": "Next",
+    "step": "Step",
+    "of": "of",
+    "progress": "Progress",
+    "reset": "Reset View"
+  },
+  "controls": {
+    "play": "Play",
+    "pause": "Pause",
+    "restart": "Restart",
+    "playAudio": "Play Audio",
+    "pauseAudio": "Pause Audio",
+    "volume": "Volume"
+  },
+  "audio": {
+    "play": "Play",
+    "pause": "Pause",
+    "volume": "Volume",
+    "audioNotAvailable": "Audio narration not available for this step"
+  },
+  "language": {
+    "switchTo": "Switch Language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "errors": {
+    "notFound": "Cabinet Not Found",
+    "notFoundDescription": "The cabinet you're looking for doesn't exist or has been removed.",
+    "goHome": "Go to Home",
+    "loadError": "Failed to Load",
+    "loadErrorDescription": "There was an error loading the 3D model. Please check your internet connection.",
+    "retry": "Retry"
+  },
+  "loading": {
+    "cabinet": "Loading cabinet...",
+    "model": "Loading 3D model...",
+    "audio": "Loading audio..."
+  }
+}

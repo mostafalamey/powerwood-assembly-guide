@@ -1,0 +1,53 @@
+{
+  "categories": [
+    {
+      "id": "base",
+      "name": "Base Cabinets",
+      "nameAr": "الخزائن الأرضية",
+      "description": "Standard base cabinets for kitchen countertops",
+      "descriptionAr": "الخزائن الأرضية القياسية لطاولات المطبخ"
+    },
+    {
+      "id": "wall",
+      "name": "Wall Cabinets",
+      "nameAr": "خزائن الحائط",
+      "description": "Upper wall-mounted cabinets",
+      "descriptionAr": "خزائن علوية مثبتة على الحائط"
+    },
+    {
+      "id": "high",
+      "name": "High Cabinets",
+      "nameAr": "خزائن عالية",
+      "description": "Tall wall cabinets",
+      "descriptionAr": "خزائن حائط طويلة"
+    },
+    {
+      "id": "tall",
+      "name": "Tall Cabinets",
+      "nameAr": "خزائن طويلة",
+      "description": "Full-height pantry and storage cabinets",
+      "descriptionAr": "خزائن مخزن وتخزين بالارتفاع الكامل"
+    },
+    {
+      "id": "cornerBase",
+      "name": "Corner Base",
+      "nameAr": "قاعدة الزاوية",
+      "description": "Corner base cabinet solutions",
+      "descriptionAr": "حلول خزانة قاعدة الزاوية"
+    },
+    {
+      "id": "cornerWall",
+      "name": "Corner Wall",
+      "nameAr": "حائط الزاوية",
+      "description": "Corner wall cabinet solutions",
+      "descriptionAr": "حلول خزانة حائط الزاوية"
+    },
+    {
+      "id": "fillers",
+      "name": "Fillers",
+      "nameAr": "الحشوات",
+      "description": "Filler strips and accessories",
+      "descriptionAr": "شرائط الحشو والإكسسوارات"
+    }
+  ]
+}

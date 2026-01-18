@@ -1,0 +1,1290 @@
+{
+  "cabinets": [
+    {
+      "id": "BC-002",
+      "name": {
+        "en": "2-Door Base Cabinet 36\"",
+        "ar": "خزانة أرضية بابين 36 بوصة"
+      },
+      "category": "base",
+      "estimatedTime": 25,
+      "image": "/images/cabinets/BC-002.png",
+      "model": "/models/BC_002.glb",
+      "description": {
+        "en": "Standard 2-door base cabinet with adjustable shelf",
+        "ar": "خزانة أرضية قياسية بابين مع رف قابل للتعديل"
+      },
+      "steps": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Attach one leg to base panel",
+            "ar": "تثبيت ساق واحدة على اللوحة الأساسية"
+          },
+          "description": {
+            "en": "Locate the base panel which has 4 cups for the legs on one side. Turn the panel upside down, so that the cups are facing up, take one leg and align it with one of the cups. Press firmly untill you hear a click, indicating the leg is securely attached.",
+            "ar": "حدد اللوحة الأساسية التي تحتوي على 4 أكواب للأرجل على جانب واحد. اقلب اللوحة رأسًا على عقب بحيث تواجه الأكواب للأعلى، خذ ساقًا واحدة وقم بمحاذاتها مع أحد الأكواب. اضغط بقوة حتى تسمع نقرة، مما يشير إلى أن الساق مثبتة بأمان."
+          },
+          "duration": 3,
+          "animation": {
+            "duration": 19000,
+            "keyframes": [
+              {
+                "time": 0,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.07,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": false,
+                    "position": [
+                      0,
+                      -0.2,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": false
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": false
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": false
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "visible": false
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "visible": false
+                  },
+                  {
+                    "name": "BackPanel",
+                    "visible": false
+                  },
+                  {
+                    "name": "TopPanel",
+                    "visible": false
+                  }
+                ]
+              },
+              {
+                "time": 7000,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.07,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": false
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": false
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": false
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": false
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "visible": false
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "visible": false
+                  },
+                  {
+                    "name": "BackPanel",
+                    "visible": false
+                  },
+                  {
+                    "name": "TopPanel",
+                    "visible": false
+                  }
+                ]
+              },
+              {
+                "time": 8000,
+                "easing": "linear",
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "position": [
+                      0,
+                      0.25,
+                      0
+                    ],
+                    "rotation": [
+                      1.5708,
+                      0,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 8500,
+                "easing": "linear",
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "rotation": [
+                      3.14159,
+                      0,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 9000,
+                "easing": "power2.out",
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": false
+                  }
+                ]
+              },
+              {
+                "time": 11000,
+                "easing": "power2.out",
+                "objects": [
+                  {
+                    "name": "Leg_FR",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 14000,
+                "easing": "power2.out",
+                "objects": [
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 15000,
+                "easing": "power2.out",
+                "objects": [
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      -0.01,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 15900,
+                "easing": "power2.out",
+                "objects": [
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      -0.01,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 16000,
+                "easing": "power2.in",
+                "objects": [
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ]
+              }
+            ],
+            "camera": {
+              "keyframes": [
+                {
+                  "time": 0,
+                  "position": [
+                    4.5,
+                    2.5,
+                    4.5
+                  ],
+                  "target": [
+                    0,
+                    0.45,
+                    0
+                  ]
+                },
+                {
+                  "time": 5000,
+                  "position": [
+                    4.5,
+                    2.5,
+                    4.5
+                  ],
+                  "target": [
+                    0,
+                    0.45,
+                    0
+                  ]
+                },
+                {
+                  "time": 7000,
+                  "position": [
+                    2.5,
+                    0.8,
+                    2.5
+                  ],
+                  "target": [
+                    0,
+                    0.2,
+                    0
+                  ]
+                },
+                {
+                  "time": 10000,
+                  "position": [
+                    2.5,
+                    0.8,
+                    2.5
+                  ],
+                  "target": [
+                    0,
+                    0.2,
+                    0
+                  ]
+                },
+                {
+                  "time": 11000,
+                  "position": [
+                    1.5,
+                    0.8,
+                    1.5
+                  ],
+                  "target": [
+                    0.35,
+                    0.15,
+                    0
+                  ]
+                },
+                {
+                  "time": 17000,
+                  "position": [
+                    1.5,
+                    0.8,
+                    1.5
+                  ],
+                  "target": [
+                    0.35,
+                    0.15,
+                    0
+                  ]
+                },
+                {
+                  "time": 19000,
+                  "position": [
+                    2.5,
+                    0.8,
+                    2.5
+                  ],
+                  "target": [
+                    0,
+                    0.2,
+                    0
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Attach remaining legs and flip base",
+            "ar": "تثبيت باقي الأرجل وقلب القاعدة"
+          },
+          "description": {
+            "en": "Attach the remaining three legs, then carefully flip the base panel to its correct orientation. Avoid applying any sideways force to the legs during this process.",
+            "ar": "ثبت الأرجل الثلاثة المتبقية، ثم اقلب اللوحة الأساسية إلى وضعها الصحيح. تجنب تطبيق أي قوة جانبية على الأرجل أثناء هذه العملية."
+          },
+          "duration": 5,
+          "animation": {
+            "duration": 13000,
+            "keyframes": [
+              {
+                "time": 0,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ],
+                    "rotation": [
+                      3.14159,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": false,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": false,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": false,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "LegCups",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "visible": false
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "visible": false
+                  },
+                  {
+                    "name": "BackPanel",
+                    "visible": false
+                  },
+                  {
+                    "name": "TopPanel",
+                    "visible": false
+                  }
+                ]
+              },
+              {
+                "time": 3000,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ],
+                    "rotation": [
+                      3.14159,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 5000,
+                "objects": [
+                  {
+                    "name": "Leg_FR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": true,
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 6000,
+                "objects": [
+                  {
+                    "name": "Leg_FL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              },
+              {
+                "time": 6500,
+                "objects": [
+                  {
+                    "name": "Leg_BR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              },
+              {
+                "time": 7000,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "position": [
+                      0,
+                      -0.1,
+                      0
+                    ],
+                    "rotation": [
+                      3.14159,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              },
+              {
+                "time": 9500,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "position": [
+                      0,
+                      0.15,
+                      0
+                    ],
+                    "rotation": [
+                      3.14159,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.inOut"
+              },
+              {
+                "time": 10500,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.inOut"
+              }
+            ],
+            "camera": {
+              "keyframes": [
+                {
+                  "time": 0,
+                  "position": [
+                    2.5,
+                    0.8,
+                    2.5
+                  ],
+                  "target": [
+                    0,
+                    0.2,
+                    0
+                  ]
+                },
+                {
+                  "time": 10500,
+                  "position": [
+                    2.5,
+                    0.8,
+                    2.5
+                  ],
+                  "target": [
+                    0,
+                    0.2,
+                    0
+                  ]
+                },
+                {
+                  "time": 13000,
+                  "position": [
+                    4.5,
+                    1.5,
+                    4.5
+                  ],
+                  "target": [
+                    0,
+                    0.5,
+                    0
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Attach one side panel to the base panel",
+            "ar": "تثبيت اللوحة الجانبية على لوحة القاعدة"
+          },
+          "description": {
+            "en": "Decide which side you want the door to open from, this will determine which side panel to attach first. Take the side panel that has the hinge clips on it, this is the panel that will hold the door. align the panel with the base and press firmly until you hear a click, indicating the panel is securely attached. Make sure the groove on the side panel aligns with the one on the base panel.",
+            "ar": "قرر من أي جانب تريد فتح الباب، فهذا سيحدد أي لوحة جانبية يجب تثبيتها أولاً. خذ اللوحة الجانبية التي تحتوي على مشابك المفصل عليها، هذه هي اللوحة التي ستحمل الباب. قم بمحاذاة اللوحة مع القاعدة واضغط بقوة حتى تسمع نقرة، مما يشير إلى أن اللوحة مثبتة بأمان. تأكد من محاذاة الأخدود على اللوحة الجانبية مع الأخدود على لوحة القاعدة."
+          },
+          "duration": 3,
+          "animation": {
+            "duration": 2500,
+            "keyframes": [
+              {
+                "time": 0,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "visible": true,
+                    "position": [
+                      0,
+                      0.2,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "visible": false
+                  },
+                  {
+                    "name": "BackPanel",
+                    "visible": false
+                  },
+                  {
+                    "name": "TopPanel",
+                    "visible": false
+                  }
+                ]
+              },
+              {
+                "time": 1000,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              },
+              {
+                "time": 1600,
+                "objects": [
+                  {
+                    "name": "SidePanel_L",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              }
+            ],
+            "camera": {
+              "keyframes": [
+                {
+                  "time": 0,
+                  "position": [
+                    4.5,
+                    1.5,
+                    4.5
+                  ],
+                  "target": [
+                    0,
+                    0.5,
+                    0
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Attach the other side panel",
+            "ar": "تثبيت اللوحة الجانبية الاخرى"
+          },
+          "description": {
+            "en": "Position and attach the other side panel to the base the same way.",
+            "ar": "ضع وثبت اللوحة الجانبية الأخرى على لوحة القاعدة بنفس الطريقة."
+          },
+          "duration": 3,
+          "animation": {
+            "duration": 2500,
+            "keyframes": [
+              {
+                "time": 0,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true
+                  },
+                  {
+                    "name": "LegCups",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "visible": true,
+                    "position": [
+                      0,
+                      0.2,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "BackPanel",
+                    "visible": false
+                  },
+                  {
+                    "name": "TopPanel",
+                    "visible": false
+                  }
+                ]
+              },
+              {
+                "time": 1000,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              },
+              {
+                "time": 1600,
+                "objects": [
+                  {
+                    "name": "SidePanel_R",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              }
+            ],
+            "camera": {
+              "keyframes": [
+                {
+                  "time": 0,
+                  "position": [
+                    3.5,
+                    1.2,
+                    3.5
+                  ],
+                  "target": [
+                    0,
+                    0.45,
+                    0
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Slide the back panel into place",
+            "ar": "تثبيت اللوحة الخلفية"
+          },
+          "description": {
+            "en": "Take the back panel, which is a thin sheet, and align it with the grooves on the side panels. Slide it down into the grooves until it fits snugly, ensuring the panel is flush with the edges of the side panels.",
+            "ar": "خذ اللوحة الخلفية، وهي ورقة رفيعة، وقم بمحاذاتها مع الأخاديد على اللوحات الجانبية. قم بإدخالها في الأخاديد حتى تناسبها بإحكام، مع التأكد من أن اللوحة مستوية مع حواف اللوحات الجانبية."
+          },
+          "duration": 3,
+          "animation": {
+            "duration": 2500,
+            "keyframes": [
+              {
+                "time": 0,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "visible": true
+                  },
+                  {
+                    "name": "BackPanel",
+                    "visible": true,
+                    "position": [
+                      0,
+                      0.2,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "TopPanel",
+                    "visible": false
+                  }
+                ]
+              },
+              {
+                "time": 1000,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              },
+              {
+                "time": 1600,
+                "objects": [
+                  {
+                    "name": "BackPanel",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              }
+            ],
+            "camera": {
+              "keyframes": [
+                {
+                  "time": 0,
+                  "position": [
+                    4.5,
+                    3,
+                    4.5
+                  ],
+                  "target": [
+                    0,
+                    0.45,
+                    0
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Attach top panel",
+            "ar": "تثبيت اللوحة العلوية"
+          },
+          "description": {
+            "en": "Take the top panel, and align it with the top edges of the side and back panels. Press down firmly until you hear a click, indicating the panel is securely attached and completing the cabinet assembly.",
+            "ar": "خذ اللوحة العلوية وقم بمحاذاتها مع الحواف العلوية للوحات الجانبية والخلفية. اضغط بقوة حتى تسمع نقرة، مما يشير إلى أن اللوحة مثبتة بإحكام وتكمل تجميع الخزانة."
+          },
+          "duration": 3,
+          "animation": {
+            "duration": 2500,
+            "keyframes": [
+              {
+                "time": 0,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "visible": true
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "visible": true
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "visible": true
+                  },
+                  {
+                    "name": "BackPanel",
+                    "visible": true
+                  },
+                  {
+                    "name": "TopPanel",
+                    "visible": true,
+                    "position": [
+                      0,
+                      0.2,
+                      0
+                    ]
+                  }
+                ]
+              },
+              {
+                "time": 1000,
+                "objects": [
+                  {
+                    "name": "BasePanel",
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_FL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BR",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "Leg_BL",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "SidePanel_L",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "SidePanel_R",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  },
+                  {
+                    "name": "BackPanel",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              },
+              {
+                "time": 1600,
+                "objects": [
+                  {
+                    "name": "TopPanel",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "easing": "power2.out"
+              }
+            ],
+            "camera": {
+              "keyframes": [
+                {
+                  "time": 0,
+                  "position": [
+                    4.5,
+                    2,
+                    4.5
+                  ],
+                  "target": [
+                    0,
+                    0.45,
+                    0
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "tools": {
+        "en": [
+          "Phillips screwdriver",
+          "Rubber mallet",
+          "Level"
+        ],
+        "ar": [
+          "مفك فيليبس",
+          "مطرقة مطاطية",
+          "ميزان"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "appTitle": "دليل تجميع باور وود",
+  "appDescription": "تعليمات تجميع خزائن المطبخ ثلاثية الأبعاد التفاعلية",
+  "welcome": "مرحباً بك في دليل تجميع باور وود",
+  "homeDescription": "اتبع التعليمات ثلاثية الأبعاد خطوة بخطوة لتجميع خزائن مطبخك بسهولة",
+  "scanQRCode": "امسح رمز الاستجابة السريعة للبدء",
+  "scanInstructions": "استخدم كاميرا هاتفك لمسح رمز الاستجابة السريعة على صندوق الخزانة",
+  "qrCodeLocation": "ابحث عن ملصق رمز الاستجابة السريعة على جانب عبوة الخزانة",
+  "browseCategories": "تصفح حسب الفئة",
+  "features": "الميزات الرئيسية",
+  "feature3D": "عرض ثلاثي الأبعاد تفاعلي",
+  "feature3DDescription": "تدوير وتكبير واستكشاف التجميع من كل زاوية",
+  "featureMultilingual": "لغات متعددة",
+  "featureMultilingualDescription": "تعليمات باللغتين الإنجليزية والعربية",
+  "featureAudio": "سرد صوتي",
+  "featureAudioDescription": "استمع إلى التعليمات الصوتية خطوة بخطوة",
+  "categories": {
+    "base": "الخزائن الأرضية",
+    "baseDescription": "الخزائن الأرضية القياسية لطاولات المطبخ",
+    "wall": "خزائن الحائط",
+    "wallDescription": "خزائن علوية مثبتة على الحائط",
+    "high": "خزائن عالية",
+    "highDescription": "خزائن حائط طويلة",
+    "tall": "خزائن طويلة",
+    "tallDescription": "خزائن مخزن وتخزين بالارتفاع الكامل",
+    "cornerBase": "الزاوية الأرضية",
+    "cornerBaseDescription": "حلول خزانة الزاوية الأرضية",
+    "cornerWall": "الزاوية الحائطية",
+    "cornerWallDescription": "حلول خزانة الزاوية الحائطية",
+    "fillers": "الحشوات",
+    "fillersDescription": "شرائط الحشو والإكسسوارات"
+  },
+  "cabinet": {
+    "overview": "نظرة عامة على الخزانة",
+    "estimatedTime": "الوقت المقدر",
+    "totalSteps": "إجمالي الخطوات",
+    "requiredTools": "الأدوات المطلوبة",
+    "startAssembly": "بدء التجميع",
+    "minutes": "دقائق",
+    "steps": "خطوات"
+  },
+  "toolsRequired": "الأدوات المطلوبة",
+  "loading": "جاري التحميل...",
+  "navigation": {
+    "previous": "السابق",
+    "next": "التالي",
+    "step": "خطوة",
+    "of": "من",
+    "progress": "التقدم",
+    "reset": "إعادة تعيين العرض"
+  },
+  "controls": {
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "restart": "إعادة التشغيل",
+    "playAudio": "تشغيل الصوت",
+    "pauseAudio": "إيقاف الصوت",
+    "volume": "مستوى الصوت"
+  },
+  "audio": {
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "volume": "مستوى الصوت",
+    "audioNotAvailable": "السرد الصوتي غير متاح لهذه الخطوة"
+  },
+  "language": {
+    "switchTo": "تبديل اللغة",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "errors": {
+    "notFound": "الخزانة غير موجودة",
+    "notFoundDescription": "الخزانة التي تبحث عنها غير موجودة أو تمت إزالتها.",
+    "goHome": "العودة إلى الصفحة الرئيسية",
+    "loadError": "فشل التحميل",
+    "loadErrorDescription": "حدث خطأ أثناء تحميل النموذج ثلاثي الأبعاد. يرجى التحقق من اتصال الإنترنت.",
+    "retry": "إعادة المحاولة"
+  },
+  "loading": {
+    "cabinet": "تحميل الخزانة...",
+    "model": "تحميل النموذج ثلاثي الأبعاد...",
+    "audio": "تحميل الصوت..."
+  }
+}
