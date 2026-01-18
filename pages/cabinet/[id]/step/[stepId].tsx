@@ -329,8 +329,8 @@ export default function StepPage() {
                         ? (cabinet as any).descriptionAr
                         : cabinet.description
                       : locale === "ar"
-                      ? cabinet.description.ar
-                      : cabinet.description.en}
+                      ? cabinet.description?.ar
+                      : cabinet.description?.en}
                   </p>
                 </div>
                 <StepNavigation

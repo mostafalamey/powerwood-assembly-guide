@@ -173,7 +173,7 @@ export default function CategoryPage() {
                             />
                           </svg>
                           <span>
-                            {cabinet.stepCount || 0} {t("cabinet.steps")}
+                            {(cabinet as any).stepCount || 0} {t("cabinet.steps")}
                           </span>
                         </div>
                       </div>
