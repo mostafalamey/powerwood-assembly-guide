@@ -14,7 +14,7 @@ export default function CategoryPage() {
 
   // Find category info
   const categoryInfo = categoriesData.categories.find(
-    (cat) => cat.id === category
+    (cat) => cat.id === category,
   );
 
   if (!categoryInfo) {
@@ -85,16 +85,16 @@ export default function CategoryPage() {
                       ? (cabinet as any).nameAr
                       : cabinet.name
                     : locale === "ar"
-                    ? cabinet.name.ar
-                    : cabinet.name.en;
+                      ? cabinet.name.ar
+                      : cabinet.name.en;
                 const cabinetDesc =
                   typeof cabinet.description === "string"
                     ? locale === "ar"
                       ? (cabinet as any).descriptionAr
                       : cabinet.description
                     : locale === "ar"
-                    ? cabinet.description?.ar
-                    : cabinet.description?.en;
+                      ? cabinet.description?.ar
+                      : cabinet.description?.en;
 
                 return (
                   <Link
@@ -173,7 +173,8 @@ export default function CategoryPage() {
                             />
                           </svg>
                           <span>
-                            {(cabinet as any).stepCount || 0} {t("cabinet.steps")}
+                            {(cabinet as any).stepCount || 0}{" "}
+                            {t("cabinet.steps")}
                           </span>
                         </div>
                       </div>

@@ -123,8 +123,8 @@ export default function StepPage() {
         ? (cabinet as any).nameAr
         : cabinet.name
       : locale === "ar"
-      ? cabinet.name.ar
-      : cabinet.name.en;
+        ? cabinet.name.ar
+        : cabinet.name.en;
 
   const stepTitle =
     typeof currentStep.title === "string"
@@ -132,8 +132,8 @@ export default function StepPage() {
         ? (currentStep as any).titleAr
         : currentStep.title
       : locale === "ar"
-      ? currentStep.title.ar
-      : currentStep.title.en;
+        ? currentStep.title.ar
+        : currentStep.title.en;
 
   const stepDescription =
     typeof currentStep.description === "string"
@@ -141,8 +141,8 @@ export default function StepPage() {
         ? (currentStep as any).descriptionAr
         : currentStep.description
       : locale === "ar"
-      ? currentStep.description.ar
-      : currentStep.description.en;
+        ? currentStep.description.ar
+        : currentStep.description.en;
 
   const modelUrl = (currentStep as any).model || (cabinet as any).model || null;
 
@@ -329,8 +329,8 @@ export default function StepPage() {
                         ? (cabinet as any).descriptionAr
                         : cabinet.description
                       : locale === "ar"
-                      ? cabinet.description?.ar
-                      : cabinet.description?.en}
+                        ? cabinet.description?.ar
+                        : cabinet.description?.en}
                   </p>
                 </div>
                 <StepNavigation
