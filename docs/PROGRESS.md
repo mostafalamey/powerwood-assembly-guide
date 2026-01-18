@@ -1,8 +1,8 @@
 # PWAssemblyGuide - Development Progress
 
-**Last Updated:** January 15, 2026  
+**Last Updated:** January 18, 2026  
 **Current Phase:** Phase 5 (Audio Integration) - COMPLETED  
-**Overall Progress:** 38% (6.5 of 16 weeks)
+**Overall Progress:** 42% (6.7 of 16 weeks)
 
 ---
 
@@ -329,32 +329,27 @@ package.json (added gsap@^3.12.5)
 ### Key Technical Achievements
 
 - **Smart Audio Path Resolution:** Automatically determines audio path based on:
-
   - Cabinet category (BC → BaseCabinets, WC → WallCabinets, etc.)
   - Cabinet ID formatting (BC-002 → BC_002)
   - Language code mapping (en → eng, ar → arb)
   - Step ID (stepId → step{stepId}.mp3)
 
 - **iOS Compatibility:**
-
   - Graceful handling of autoplay restrictions
   - User-initiated playback fallback
   - No errors on autoplay failure
 
 - **Preloading Strategy:**
-
   - Audio loads immediately on step change
   - Preload="auto" attribute for better UX
   - Loading spinner during audio fetch
 
 - **Multilingual Support:**
-
   - Automatic language detection from context
   - Seamless switching between English/Arabic audio
   - Separate audio files per language
 
 - **User Controls:**
-
   - Play/pause with visual feedback
   - Seek bar with gradient progress indicator
   - Volume slider (0-100% in 10% increments)
@@ -632,4 +627,105 @@ Upcoming tasks:
 
 **Status:** ✅ Ahead of Schedule | **Velocity:** Excellent | **Confidence:** High 🟢
 
-**Phase 5 Complete!** Audio system fully integrated with multilingual support. Ready to proceed with Admin Panel (Phase 6) or testing.
+**Phase 5.5 Complete!** Critical bugs fixed, UI/UX refined, rendering quality enhanced. Ready to proceed with Admin Panel (Phase 6) or testing.
+
+---
+
+## 📦 Phase 5.5: UI/UX Refinements (January 18, 2026) - COMPLETED
+
+**Completed:** January 18, 2026  
+**Duration:** < 1 day
+
+### Critical Bug Fixes
+
+#### Dual Audio Player Issue ✅
+
+- **Problem:** Two separate AudioPlayer instances (mobile + desktop) caused dual audio playback when switching viewport sizes
+- **Solution:** Single shared AudioPlayer instance positioned above both layouts
+- **Impact:** Clean audio playback regardless of viewport changes
+
+#### Dual SceneViewer Issue ✅
+
+- **Problem:** Two SceneViewer instances caused animation conflicts and failed triggers in mobile view
+- **Solution:** Conditional rendering based on viewport detection (useState + resize listener)
+- **Technical:** Only one SceneViewer mounts at a time based on `isDesktop` state (≥1024px breakpoint)
+- **Impact:** Animations now work consistently across all viewport sizes
+
+### Layout Improvements
+
+#### Audio Player Repositioning ✅
+
+- **Change:** Moved audio player below 3D scene viewer (was above)
+- **Rationale:** More logical flow - view model first, then control narration
+- **Layout Order:**
+  1. 3D Scene Viewer
+  2. Audio Player
+  3. Step Info
+
+#### Refresh Button Optimization ✅
+
+- **Removed:** StepControls component (entire row)
+- **Added:** Absolutely positioned refresh button on scene viewer
+- **Position:** Top-right corner with semi-transparent white background
+- **Benefits:**
+  - Saves vertical space (~50px)
+  - Cleaner UI with fewer separate sections
+  - Better mobile experience
+- **Removed:** Reset View button (unnecessary with OrbitControls)
+
+### Rendering Quality Improvements
+
+#### Shadow Quality Enhancement ✅
+
+- **Problem:** Shadow banding and artifacts on cabinet geometry
+- **Solutions Implemented:**
+  - Increased shadow map resolution: 2048 → 4096
+  - Fine-tuned shadow bias: -0.0001 → -0.00005
+  - Added normalBias: 0.02 (better handles surface angles)
+  - Added shadow radius: 2 (softer edges)
+  - Tightened shadow camera bounds: ±10 → ±5 (better detail)
+  - Reduced shadow opacity: 0.3 → 0.2 (subtler)
+- **Lighting Balance:**
+  - Increased ambient light: 0.6 → 0.8
+  - Reduced main light: 1.2 → 1.0
+  - Increased fill light: 0.4 → 0.5
+  - Reduced tone mapping exposure: 1.2 → 1.0
+- **Result:** Cleaner shadows with no visible banding artifacts
+
+### Technical Details
+
+**Files Modified:**
+
+- `pages/cabinet/[id]/step/[stepId].tsx` - Layout restructuring, viewport detection
+- `components/3d/SceneViewer.tsx` - Shadow quality improvements
+
+**New State Management:**
+
+```typescript
+const [isDesktop, setIsDesktop] = useState(false);
+
+useEffect(() => {
+  const checkScreenSize = () => {
+    setIsDesktop(window.innerWidth >= 1024);
+  };
+  checkScreenSize();
+  window.addEventListener("resize", checkScreenSize);
+  return () => window.removeEventListener("resize", checkScreenSize);
+}, []);
+```
+
+**Conditional Rendering:**
+
+```typescript
+// Mobile: !isDesktop && <SceneViewer />
+// Desktop: isDesktop && <SceneViewer />
+```
+
+### Impact Summary
+
+- ✅ **Fixed:** Audio duplication bug
+- ✅ **Fixed:** Animation trigger issues in mobile view
+- ✅ **Improved:** UI hierarchy and flow
+- ✅ **Reduced:** Vertical space usage
+- ✅ **Enhanced:** 3D rendering quality
+- ✅ **Eliminated:** Shadow artifacts and banding

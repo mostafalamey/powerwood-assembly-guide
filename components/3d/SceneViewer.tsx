@@ -68,7 +68,7 @@ export default function SceneViewer({
 
       // Get original transform
       const originalTransform = originalTransformsRef.current.get(
-        keyframeObj.name
+        keyframeObj.name,
       );
       if (!originalTransform) {
         return;
@@ -87,7 +87,7 @@ export default function SceneViewer({
         object.position.set(
           originalTransform.position.x + keyframeObj.position[0],
           originalTransform.position.y + keyframeObj.position[1],
-          originalTransform.position.z + keyframeObj.position[2]
+          originalTransform.position.z + keyframeObj.position[2],
         );
       } else {
         object.position.copy(originalTransform.position);
@@ -98,7 +98,7 @@ export default function SceneViewer({
         object.rotation.set(
           originalTransform.rotation.x + keyframeObj.rotation[0],
           originalTransform.rotation.y + keyframeObj.rotation[1],
-          originalTransform.rotation.z + keyframeObj.rotation[2]
+          originalTransform.rotation.z + keyframeObj.rotation[2],
         );
       } else {
         object.rotation.copy(originalTransform.rotation);
@@ -109,7 +109,7 @@ export default function SceneViewer({
         object.scale.set(
           keyframeObj.scale[0],
           keyframeObj.scale[1],
-          keyframeObj.scale[2]
+          keyframeObj.scale[2],
         );
       } else {
         object.scale.copy(originalTransform.scale);
@@ -129,7 +129,7 @@ export default function SceneViewer({
         cameraRef.current.position.set(
           firstCameraKeyframe.position[0],
           firstCameraKeyframe.position[1],
-          firstCameraKeyframe.position[2]
+          firstCameraKeyframe.position[2],
         );
       }
 
@@ -137,7 +137,7 @@ export default function SceneViewer({
         controlsRef.current.target.set(
           firstCameraKeyframe.target[0],
           firstCameraKeyframe.target[1],
-          firstCameraKeyframe.target[2]
+          firstCameraKeyframe.target[2],
         );
         controlsRef.current.update();
       }
@@ -222,7 +222,7 @@ export default function SceneViewer({
                 });
               },
               undefined,
-              endTime
+              endTime,
             );
           }
 
@@ -236,7 +236,7 @@ export default function SceneViewer({
             tl.to(
               object.position,
               { ...targetPos, duration, ease: easing },
-              startTime
+              startTime,
             );
           } else if (kf.data.position && index === 0) {
             // First keyframe - instant position
@@ -247,7 +247,7 @@ export default function SceneViewer({
                 y: original.position.y + kf.data.position[1],
                 z: original.position.z + kf.data.position[2],
               },
-              endTime
+              endTime,
             );
           }
 
@@ -261,7 +261,7 @@ export default function SceneViewer({
             tl.to(
               object.rotation,
               { ...targetRot, duration, ease: easing },
-              startTime
+              startTime,
             );
           } else if (kf.data.rotation && index === 0) {
             // First keyframe - instant rotation
@@ -272,7 +272,7 @@ export default function SceneViewer({
                 y: original.rotation.y + kf.data.rotation[1],
                 z: original.rotation.z + kf.data.rotation[2],
               },
-              endTime
+              endTime,
             );
           }
 
@@ -287,7 +287,7 @@ export default function SceneViewer({
                 duration,
                 ease: easing,
               },
-              startTime
+              startTime,
             );
           } else if (kf.data.scale && index === 0) {
             // First keyframe - instant scale
@@ -298,7 +298,7 @@ export default function SceneViewer({
                 y: kf.data.scale[1],
                 z: kf.data.scale[2],
               },
-              endTime
+              endTime,
             );
           }
         });
@@ -314,7 +314,7 @@ export default function SceneViewer({
         const camera = cameraRef.current;
         const controls = controlsRef.current;
         const sortedKeyframes = [...animation.camera.keyframes].sort(
-          (a, b) => a.time - b.time
+          (a, b) => a.time - b.time,
         );
         const tl = gsap.timeline();
 
@@ -336,7 +336,7 @@ export default function SceneViewer({
                 duration,
                 ease: easing,
               },
-              startTime
+              startTime,
             );
           } else if (kf.position && index === 0) {
             // First keyframe - instant position
@@ -347,7 +347,7 @@ export default function SceneViewer({
                 y: kf.position[1],
                 z: kf.position[2],
               },
-              endTime
+              endTime,
             );
           }
 
@@ -365,7 +365,7 @@ export default function SceneViewer({
                   controls.update();
                 },
               },
-              startTime
+              startTime,
             );
           } else if (kf.target && index === 0) {
             // First keyframe - instant target
@@ -375,7 +375,7 @@ export default function SceneViewer({
                 controls.update();
               },
               undefined,
-              endTime
+              endTime,
             );
           }
         });
@@ -406,7 +406,7 @@ export default function SceneViewer({
         onAnimationComplete?.();
       }, totalDuration);
     },
-    [onAnimationComplete]
+    [onAnimationComplete],
   );
 
   useEffect(() => {
@@ -424,12 +424,12 @@ export default function SceneViewer({
       12,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
-      1000
+      1000,
     );
     camera.position.set(
       defaultCameraPos.x,
       defaultCameraPos.y,
-      defaultCameraPos.z
+      defaultCameraPos.z,
     );
     cameraRef.current = camera;
 
@@ -441,40 +441,42 @@ export default function SceneViewer({
     });
     renderer.setSize(
       containerRef.current.clientWidth,
-      containerRef.current.clientHeight
+      containerRef.current.clientHeight,
     );
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
+    renderer.toneMappingExposure = 1.0;
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Lighting - Enhanced for better visual quality
     // Hemisphere light for natural ambient lighting
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
     hemisphereLight.position.set(0, 0, 0);
     scene.add(hemisphereLight);
 
     // Main directional light (sun) with improved shadows
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
     mainLight.position.set(5, 10, 7.5);
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
     mainLight.shadow.camera.near = 0.5;
     mainLight.shadow.camera.far = 50;
-    mainLight.shadow.camera.left = -10;
-    mainLight.shadow.camera.right = 10;
-    mainLight.shadow.camera.top = 10;
-    mainLight.shadow.camera.bottom = -10;
-    mainLight.shadow.bias = -0.0001;
+    mainLight.shadow.camera.left = -5;
+    mainLight.shadow.camera.right = 5;
+    mainLight.shadow.camera.top = 5;
+    mainLight.shadow.camera.bottom = -5;
+    mainLight.shadow.bias = -0.00005;
+    mainLight.shadow.normalBias = 0.02;
+    mainLight.shadow.radius = 2;
     scene.add(mainLight);
 
     // Fill light from the side
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
     fillLight.position.set(-5, 5, -5);
     scene.add(fillLight);
 
@@ -485,7 +487,7 @@ export default function SceneViewer({
 
     // Ground plane for shadows
     const groundGeometry = new THREE.PlaneGeometry(50, 50);
-    const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+    const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.2 });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = 0;
@@ -606,7 +608,7 @@ export default function SceneViewer({
         setError("Failed to load 3D model");
         setIsLoading(false);
         onError?.(err as Error);
-      }
+      },
     );
 
     // Animation loop
@@ -647,7 +649,7 @@ export default function SceneViewer({
       cameraRef.current.position.set(
         cameraPosition.x,
         cameraPosition.y,
-        cameraPosition.z
+        cameraPosition.z,
       );
     }
     if (controlsRef.current) {

@@ -3,16 +3,16 @@
     {
       "id": "BC-002",
       "name": {
-        "en": "2-Door Base Cabinet 36\"",
-        "ar": "خزانة أرضية بابين 36 بوصة"
+        "en": "1-Door Base Cabinet 60cm",
+        "ar": "خزانة أرضية باب واحد 60 سم"
       },
       "category": "base",
       "estimatedTime": 25,
       "image": "/images/cabinets/BC-002.png",
       "model": "/models/BC_002.glb",
       "description": {
-        "en": "Standard 2-door base cabinet with adjustable shelf",
-        "ar": "خزانة أرضية قياسية بابين مع رف قابل للتعديل"
+        "en": "Standard 1-door base cabinet with adjustable shelf",
+        "ar": "خزانة أرضية قياسية باب واحد مع رف قابل للتعديل"
       },
       "stepCount": 6
     }

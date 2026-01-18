@@ -4,7 +4,6 @@ import Head from "next/head";
 import { useTranslation } from "@/lib/i18n";
 import Header from "@/components/Header";
 import SceneViewer from "@/components/3d/SceneViewer";
-import StepControls from "@/components/StepControls";
 import StepNavigation from "@/components/StepNavigation";
 import AudioPlayer from "@/components/AudioPlayer";
 import { getCabinet } from "@/data/cabinets-loader";
@@ -22,6 +21,19 @@ export default function StepPage() {
   const [sceneViewerKey, setSceneViewerKey] = useState(0);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isAnimating, setIsAnimating] = useState(true); // Start true, set false on completion
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // Detect screen size
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsDesktop(window.innerWidth >= 1024); // lg breakpoint
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -158,59 +170,81 @@ export default function StepPage() {
         <div className="container mx-auto px-2 py-2 max-w-7xl">
           {/* Mobile Layout */}
           <div className="lg:hidden space-y-2">
-            {/* 3D Viewer */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              {modelUrl ? (
-                <SceneViewer
-                  key={sceneViewerKey}
-                  modelUrl={modelUrl}
-                  currentStep={currentStep}
-                  cameraPosition={currentStep.cameraPosition}
-                  isPlaying={isPlaying}
-                  shouldAutoStart={false}
-                  height="360px"
-                  onAnimationComplete={handleAnimationComplete}
-                />
-              ) : (
-                <div
-                  className="flex items-center justify-center bg-gray-100"
-                  style={{ height: "400px" }}
-                >
-                  <div className="text-center p-6">
-                    <svg
-                      className="w-16 h-16 text-gray-400 mx-auto mb-24"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                      />
-                    </svg>
-                    <p className="text-gray-600 font-medium">
-                      3D Model Not Available
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">
-                      Model file will be added soon
-                    </p>
+            {/* 3D Viewer - Mobile */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
+              <div className="h-[360px]">
+                {modelUrl ? (
+                  !isDesktop && (
+                    <SceneViewer
+                      key={sceneViewerKey}
+                      modelUrl={modelUrl}
+                      currentStep={currentStep}
+                      cameraPosition={currentStep.cameraPosition}
+                      isPlaying={isPlaying}
+                      shouldAutoStart={false}
+                      height="100%"
+                      onAnimationComplete={handleAnimationComplete}
+                    />
+                  )
+                ) : (
+                  <div className="flex items-center justify-center bg-gray-100 h-full">
+                    <div className="text-center p-6">
+                      <svg
+                        className="w-16 h-16 text-gray-400 mx-auto mb-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                        />
+                      </svg>
+                      <p className="text-gray-600 font-medium">
+                        3D Model Not Available
+                      </p>
+                      <p className="text-gray-500 text-sm mt-2">
+                        Model file will be added soon
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
+              </div>
+              {/* Refresh Button */}
+              {modelUrl && (
+                <button
+                  onClick={handleRestart}
+                  className="absolute top-3 right-3 w-10 h-10 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-colors z-10"
+                  aria-label="Restart animation"
+                >
+                  <svg
+                    className="w-5 h-5 text-gray-700"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </button>
               )}
             </div>
 
-            {/* Controls */}
-            <StepControls onRestart={handleRestart} onReset={handleReset} />
-
-            {/* Audio Player */}
-            <AudioPlayer
-              cabinetId={cabinet.id}
-              stepId={currentStep.id}
-              autoPlay={false}
-              onPlayPause={handleAudioPlayPause}
-            />
+            {/* Shared Audio Player - Single instance */}
+            <div>
+              <AudioPlayer
+                cabinetId={cabinet.id}
+                stepId={currentStep.id}
+                autoPlay={false}
+                onPlayPause={handleAudioPlayPause}
+              />
+            </div>
 
             {/* Step Info */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -349,59 +383,81 @@ export default function StepPage() {
 
             {/* Middle & Right Columns: Viewer and Info */}
             <div className="lg:col-span-2 space-y-4">
-              {/* 3D Viewer */}
-              <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                {modelUrl ? (
-                  <SceneViewer
-                    key={sceneViewerKey}
-                    modelUrl={modelUrl}
-                    currentStep={currentStep}
-                    cameraPosition={currentStep.cameraPosition}
-                    isPlaying={isPlaying}
-                    shouldAutoStart={false}
-                    height="500px"
-                    onAnimationComplete={handleAnimationComplete}
-                  />
-                ) : (
-                  <div
-                    className="flex items-center justify-center bg-gray-100"
-                    style={{ height: "500px" }}
-                  >
-                    <div className="text-center p-6">
-                      <svg
-                        className="w-20 h-20 text-gray-400 mx-auto mb-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                        />
-                      </svg>
-                      <p className="text-gray-600 font-medium text-lg">
-                        3D Model Not Available
-                      </p>
-                      <p className="text-gray-500 mt-2">
-                        Model file will be added soon
-                      </p>
+              {/* 3D Viewer - Desktop */}
+              <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
+                <div className="h-[500px]">
+                  {modelUrl ? (
+                    isDesktop && (
+                      <SceneViewer
+                        key={sceneViewerKey}
+                        modelUrl={modelUrl}
+                        currentStep={currentStep}
+                        cameraPosition={currentStep.cameraPosition}
+                        isPlaying={isPlaying}
+                        shouldAutoStart={false}
+                        height="100%"
+                        onAnimationComplete={handleAnimationComplete}
+                      />
+                    )
+                  ) : (
+                    <div className="flex items-center justify-center bg-gray-100 h-full">
+                      <div className="text-center p-6">
+                        <svg
+                          className="w-20 h-20 text-gray-400 mx-auto mb-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          />
+                        </svg>
+                        <p className="text-gray-600 font-medium text-lg">
+                          3D Model Not Available
+                        </p>
+                        <p className="text-gray-500 mt-2">
+                          Model file will be added soon
+                        </p>
+                      </div>
                     </div>
-                  </div>
+                  )}
+                </div>
+                {/* Refresh Button */}
+                {modelUrl && (
+                  <button
+                    onClick={handleRestart}
+                    className="absolute top-3 right-3 w-10 h-10 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-colors z-10"
+                    aria-label="Restart animation"
+                  >
+                    <svg
+                      className="w-5 h-5 text-gray-700"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  </button>
                 )}
               </div>
 
-              {/* Controls */}
-              <StepControls onRestart={handleRestart} onReset={handleReset} />
-
-              {/* Audio Player */}
-              <AudioPlayer
-                cabinetId={cabinet.id}
-                stepId={currentStep.id}
-                autoPlay={false}
-                onPlayPause={handleAudioPlayPause}
-              />
+              {/* Shared Audio Player - Single instance */}
+              <div>
+                <AudioPlayer
+                  cabinetId={cabinet.id}
+                  stepId={currentStep.id}
+                  autoPlay={false}
+                  onPlayPause={handleAudioPlayPause}
+                />
+              </div>
 
               {/* Step Info */}
               <div className="bg-white rounded-lg shadow-md p-6">
