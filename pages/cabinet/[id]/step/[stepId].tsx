@@ -46,7 +46,7 @@ export default function StepPage() {
 
     setCabinet(foundCabinet);
 
-    if (stepId) {
+    if (stepId && foundCabinet.steps) {
       const stepIndex = foundCabinet.steps.findIndex((s) => s.id === stepId);
       if (stepIndex !== -1) {
         setCurrentStep(foundCabinet.steps[stepIndex] as Step);
@@ -54,7 +54,7 @@ export default function StepPage() {
       } else {
         router.push(`/cabinet/${id}`);
       }
-    } else if (foundCabinet.steps.length > 0) {
+    } else if (foundCabinet.steps && foundCabinet.steps.length > 0) {
       const firstStep = foundCabinet.steps[0] as Step;
       router.push(`/cabinet/${id}/step/${firstStep.id}`);
     }
