@@ -11,10 +11,214 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### In Progress
 
-- Step animation system (Phase 3)
-- Object visibility control
-- Smooth transitions with GSAP
-- Swipe gestures for mobile navigation
+- Visual 3D step authoring tool (Phase 6.4)
+- Step copy/reuse system (Phase 6.5)
+
+---
+
+## [0.7.0] - 2026-01-20
+
+### ✨ Added - Phase 6: Admin Panel (80% Complete)
+
+- **QR Code Generation System:**
+  - Grid view of all cabinets with QR codes
+  - Selection system (checkboxes, select all/deselect all)
+  - Download PNG feature (canvas export with filename)
+  - **Advanced Print Layout:**
+    - Dual rendering architecture (screen vs print)
+    - Print-only header with PWAssemblyGuide logo
+    - Clean 2-column grid (2 QR codes per page)
+    - Shows: QR code + cabinet name + ID
+    - Hides: navigation, buttons, links, URLs, footer
+    - Selection-based printing (only checked codes)
+  - Navigation integration (admin header + cabinets page button)
+  - Level H error correction for durability
+  - 200x200px QR codes with margins
+
+- **Step Management UI:**
+  - Visual step list with drag-and-drop reordering
+  - Step cards showing:
+    - Step number badge
+    - Bilingual titles (EN + AR)
+    - Duration in minutes
+    - Animation status indicator (✅/⚠️)
+  - Add new step form with auto-generated step IDs
+  - Edit step form with all fields editable
+  - Delete step with confirmation dialog
+  - Visual editor placeholder page
+  - Multiple navigation paths to step management
+
+- **Cabinet Management:**
+  - Cabinet list page with search and category filter
+  - Cabinet cards with image, name, category, step count
+  - Create cabinet modal with bilingual inputs
+  - Edit cabinet page with full-page layout
+  - Delete cabinet with confirmation
+  - "Manage Steps" link showing stepCount
+
+- **Authentication System:**
+  - Login page with password hashing (bcryptjs)
+  - Token-based authentication (24-hour expiration)
+  - AuthContext for client-side state management
+  - Protected routes with AuthGuard component
+  - Logout functionality
+  - LocalStorage persistence
+
+- **Admin Layout:**
+  - Consistent navigation (Cabinets, QR Codes, Dashboard)
+  - Dark mode toggle
+  - View Site link
+  - Responsive header
+
+- **API Routes:**
+  - `pages/api/auth.ts` - Login endpoint
+  - `pages/api/cabinets.ts` - Full CRUD for split data structure
+    - GET: Merges metadata from index with steps
+    - POST: Creates entries in both files
+    - PUT: Updates both files, calculates stepCount
+    - DELETE: Removes from both locations
+  - Token validation middleware
+
+### 🔄 Changed - Data Structure Migration
+
+- **Split Architecture:**
+  - Migrated from single `cabinets.json` to split structure
+  - `data/cabinets-index.json` - Lightweight metadata only (~2KB)
+  - `data/cabinets/[id].json` - Individual animation files
+  - Benefits: Faster loads, better Git diffs, scales to 100+ cabinets
+
+- **Smart Data Loading:**
+  - Updated `cabinets-loader.ts` with merge function
+  - getCabinet() combines metadata from index with steps from individual files
+  - Automatic stepCount calculation on save
+
+- **TypeScript Interfaces:**
+  - Added `stepCount?: number` to Cabinet interface
+  - Made `steps?: Step[]` optional
+  - Made `description` optional
+  - Created CabinetStepsData interface
+
+### 🐛 Fixed
+
+- Cabinet page display issue (name/description undefined)
+- Property access errors with safe navigation (`?.`)
+- Print layout showing navigation buttons
+- QR code selection not filtering print output
+
+### 📦 Dependencies Added
+
+- bcryptjs@2.4.3 - Password hashing
+- qrcode.react@3.1.0 - QR code generation
+- react-dropzone@14.2.3 - File upload support
+
+### 📚 Documentation
+
+- Updated [PROGRESS.md](./docs/PROGRESS.md) with Phase 6 details
+- Updated [IMPLEMENTATION_STATUS.md](./docs/IMPLEMENTATION_STATUS.md)
+- Created [DATA_STRUCTURE.md](./docs/DATA_STRUCTURE.md)
+- Updated [README.md](./README.md) to reflect current status
+
+---
+
+## [0.6.0] - 2026-01-18
+
+### ✨ Added - Phase 5.5: UI/UX Refinements
+
+- Single shared AudioPlayer instance (prevents dual playback)
+- Conditional SceneViewer rendering based on viewport
+- Viewport detection with resize listener
+- Refresh button positioned absolutely on scene viewer
+
+### 🐛 Fixed - Critical Bugs
+
+- **Dual Audio Player Issue:**
+  - Problem: Two AudioPlayer instances causing dual playback
+  - Solution: Single shared instance above both layouts
+- **Dual SceneViewer Issue:**
+  - Problem: Two SceneViewer instances causing animation conflicts
+  - Solution: Conditional rendering (one instance at a time)
+- **Shadow Quality:**
+  - Increased shadow map resolution: 2048 → 4096
+  - Fine-tuned shadow bias and normal bias
+  - Reduced shadow opacity for subtler effect
+  - Eliminated shadow banding artifacts
+
+### 🔄 Changed
+
+- Audio player moved below 3D scene viewer
+- Removed StepControls component row
+- Removed Reset View button (unnecessary with OrbitControls)
+- Balanced lighting for better rendering quality
+
+---
+
+## [0.5.0] - 2026-01-17
+
+### ✨ Added - Phase 5: Audio Integration
+
+- **AudioPlayer Component:**
+  - Play/pause controls
+  - Volume slider (0-100%)
+  - Progress bar with time display
+  - Seek functionality (click to jump)
+  - Auto-switch audio on step change
+  - Bilingual audio support (EN/AR)
+  - Mobile-optimized controls
+  - Dark mode support
+
+- **Audio Files:**
+  - Organized by language and cabinet: `/public/audio/[lang]/[category]/[cabinet]/`
+  - MP3 format for broad compatibility
+  - Sample audio for BC_002 cabinet
+
+- **Audio Context:**
+  - Preloading system for smooth playback
+  - Error handling for missing files
+  - State management for current audio
+
+### 🔄 Changed
+
+- Step viewer layout adjusted to accommodate audio player
+- Audio player positioned above step info panel
+
+---
+
+## [0.4.0] - 2026-01-15
+
+### ✨ Added - Phase 3: Step System with GSAP Animations
+
+- **GSAP Animation System:**
+  - Keyframe-based animations with JSON definitions
+  - Additive transform system (position/rotation offsets)
+  - Hierarchical model support (parent-child relationships)
+  - Visibility control (show/hide objects at specific times)
+  - Camera animations per step
+  - Smooth easing with customizable timing
+
+- **Animation Controls:**
+  - Play/pause/restart functionality
+  - Animation completion detection
+  - Disabled navigation during animations
+  - Click step to restart current animation
+  - Original transform preservation
+
+- **Step Data Structure:**
+  - Keyframe-based animation format
+  - Camera position keyframes
+  - Object visibility keyframes
+  - Duration calculated from max keyframe time
+
+- **Completion Tracking:**
+  - Mark steps as completed
+  - Progress indicator
+  - Completion screen on final step
+  - LocalStorage persistence
+
+### 📚 Documentation
+
+- Created [KEYFRAME_ANIMATION_SYSTEM.md](./docs/KEYFRAME_ANIMATION_SYSTEM.md)
+- Created [KEYFRAME_ANIMATION.md](./docs/KEYFRAME_ANIMATION.md)
+- Updated all phase documentation
 
 ---
 
@@ -147,46 +351,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-| Version | Date       | Phase    | Status      | Highlights                            |
-| ------- | ---------- | -------- | ----------- | ------------------------------------- |
-| 0.3.0   | 2026-01-14 | Phase 2  | ✅ Complete | Enhanced 3D rendering, collapsible UI |
-| 0.2.0   | 2026-01-13 | Phase 1  | ✅ Complete | Foundation, routing, i18n             |
-| 0.1.0   | 2026-01-13 | Planning | ✅ Complete | Project initialization                |
+| Version | Date       | Phase     | Status      | Highlights                             |
+| ------- | ---------- | --------- | ----------- | -------------------------------------- |
+| 0.7.0   | 2026-01-20 | Phase 6   | 🚧 80%      | Admin panel, QR codes, step management |
+| 0.6.0   | 2026-01-18 | Phase 5.5 | ✅ Complete | UI/UX refinements, bug fixes           |
+| 0.5.0   | 2026-01-17 | Phase 5   | ✅ Complete | Audio integration                      |
+| 0.4.0   | 2026-01-15 | Phase 3   | ✅ Complete | GSAP animations, completion tracking   |
+| 0.3.0   | 2026-01-14 | Phase 2   | ✅ Complete | Enhanced 3D rendering, collapsible UI  |
+| 0.2.0   | 2026-01-13 | Phase 1   | ✅ Complete | Foundation, routing, i18n              |
+| 0.1.0   | 2026-01-13 | Planning  | ✅ Complete | Project initialization                 |
 
 ---
 
 ## Upcoming Releases
 
-### [0.4.0] - 2026-01-25 (Planned)
+### [0.8.0] - TBD (Planned)
 
-**Phase 3: Step System**
+**Phase 6.4: Visual 3D Authoring Tool**
 
-- Animation data format
-- Object visibility control
-- Smooth transitions (GSAP)
-- Swipe gestures
-- Step thumbnails
-- Completion tracking
+- Three.js scene editor with GLB loading
+- Object hierarchy browser (tree view)
+- Transform controls (move/rotate/scale)
+- Timeline-based keyframe recording
+- Camera position recording
+- Animation preview playback
+- JSON export for step animations
 
-### [0.5.0] - 2026-02-08 (Planned)
+### [0.9.0] - TBD (Planned)
 
-**Phase 4: Content Creation**
+**Phase 6.5: Step Copy/Reuse System**
 
-- 10 cabinet 3D models
-- Assembly animations
-- English/Arabic translations
-- Step descriptions
+- Browse all steps from all cabinets
+- Filter by cabinet ID or category
+- 3D preview of step animations
+- Copy step to current cabinet
+- Adjust copied step parameters
 
-### [0.6.0] - 2026-02-15 (Planned)
-
-**Phase 5: Audio Integration**
-
-- AudioPlayer component
-- English narration
-- Arabic narration
-- Preloading system
-
-### [1.0.0] - 2026-04-?? (Planned)
+### [1.0.0] - March 2026 (Planned)
 
 **MVP Launch**
 
@@ -209,20 +410,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Phase 1: 1 day (planned: 2 weeks) - 93% faster ⚡
 - Phase 2: 1 day (planned: 2 weeks) - 93% faster ⚡
-- Phase 3: In progress (planned: 2 weeks)
+- Phase 3: 1 day (planned: 2 weeks) - 93% faster ⚡
+- Phase 5: 1 day (planned: 1 week) - 86% faster ⚡
+- Phase 5.5: <1 day (unplanned) - Critical fixes
+- Phase 6: 2 days (planned: 2 weeks, 80% complete) - On track 🎯
 - **Overall:** Significantly ahead of schedule
 
 ### Key Metrics
 
-- **Lines of Code:** ~2,000+ (TypeScript/TSX)
-- **Components:** 7 (3D, UI, context, layout)
-- **Pages:** 3 (index, cabinet, step)
-- **Data Files:** 2 (cabinets, categories)
+- **Lines of Code:** ~10,000+ (TypeScript/TSX)
+- **Components:** 15+ (3D, UI, admin, context, layout)
+- **Pages:** 15+ (public + admin routes)
+- **API Routes:** 2 (auth, cabinets)
+- **Data Files:** 3+ (index + individual cabinets)
 - **3D Models:** 2 (BC-001, Arrows)
 - **Languages:** 2 (EN, AR)
-- **Documentation:** 6 files, ~4,000 lines
+- **Documentation:** 10+ files, ~8,000+ lines
+- **Admin Features:** Auth, CRUD, step management, QR generation
+- **Progress:** 58% complete (8.5 of 16 weeks equivalent)
 
 ---
 
 **Maintained by:** PowerWood Development Team  
-**Last Updated:** January 14, 2026
+**Last Updated:** January 20, 2026

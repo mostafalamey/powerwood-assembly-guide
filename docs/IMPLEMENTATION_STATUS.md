@@ -6,6 +6,14 @@
 
 ## ✅ Phase 3: Step System with Animations - COMPLETED
 
+## ✅ Phase 5: Audio Integration - COMPLETED
+
+## ✅ Phase 5.5: UI/UX Refinements - COMPLETED
+
+## 🔄 Phase 6: Admin Panel - IN PROGRESS (80%)
+
+## ✅ Phase 7: QR Code Generation - COMPLETED (Integrated into Phase 6)
+
 ### What's Been Implemented
 
 #### Phase 2: 3D Viewer Core (Weeks 3-4)
@@ -96,10 +104,13 @@
 
 #### 4. Data Structure ✅
 
+- **Split Architecture for Scalability:**
+  - `data/cabinets-index.json` - Lightweight metadata only (id, name, description, category, image, stepCount)
+  - `data/cabinets/[ID].json` - Individual cabinet files with full animation keyframes
+  - `data/cabinets-loader.ts` - Smart merge function (getCabinet combines metadata + steps)
+  - Benefits: Faster loads (~2KB vs 200KB+), better Git diffs, scales to 100+ cabinets
+  - Automatic stepCount calculation on save
 - `data/categories.json` - 7 cabinet categories (bilingual)
-- `data/cabinets-index.json` - Cabinet metadata (fast loading, no animation data)
-- `data/cabinets/[ID].json` - Individual cabinet files with full animation keyframes
-- `data/cabinets-loader.ts` - Static-export compatible loader using require()
 - Step structure with keyframe-based animations
 - Camera keyframe data format
 - Tool requirements (bilingual)
@@ -138,7 +149,6 @@
 
 1. **Home Page**
    Language switcher in top-right corner
-
    - QR code scanning instructions
    - Category browse grid (7 categories) with images
    - Two-column layout (image + text) for category cards
@@ -146,7 +156,6 @@
    - Fully responsive with hover effects
 
 2. **Category Listing Page**
-
    - Filtered cabinet list by category
    - Cabinet cards with images, stats, and descriptions
    - Estimated time and step count display
@@ -154,7 +163,6 @@
    - Bilingual support
 
 3. **Cabinet Overview Page**
-
    - Cabinet name and description (bilingual)
    - Estimated assembly time
    - Total step count
@@ -192,26 +200,195 @@
 - **Categories:** 7
 - **Sample cabinets:** 2
 
+## 🎯 Next Steps - Phase 6: Admin Panel (Remaining 20%)
+
+### Completed Features (80%)
+
+#### 6.1 Authentication System ✅
+
+- Token-based authentication with bcryptjs
+- Login page with password hashing
+- AuthContext for client-side state management
+- Protected routes with AuthGuard component
+- 24-hour token expiration
+- LocalStorage persistence
+
+#### 6.2 Cabinet Management ✅
+
+- **Admin Layout Component:**
+  - Consistent navigation (Cabinets, QR Codes, Dashboard)
+  - Dark mode toggle
+  - View Site link
+  - Logout functionality
+- **Cabinet List Page:**
+  - Search by ID or name
+  - Category filtering
+  - Cabinet cards with image, stats
+  - Edit/Delete actions
+  - "Add Cabinet" and "QR Codes" buttons
+- **Cabinet Forms:**
+  - Create/Edit modal with bilingual inputs
+  - Full-page edit view
+  - Image and model path configuration
+  - "Manage Steps" navigation link
+
+#### 6.3 Step Management UI ✅
+
+- **Step List with Drag-and-Drop:**
+  - Visual step cards (title, duration, animation status)
+  - Drag-and-drop reordering
+  - Automatic step ID updates
+  - Edit/Delete actions per step
+  - Link to visual editor (placeholder)
+- **Add New Step:**
+  - Auto-generate next step ID
+  - Bilingual title/description inputs
+  - Duration and tools configuration
+- **Edit Step:**
+  - Pre-populated form
+  - Animation status display
+  - Save updates to specific step
+
+#### 6.4 QR Code Generation ✅
+
+- **QR Codes Page:**
+  - Grid view of all cabinets with QR codes
+  - Select/deselect individual codes
+  - Download PNG feature (canvas export)
+  - **Advanced Print Layout:**
+    - Dual rendering (screen vs print)
+    - Print-only header (PWAssemblyGuide logo)
+    - 2 QR codes per page
+    - Clean layout: QR code + name + ID only
+    - Hidden: navigation, buttons, links, URLs, footer
+    - Selection-based printing (only checked codes)
+  - Navigation integration in admin header
+
+#### 6.5 API Routes ✅
+
+- `pages/api/auth.ts` - Login endpoint
+- `pages/api/cabinets.ts` - Full CRUD for split data structure
+  - GET: Merges metadata from index with steps from individual files
+  - POST: Creates entry in both index and animation file
+  - PUT: Updates both files, calculates stepCount
+  - DELETE: Removes from both locations
+- Token validation middleware
+
+### Remaining Tasks (20%)
+
+#### Phase 6.4: Visual 3D Step Authoring Tool (0%)
+
+- [ ] Three.js scene editor with GLB loading
+- [ ] Object hierarchy browser (tree view of model parts)
+- [ ] Transform controls (move/rotate/scale with visual gizmos)
+- [ ] Timeline-based keyframe recording
+  - [ ] Record position/rotation at specific times
+  - [ ] Visual timeline scrubber
+  - [ ] Play/pause preview
+- [ ] Camera position recording
+  - [ ] "Record Camera" button to capture current view
+  - [ ] Multiple camera angles per step
+- [ ] Animation preview playback
+- [ ] JSON export for step animations
+- [ ] Import existing animations for editing
+
+#### Phase 6.5: Step Copy/Reuse System (0%)
+
+- [ ] Browse all steps from all cabinets
+- [ ] Filter by cabinet ID or category
+- [ ] 3D preview of step animations in modal
+- [ ] "Copy to Cabinet" action
+- [ ] Adjust copied step parameters
+- [ ] Duplicate step within same cabinet
+
+### Files Created in Phase 6
+
+```files
+   # Authentication
+   contexts/AuthContext.tsx (180 lines)
+   pages/api/auth.ts (85 lines)
+   pages/admin/login.tsx (140 lines)
+   components/admin/AuthGuard.tsx (45 lines)
+
+   # Admin Layout
+   components/admin/AdminLayout.tsx (150 lines)
+
+   # Cabinet Management
+   pages/admin/index.tsx (50 lines - dashboard)
+   pages/admin/cabinets/index.tsx (320 lines - list with search/filter)
+   pages/admin/cabinets/new.tsx (60 lines - uses modal)
+   pages/admin/cabinets/[id]/edit.tsx (280 lines - full-page editor)
+   components/admin/CabinetFormModal.tsx (245 lines - create/edit form)
+
+   # Step Management
+   pages/admin/cabinets/[id]/steps/index.tsx (380 lines - list with drag-drop)
+   pages/admin/cabinets/[id]/steps/new.tsx (240 lines - create form)
+   pages/admin/cabinets/[id]/steps/[stepId]/edit.tsx (260 lines - edit form)
+   pages/admin/cabinets/[id]/steps/authoring.tsx (80 lines - placeholder)
+
+   # QR Code System
+   pages/admin/qr-codes.tsx (360 lines - generation + advanced print layout)
+
+   # API Routes
+   pages/api/auth.ts (85 lines)
+   pages/api/cabinets.ts (Updated - 380 lines for split structure)
+
+   # Data Structure
+   data/cabinets-index.json (metadata only)
+   data/cabinets/BC-002.json (individual cabinet with animations)
+   data/cabinets-loader.ts (Updated - smart merge logic)
+   docs/DATA_STRUCTURE.md (comprehensive documentation)
+
+   # Total: ~3,200 lines of new/updated code
+```
+
+### Bug Fixes in Phase 6
+
+1. **Cabinet Page Display Issue:**
+   - Problem: Empty cabinet page (undefined name/description)
+   - Cause: BC-002.json only had steps, no metadata
+   - Fix: Updated getCabinet() to merge metadata from index with steps
+   - Added safe property access with optional chaining
+
+2. **Dual Audio/SceneViewer Issue (Phase 5.5):**
+   - Problem: Two instances causing conflicts
+   - Fix: Viewport detection with single conditional render
+
+3. **Print Layout Issues:**
+   - Problem: Navigation buttons visible in print view
+   - Solution: Dual rendering with complete separation
+   - Print view: Hidden on screen, shows when printing
+   - Screen view: Hidden when printing, shows on screen
+
+### Phase 6 Impact
+
+- ✅ **Scalable Data:** Split architecture supports 100+ cabinets
+- ✅ **Content Management:** Full CRUD without database
+- ✅ **Step Management:** Visual UI with drag-and-drop
+- ✅ **QR Production:** Print-ready codes for physical packaging
+- ✅ **Secure Access:** Token-based authentication
+- ⏳ **Authoring:** Visual 3D editor for non-technical users (pending)
+- ⏳ **Efficiency:** Step reuse across cabinets (pending)
+
+---
+
 ## 🎯 Next Steps - Phase 4: Content Creation
 
 ### Upcoming Tasks (Weeks 7-8)
 
 1. **3D Model Creation**
-
    - [ ] Export all 10 cabinet models from SketchUp as GLB
    - [ ] Optimize models with Draco compression
    - [ ] Test models in viewer
    - [ ] Create assembly animations in Blender (if needed)
 
 2. **Animation Data**
-
    - [ ] Define animation sequences for all steps
    - [ ] Set camera positions for each step
    - [ ] Test animations for smoothness
    - [ ] Adjust timing and easing
 
 3. **Translation Completion**
-
    - [ ] Translate all step titles to Arabic
    - [ ] Translate all step descriptions to Arabic
    - [ ] Translate tool names to Arabic
@@ -228,7 +405,6 @@
 ### MVP Timeline Status
 
 - ✅ **Week 1-2: Foundation** - COMPLETED
-
   - Project setup ✅
   - Basic routing ✅
   - Tailwind configuration ✅
@@ -236,7 +412,6 @@
   - Category and cabinet pages ✅
 
 - ✅ **Week 3-4: 3D Viewer** - COMPLETED
-
   - Three.js integration ✅
   - GLB model loader ✅
   - Camera controls (OrbitControls) ✅
@@ -246,7 +421,6 @@
   - Play/pause/restart controls ✅
 
 - ✅ **Week 5-6: Step System with GSAP Animations** - COMPLETED
-
   - GSAP integration for runtime animations ✅
   - JSON-based animation definitions ✅
   - Additive transform system (position/rotation offsets) ✅
@@ -304,19 +478,16 @@ Output: `out/` directory
 ### Key Design Decisions
 
 1. **Custom i18n instead of next-i18next**
-
    - Reason: next-i18next not compatible with `output: 'export'`
    - Benefit: Works with static hosting (Hostinger)
    - Trade-off: Manual locale management
 
 2. **Pages Router instead of App Router**
-
    - Reason: Simpler for MVP, better i18n support
    - Benefit: Easier to understand and debug
    - Future: Can migrate to App Router in V2
 
 3. **JSON files instead of database**
-
    - Reason: Static export requirement
    - Benefit: Version control, no server needed
    - Future: Migrate to CMS (Payload) when needed
@@ -342,7 +513,6 @@ You can test by visiting:
 ### Next Steps for Phase 3
 
 1. **Create GLB Models:**
-
    - Convert SketchUp file (BaseCabinetCarcass.skp) to GLB
    - Export from SketchUp as Collada (.dae)
    - Import to Blender and optimize
@@ -350,7 +520,6 @@ You can test by visiting:
    - Place in `public/models/` directory
 
 2. **Test 3D Viewer:**
-
    - Load models in step viewer
    - Test camera controls (rotate, zoom, pan)
    - Test animation playback (if models have animations)
@@ -413,6 +582,6 @@ All dependencies from package.json are installed:
 
 ---
 
-**Status:** Ready for Phase 4 (Content Creation)  
-**Server:** Running at <http://localhost:3000>  
-**Last Updated:** January 14, 2026
+**Status:** Ready for Phase 6.4 (Visual Editor) or Phase 6.5 (Step Reuse)  
+**Server:** Running at <http://localhost:3001>  
+**Last Updated:** January 20, 2026

@@ -23,15 +23,34 @@ export function getAllCabinets(): Omit<Cabinet, "steps">[] {
  */
 export function getCabinet(cabinetId: string): Cabinet | null {
   try {
-    // For static build, we need to import directly
-    // This requires adding each cabinet to the switch/case
-    switch (cabinetId) {
-      case "BC-002":
-        return require("./cabinets/BC-002.json");
-      // Add more cases as cabinets are added
-      default:
-        return null;
+    // Get metadata from index
+    const metadata = cabinetsIndex.cabinets.find((c) => c.id === cabinetId);
+    if (!metadata) {
+      return null;
     }
+
+    // Load steps from separate file if it exists
+    let steps: any[] = [];
+    try {
+      switch (cabinetId) {
+        case "BC-002":
+          const cabinetData = require("./cabinets/BC-002.json");
+          steps = cabinetData.steps || [];
+          break;
+        // Add more cases as cabinets are added
+        default:
+          steps = [];
+      }
+    } catch (error) {
+      // Steps file doesn't exist yet, that's okay
+      steps = [];
+    }
+
+    // Merge metadata with steps
+    return {
+      ...metadata,
+      steps,
+    } as Cabinet;
   } catch (error) {
     return null;
   }
@@ -48,7 +67,7 @@ export function getAllCabinetIds(): string[] {
  * Filter cabinets by category
  */
 export function getCabinetsByCategory(
-  category: string
+  category: string,
 ): Omit<Cabinet, "steps">[] {
   return cabinetsIndex.cabinets.filter((c) => c.category === category) as any;
 }

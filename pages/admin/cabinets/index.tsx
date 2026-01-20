@@ -1,0 +1,457 @@
+import React, { useState, useEffect } from "react";
+import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import AdminLayout from "../../../components/admin/AdminLayout";
+import AuthGuard from "../../../components/admin/AuthGuard";
+import CabinetFormModal from "../../../components/admin/CabinetFormModal";
+import Image from "next/image";
+
+interface Cabinet {
+  id: string;
+  name: {
+    en: string;
+    ar: string;
+  };
+  category: string;
+  estimatedTime: number;
+  description?: {
+    en: string;
+    ar: string;
+  };
+  stepCount?: number;
+  steps?: any[];
+  model?: string;
+  image?: string;
+}
+
+export default function CabinetsListPage() {
+  const [cabinets, setCabinets] = useState<Cabinet[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCabinet, setEditingCabinet] = useState<Cabinet | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetchCabinets();
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => setActiveDropdown(null);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  const fetchCabinets = async () => {
+    try {
+      const token = localStorage.getItem("admin_token");
+      const response = await fetch("/api/cabinets", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCabinets(data);
+      } else {
+        setError("Failed to fetch cabinets");
+      }
+    } catch (err) {
+      setError("Error loading cabinets");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm(`Are you sure you want to delete cabinet ${id}?`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("admin_token");
+      const response = await fetch(`/api/cabinets?id=${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setCabinets(cabinets.filter((c) => c.id !== id));
+      } else {
+        alert("Failed to delete cabinet");
+      }
+    } catch (err) {
+      alert("Error deleting cabinet");
+      console.error(err);
+    }
+  };
+
+  const handleEdit = (cabinet: Cabinet) => {
+    // Ensure description is present for the modal
+    const cabinetWithDescription = {
+      ...cabinet,
+      description: cabinet.description || { en: "", ar: "" },
+    };
+    setEditingCabinet(cabinetWithDescription);
+    setIsModalOpen(true);
+    setActiveDropdown(null);
+  };
+
+  const handleAddNew = () => {
+    setEditingCabinet(null);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingCabinet(null);
+  };
+
+  const handleModalSuccess = () => {
+    fetchCabinets();
+  };
+
+  const toggleDropdown = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (activeDropdown === id) {
+      setActiveDropdown(null);
+      setDropdownPosition(null);
+    } else {
+      const button = e.currentTarget as HTMLElement;
+      const rect = button.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 4,
+        right: window.innerWidth - rect.right + window.scrollX,
+      });
+      setActiveDropdown(id);
+    }
+  };
+
+  const filteredCabinets = cabinets.filter(
+    (cabinet) =>
+      cabinet.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cabinet.name.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cabinet.category.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  return (
+    <AuthGuard>
+      <Head>
+        <title>Cabinets - Admin Panel</title>
+      </Head>
+      <AdminLayout title="Cabinets">
+        <div className="p-6">
+          {/* Header Actions */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex-1 max-w-lg">
+              <input
+                type="text"
+                placeholder="Search cabinets by ID, name, or category..."
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="ml-4 flex gap-3">
+              <Link
+                href="/admin/qr-codes"
+                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 inline-flex items-center gap-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                  />
+                </svg>
+                QR Codes
+              </Link>
+              <button
+                onClick={handleAddNew}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                + Add Cabinet
+              </button>
+            </div>
+          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div className="text-center py-12">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <p className="mt-2 text-gray-600 dark:text-gray-400">
+                Loading cabinets...
+              </p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4 mb-6">
+              <p className="text-red-800 dark:text-red-200">{error}</p>
+            </div>
+          )}
+
+          {/* Cabinets Table */}
+          {!loading && !error && (
+            <>
+              <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                Showing {filteredCabinets.length} of {cabinets.length} cabinets
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Thumbnail
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Name (EN)
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Category
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Steps
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Time (min)
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {filteredCabinets.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={7}
+                          className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
+                        >
+                          {searchTerm
+                            ? "No cabinets match your search"
+                            : "No cabinets yet"}
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredCabinets.map((cabinet) => (
+                        <tr
+                          key={cabinet.id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                          {/* Thumbnail (Desktop only) */}
+                          <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
+                            <div className="w-16 h-16 relative bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center overflow-hidden">
+                              {cabinet.image ? (
+                                <Image
+                                  src={cabinet.image}
+                                  alt={cabinet.name.en}
+                                  width={64}
+                                  height={64}
+                                  className="object-cover"
+                                  onError={(e) => {
+                                    (
+                                      e.target as HTMLImageElement
+                                    ).style.display = "none";
+                                  }}
+                                />
+                              ) : (
+                                <svg
+                                  className="w-8 h-8 text-gray-400"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                            {cabinet.id}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                            {cabinet.name.en}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                              {cabinet.category}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {cabinet.stepCount !== undefined
+                              ? cabinet.stepCount
+                              : cabinet.steps?.length || 0}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {cabinet.estimatedTime}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button
+                              onClick={(e) => toggleDropdown(cabinet.id, e)}
+                              className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 focus:outline-none"
+                              aria-label="Open actions menu"
+                            >
+                              <svg
+                                className="w-5 h-5"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                              </svg>
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {activeDropdown === cabinet.id &&
+                              dropdownPosition && (
+                                <div
+                                  className="fixed w-48 rounded-md shadow-lg dark:shadow-2xl bg-white dark:bg-gray-700 z-50 border border-gray-200 dark:border-gray-600"
+                                  style={{
+                                    top: `${dropdownPosition.top}px`,
+                                    right: `${dropdownPosition.right}px`,
+                                  }}
+                                >
+                                  <div className="py-1">
+                                    <Link
+                                      href={`/cabinet/${cabinet.id}`}
+                                      target="_blank"
+                                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                      <span className="flex items-center">
+                                        <svg
+                                          className="w-4 h-4 mr-2"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                          />
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                          />
+                                        </svg>
+                                        View
+                                      </span>
+                                    </Link>
+                                    <button
+                                      onClick={() => handleEdit(cabinet)}
+                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                      <span className="flex items-center">
+                                        <svg
+                                          className="w-4 h-4 mr-2"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                          />
+                                        </svg>
+                                        Edit
+                                      </span>
+                                    </button>
+                                    <Link
+                                      href={`/admin/cabinets/${cabinet.id}/steps`}
+                                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                      <span className="flex items-center">
+                                        <svg
+                                          className="w-4 h-4 mr-2"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                                          />
+                                        </svg>
+                                        Manage Steps
+                                      </span>
+                                    </Link>
+                                    <button
+                                      onClick={() => handleDelete(cabinet.id)}
+                                      className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                    >
+                                      <span className="flex items-center">
+                                        <svg
+                                          className="w-4 h-4 mr-2"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                          />
+                                        </svg>
+                                        Delete
+                                      </span>
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      </AdminLayout>
+
+      {/* Cabinet Form Modal */}
+      <CabinetFormModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSuccess={handleModalSuccess}
+        editCabinet={editingCabinet}
+      />
+    </AuthGuard>
+  );
+}

@@ -1,8 +1,8 @@
 # PWAssemblyGuide - Development Progress
 
-**Last Updated:** January 18, 2026  
-**Current Phase:** Phase 5 (Audio Integration) - COMPLETED  
-**Overall Progress:** 42% (6.7 of 16 weeks)
+**Last Updated:** January 20, 2026  
+**Current Phase:** Phase 6 (Admin Panel) - IN PROGRESS  
+**Overall Progress:** 58% (8.5 of 16 weeks)
 
 ---
 
@@ -15,8 +15,9 @@
 | **Phase 3: Step System** | ✅ Complete    | 100%       | GSAP animations, additive transforms, completion tracking |
 | **Phase 4: Content**     | ⏭️ Skipped     | N/A        | Using BC_002 test data, skipped full content creation     |
 | **Phase 5: Audio**       | ✅ Complete    | 100%       | Audio player with multilingual support                    |
-| **Phase 6: Admin Panel** | ⏳ Not Started | 0%         | Content management                                        |
-| **Phase 7: QR Codes**    | ⏳ Not Started | 0%         | QR implementation                                         |
+| **Phase 5.5: UI/UX**     | ✅ Complete    | 100%       | Bug fixes, layout improvements, rendering quality         |
+| **Phase 6: Admin Panel** | 🔄 In Progress | 80%        | Auth, CRUD, step management, QR codes complete            |
+| **Phase 7: QR Codes**    | ✅ Complete    | 100%       | Integrated into Admin Panel with print layout             |
 | **Phase 8: Polish**      | ⏳ Not Started | 0%         | Performance & UX                                          |
 | **Phase 9: Testing**     | ⏳ Not Started | 0%         | Device testing                                            |
 | **Phase 10: Launch**     | ⏳ Not Started | 0%         | Deployment                                                |
@@ -627,7 +628,308 @@ Upcoming tasks:
 
 **Status:** ✅ Ahead of Schedule | **Velocity:** Excellent | **Confidence:** High 🟢
 
-**Phase 5.5 Complete!** Critical bugs fixed, UI/UX refined, rendering quality enhanced. Ready to proceed with Admin Panel (Phase 6) or testing.
+**Phase 6 Progress!** Admin Panel 80% complete with authentication, cabinet management, step management UI, and QR code generation. Visual 3D authoring and step reuse features remain.
+
+---
+
+## 📦 Phase 6: Admin Panel (January 19-20, 2026) - IN PROGRESS (80%)
+
+**Started:** January 19, 2026  
+**Current Status:** 80% Complete  
+**Duration So Far:** 2 days
+
+### Data Structure Migration ✅
+
+#### Split Data Architecture
+
+- **Problem:** Single cabinets.json file becoming unwieldy, slow to load
+- **Solution:** Split into index + individual files
+- **Implementation:**
+  - `data/cabinets-index.json` - Lightweight metadata only (fast loading)
+    - Fields: id, name, description, category, image, stepCount
+    - No animation data (keeps file small)
+  - `data/cabinets/[id].json` - Individual cabinet files with full animation data
+    - Contains complete steps array with animations
+    - Only loaded when needed
+  - `data/cabinets-loader.ts` - Smart merge function
+    - getCabinet() merges metadata from index with steps from individual file
+    - Automatic stepCount calculation on save
+- **Benefits:**
+  - Faster initial page loads (index is ~2KB vs 200KB+)
+  - Better Git diffs (each cabinet is separate file)
+  - Scalable to 100+ cabinets
+  - Easier content management
+
+#### API Routes Updated ✅
+
+- `pages/api/cabinets.ts` - Full rewrite for split structure
+  - GET: Merges metadata from index with steps from individual files
+  - POST: Creates entry in index + separate animation file
+  - PUT: Updates both index and animation file, calculates stepCount
+  - DELETE: Removes from both index and animation file
+- TypeScript interfaces updated:
+  - Added `stepCount?: number` to Cabinet interface
+  - Made `steps?: Step[]` optional
+  - Created CabinetStepsData interface for animation files
+
+### Authentication System ✅
+
+#### Simple Token-Based Auth
+
+- `pages/api/auth.ts` - Login endpoint with bcrypt password hashing
+- `contexts/AuthContext.tsx` - Client-side auth state management
+- Token-based authentication (24-hour expiration)
+- Protected routes with AuthGuard component
+- Logout functionality
+- LocalStorage persistence
+
+#### Security Features
+
+- Password hashing with bcryptjs
+- Token expiration validation
+- Protected API routes (require Bearer token)
+- Auto-logout on token expiration
+
+### Cabinet Management ✅
+
+#### Admin Panel Layout
+
+- `components/admin/AdminLayout.tsx` - Consistent admin UI
+  - Navigation: Cabinets, QR Codes, Dashboard
+  - Dark mode toggle
+  - View Site link
+  - Logout button
+  - Responsive header with mobile support
+
+#### Cabinet List Page
+
+- `pages/admin/cabinets/index.tsx` - Full CRUD interface
+  - Search by cabinet ID or name
+  - Category filter dropdown
+  - Cabinet cards with image, name, category, step count
+  - Edit and Delete actions
+  - "Add Cabinet" button → modal
+  - "QR Codes" button → QR generation page
+  - Confirmation dialogs for deletions
+  - Real-time search filtering
+
+#### Cabinet Forms
+
+- `components/admin/CabinetFormModal.tsx` - Create/Edit modal
+  - Bilingual name inputs (English + Arabic)
+  - Bilingual description textareas (English + Arabic)
+  - Category selection
+  - Image URL input
+  - Model path input
+  - Form validation
+  - "Manage Steps" link (shows stepCount, navigates to step management)
+
+#### Cabinet Edit Page
+
+- `pages/admin/cabinets/[id]/edit.tsx` - Full-page editor
+  - Same fields as modal but larger layout
+  - "Manage Steps" button → step management
+  - Breadcrumb navigation
+  - Save and cancel actions
+
+### Step Management UI ✅
+
+#### Step List with Drag-and-Drop
+
+- `pages/admin/cabinets/[id]/steps/index.tsx` - Main step management
+  - Visual step cards showing:
+    - Step number badge
+    - Bilingual titles (EN + AR)
+    - Duration in minutes
+    - Animation status indicator (✅ animated / ⚠️ no animation)
+  - **Drag-and-drop reordering:**
+    - Click and drag step cards to reorder
+    - Automatic step ID updates (step1 → step2, etc.)
+    - Save button to persist changes
+  - Action buttons per step:
+    - Edit → Edit step form
+    - Delete → Confirmation dialog
+    - Visual Editor → Authoring tool (placeholder)
+  - "Add New Step" button
+  - Empty state for no steps
+
+#### Add New Step
+
+- `pages/admin/cabinets/[id]/steps/new.tsx` - Step creation form
+  - Auto-generates next step ID
+  - Bilingual title inputs (EN + AR)
+  - Bilingual description textareas (EN + AR)
+  - Duration input (minutes)
+  - Bilingual tools inputs (comma-separated)
+  - Saves to cabinet's steps array via API
+
+#### Edit Step
+
+- `pages/admin/cabinets/[id]/steps/[stepId]/edit.tsx` - Step editor
+  - Pre-populated with existing step data
+  - All fields editable (title, description, duration, tools)
+  - Animation status display:
+    - Shows if step has animation keyframes
+    - Link to visual editor if animated
+  - Save updates specific step in array
+
+#### Visual 3D Authoring Tool (Placeholder)
+
+- `pages/admin/cabinets/[id]/steps/authoring.tsx` - Future feature
+  - Placeholder page with description
+  - Will integrate Three.js editor for keyframe recording
+  - Back to steps button
+
+### QR Code Generation ✅
+
+#### QR Codes Page
+
+- `pages/admin/qr-codes.tsx` - Complete QR code system
+  - **Grid view:** Shows all cabinets with QR codes
+  - **Selection system:**
+    - Checkbox per cabinet ("Include in print")
+    - Select All / Deselect All toggle
+    - Counter showing selected count
+  - **QR Code Display:**
+    - qrcode.react library with Level H error correction
+    - 200x200px size with margin
+    - Direct URLs to cabinet pages
+  - **Download feature:**
+    - "Download PNG" button per QR code
+    - Canvas export to PNG file
+    - Filename: `QR-{id}-{name}.png`
+  - **Print layout:**
+    - "Print Selected" button
+    - Clean print view with dual rendering:
+      - **Screen view:** Full admin interface (hidden when printing)
+      - **Print view:** Minimal layout (hidden on screen)
+    - Print-only header: PWAssemblyGuide logo + subtitle
+    - 2 QR codes per page in grid
+    - Shows: QR code, cabinet name, cabinet ID
+    - Hides: Navigation, buttons, links, URLs, footer
+    - Black borders for easy cutting
+  - **Navigation Integration:**
+    - Link in AdminLayout header
+    - Purple "QR Codes" button on cabinets page
+
+#### Print Optimization
+
+- Separate rendering for screen vs print using Tailwind utilities
+- `print:hidden` class hides admin UI when printing
+- `hidden print:block` class shows print-only layout
+- No CSS fighting - clean separation of concerns
+- Automatically includes only selected QR codes
+
+### Navigation Improvements ✅
+
+#### Multiple Paths to Step Management
+
+1. **From Cabinet Modal:** "Manage Steps" link in footer (shows stepCount)
+2. **From Edit Page:** "Manage Steps" button in header
+3. **Direct URL:** `/admin/cabinets/[id]/steps`
+
+#### Better UX
+
+- Breadcrumb navigation on all admin pages
+- Back buttons on detail pages
+- Confirmation dialogs for destructive actions
+- Loading states for async operations
+
+### Bug Fixes ✅
+
+#### Cabinet Page Display Issues
+
+- **Problem:** Cabinet page showing empty - name/description undefined
+- **Root Cause:** BC-002.json only contained steps array, no metadata
+- **Solution:**
+  - Updated `getCabinet()` in cabinets-loader.ts
+  - Now merges metadata from cabinets-index.json with steps from separate file
+  - Added safe property access with optional chaining (`?.`)
+  - Added fallback values for undefined properties
+- **Files Fixed:**
+  - `data/cabinets-loader.ts` - Smart merge logic
+  - `pages/cabinet/[id].tsx` - Safe property access
+  - `types/cabinet.ts` - Made description optional
+
+### Technical Stack Updates
+
+- **New Dependencies:**
+  - bcryptjs@2.4.3 - Password hashing
+  - qrcode.react@3.1.0 - QR code generation
+  - react-dropzone@14.2.3 - File upload (for future image upload)
+- **No Build Tools Needed:**
+  - Pure Next.js API routes (no Express)
+  - File system operations (fs) for JSON management
+  - Client-side state with React Context
+
+### Files Created
+
+```files
+# Authentication
+contexts/AuthContext.tsx
+pages/api/auth.ts
+components/admin/AuthGuard.tsx
+
+# Admin Layout
+components/admin/AdminLayout.tsx
+
+# Cabinet Management
+pages/admin/index.tsx (dashboard)
+pages/admin/cabinets/index.tsx (list)
+pages/admin/cabinets/new.tsx (create - uses modal)
+pages/admin/cabinets/[id]/edit.tsx (edit page)
+components/admin/CabinetFormModal.tsx (create/edit modal)
+
+# Step Management
+pages/admin/cabinets/[id]/steps/index.tsx (list with drag-drop)
+pages/admin/cabinets/[id]/steps/new.tsx (create)
+pages/admin/cabinets/[id]/steps/[stepId]/edit.tsx (edit)
+pages/admin/cabinets/[id]/steps/authoring.tsx (visual editor placeholder)
+
+# QR Code System
+pages/admin/qr-codes.tsx (generation + print)
+
+# Data Structure
+data/cabinets-index.json (metadata only)
+data/cabinets/BC-002.json (individual cabinet)
+data/cabinets-loader.ts (updated for split structure)
+
+# Documentation
+docs/DATA_STRUCTURE.md
+```
+
+### Remaining Tasks (20%)
+
+#### Phase 6.4: Visual 3D Step Authoring Tool (0%)
+
+- [ ] Three.js scene editor with GLB loading
+- [ ] Object hierarchy browser (tree view)
+- [ ] Transform controls (move/rotate/scale with gizmos)
+- [ ] Timeline-based keyframe recording
+- [ ] Camera position recording
+- [ ] Animation preview playback
+- [ ] JSON export for step animations
+- [ ] Import existing animations for editing
+
+#### Phase 6.5: Step Copy/Reuse System (0%)
+
+- [ ] Browse all steps from all cabinets
+- [ ] Filter by cabinet ID or category
+- [ ] 3D preview of step animations
+- [ ] Copy step to current cabinet
+- [ ] Adjust copied step parameters (name, description)
+- [ ] Duplicate step within same cabinet
+
+### Impact Summary
+
+- ✅ **Data Structure:** Split architecture scales to 100+ cabinets
+- ✅ **Authentication:** Secure admin access with token-based auth
+- ✅ **Cabinet CRUD:** Full create, read, update, delete functionality
+- ✅ **Step Management:** Visual UI with drag-and-drop reordering
+- ✅ **QR Codes:** Production-ready generation and printing
+- ✅ **Navigation:** Multiple intuitive paths to all features
+- ✅ **Bug Fixes:** Cabinet page display issues resolved
+- ⏳ **Pending:** Visual 3D editor and step reuse features
 
 ---
 

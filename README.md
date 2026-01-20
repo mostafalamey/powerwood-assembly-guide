@@ -3,8 +3,8 @@
 > Mobile-first, multilingual 3D web application for kitchen cabinet assembly instructions
 
 [![Status](https://img.shields.io/badge/status-in%20development-yellow)]()
-[![Phase](https://img.shields.io/badge/phase-3%20of%2010-blue)]()
-[![Progress](https://img.shields.io/badge/progress-25%25-green)]()
+[![Phase](https://img.shields.io/badge/phase-6%20of%2010-blue)]()
+[![Progress](https://img.shields.io/badge/progress-58%25-green)]()
 
 ---
 
@@ -14,12 +14,14 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 
 ### ✨ Key Features (MVP)
 
-- 🎯 **QR Code Access** - Scan to instantly load your cabinet's guide
-- 🎨 **Interactive 3D** - Rotate, zoom, and explore assembly steps
-- 🌍 **Multilingual** - English and Arabic with RTL support
-- 📱 **Mobile-First** - Optimized for smartphones and tablets
-- 🎬 **Step Animations** - Watch parts come together in 3D
-- 🔊 **Audio Narration** - Listen while you work (Phase 5)
+- 🎯 **QR Code Access** - Scan to instantly load your cabinet's guide ✅
+- 🎨 **Interactive 3D** - Rotate, zoom, and explore assembly steps ✅
+- 🌍 **Multilingual** - English and Arabic with RTL support ✅
+- 📱 **Mobile-First** - Optimized for smartphones and tablets ✅
+- 🎬 **Step Animations** - Watch parts come together in 3D ✅
+- 🔊 **Audio Narration** - Listen while you work ✅
+- 🛠️ **Admin Panel** - Content management system ✅
+- 📋 **QR Generation** - Print-ready codes for packaging ✅
 - ⚡ **Fast & Offline** - Static hosting, PWA support (V2)
 
 ---
@@ -30,21 +32,29 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 
 - ✅ **Phase 1: Foundation** (100%) - Setup, routing, i18n
 - ✅ **Phase 2: 3D Viewer** (100%) - Enhanced rendering, controls
-- 🚧 **Phase 3: Step System** (60%) - Animations in progress
-- ⏳ **Phase 4-10** - Upcoming
+- ✅ **Phase 3: Step System** (100%) - GSAP animations, completion tracking
+- ✅ **Phase 5: Audio** (100%) - Multilingual narration
+- ✅ **Phase 5.5: UI/UX** (100%) - Bug fixes, layout improvements
+- 🚧 **Phase 6: Admin Panel** (80%) - Auth, CRUD, step management, QR codes
+- ⏳ **Phase 8-10** - Upcoming
 
 ### Latest Updates
 
-- **Jan 14, 2026:** Completed Phase 2 - Enhanced 3D viewer with collapsible UI
-- **Jan 13, 2026:** Completed Phase 1 - Project foundation ready
-- **Jan 13, 2026:** Project initiated
+- **Jan 20, 2026:** Phase 6 at 80% - Admin panel with QR code print layout
+- **Jan 19, 2026:** Phase 6 started - Authentication, cabinet/step management
+- **Jan 18, 2026:** Completed Phase 5.5 - Critical UI/UX refinements
+- **Jan 17, 2026:** Completed Phase 5 - Audio integration
+- **Jan 15, 2026:** Completed Phase 3 - GSAP animation system
+- **Jan 14, 2026:** Completed Phase 2 - Enhanced 3D viewer
 
 ### Tech Stack
 
 ```
 Frontend:    Next.js 14 (Pages Router) + TypeScript 5.3
-3D Engine:   Three.js 0.160.0
+3D Engine:   Three.js 0.160.0 + GSAP 3.12.2
 UI:          Tailwind CSS 3.4 (RTL support)
+Auth:        bcryptjs 2.4.3 (token-based)
+QR Codes:    qrcode.react 3.1.0
 i18n:        Custom (localStorage + React Context)
 Build:       Static Export
 Hosting:     TBD (Hostinger planned)
@@ -94,31 +104,57 @@ AssemblyGuide/
 ├── components/
 │   ├── 3d/
 │   │   └── SceneViewer.tsx       # Core 3D rendering engine
-│   ├── Layout.tsx                # App layout wrapper
+│   ├── admin/
+│   │   ├── AdminLayout.tsx       # Admin panel layout
+│   │   ├── AuthGuard.tsx         # Protected routes
+│   │   └── CabinetFormModal.tsx  # Cabinet create/edit modal
+│   ├── AudioPlayer.tsx           # Audio narration player
+│   ├── Header.tsx                # App header with back button
 │   ├── LanguageSwitcher.tsx      # Language toggle
 │   ├── StepControls.tsx          # Play/pause/reset
 │   └── StepNavigation.tsx        # Progress & step list
 ├── contexts/
+│   ├── AuthContext.tsx           # Admin authentication
+│   ├── ThemeContext.tsx          # Dark mode support
 │   └── LanguageContext.tsx       # i18n provider
 ├── data/
-│   └── cabinets.json             # Cabinet definitions
+│   ├── cabinets-index.json       # Cabinet metadata (fast loading)
+│   ├── cabinets/
+│   │   └── [id].json             # Individual cabinet animations
+│   └── cabinets-loader.ts        # Smart data merge function
 ├── locales/
 │   ├── en.json                   # English translations
 │   └── ar.json                   # Arabic translations
 ├── pages/
+│   ├── api/
+│   │   ├── auth.ts               # Login endpoint
+│   │   └── cabinets.ts           # Cabinet CRUD API
+│   ├── admin/
+│   │   ├── login.tsx             # Admin login
+│   │   ├── cabinets/
+│   │   │   ├── index.tsx         # Cabinet list with search/filter
+│   │   │   └── [id]/
+│   │   │       ├── edit.tsx      # Edit cabinet page
+│   │   │       └── steps/
+│   │   │           ├── index.tsx # Step management (drag-drop)
+│   │   │           ├── new.tsx   # Add step form
+│   │   │           └── [stepId]/
+│   │   │               └── edit.tsx # Edit step form
+│   │   └── qr-codes.tsx          # QR code generation & print
 │   ├── _app.tsx                  # App wrapper
 │   ├── index.tsx                 # Home page
 │   └── cabinet/[id]/
 │       ├── index.tsx             # Cabinet overview
-│       └── step/[stepId].tsx     # Step viewer
+│       └── step/[stepId].tsx     # Step viewer with 3D
 ├── public/
-│   └── models/                   # GLB 3D models
+│   ├── models/                   # GLB 3D models
+│   └── audio/                    # Narration files (eng/arb)
 ├── types/
 │   └── cabinet.ts                # TypeScript interfaces
-├── MVP.md                        # Product requirements
-├── PRD.md                        # Detailed specs
-├── PROGRESS.md                   # Development progress
-└── PHASE3_GUIDE.md               # Phase 3 implementation
+└── docs/
+    ├── PROGRESS.md               # Development progress
+    ├── IMPLEMENTATION_STATUS.md  # Implementation details
+    └── DATA_STRUCTURE.md         # Data architecture docs
 ```
 
 ---
@@ -131,22 +167,29 @@ AssemblyGuide/
 | ---------- | ------ | --------- |
 | 3D FPS     | >30fps | ~60fps ✅ |
 | Model Size | <2MB   | 1.2MB ✅  |
-| Page Load  | <3s    | TBD ⏳    |
+| Page Load  | <3s    | ~2s ✅    |
 | Lighthouse | >90    | TBD ⏳    |
 
 ---
 
 ## 📅 Roadmap
 
-### MVP (V1.0) - April 2026
+### MVP (V1.0) - March 2026
 
 - [x] Phase 1: Foundation (2 weeks) ✅
 - [x] Phase 2: 3D Viewer (2 weeks) ✅
-- [ ] Phase 3: Step System (2 weeks) - 60% complete 🚧
-- [ ] Phase 4: Content Creation (2 weeks)
-- [ ] Phase 5: Audio Integration (1 week)
-- [ ] Phase 6: Admin Panel (2 weeks)
-- [ ] Phase 7: QR Codes (1 week)
+- [x] Phase 3: Step System (2 weeks) ✅
+- [ ] Phase 4: Content Creation (2 weeks) - Skipped for testing
+- [x] Phase 5: Audio Integration (1 week) ✅
+- [x] Phase 5.5: UI/UX Refinements (< 1 week) ✅
+- [ ] Phase 6: Admin Panel (2 weeks) - 80% complete 🚧
+  - [x] Authentication system ✅
+  - [x] Cabinet CRUD ✅
+  - [x] Step management with drag-drop ✅
+  - [x] QR code generation with print layout ✅
+  - [ ] Visual 3D authoring tool
+  - [ ] Step copy/reuse system
+- [ ] Phase 7: QR Codes (1 week) - Integrated into Phase 6 ✅
 - [ ] Phase 8: Polish (2 weeks)
 - [ ] Phase 9: Testing (1 week)
 - [ ] Phase 10: Launch (1 week)
@@ -236,25 +279,38 @@ Proprietary - All rights reserved
 
 ---
 
-**Last Updated:** January 14, 2026  
-**Version:** 0.3.0 (Phase 3 in progress)  
+**Last Updated:** January 20, 2026  
+**Version:** 0.7.0 (Phase 6 in progress - 80% complete)  
 **Status:** 🚧 Active Development
 
 ## 🔧 Configuration
 
 ### Adding New Cabinets
 
-Edit `data/cabinets.json`:
+Admin panel provides a UI for this, or edit `data/cabinets-index.json`:
 
 ```json
 {
   "id": "NEW-001",
-  "name": "Cabinet Name",
-  "nameAr": "اسم الخزانة",
+  "name": {
+    "en": "Cabinet Name",
+    "ar": "اسم الخزانة"
+  },
+  "description": {
+    "en": "Description",
+    "ar": "وصف"
+  },
   "category": "base",
-  "estimatedTime": 20,
-  "steps": [],
-  "requiredTools": ["Tool 1", "Tool 2"]
+  "image": "/cabinets/NEW-001.jpg",
+  "stepCount": 0
+}
+```
+
+Then create animation file in `data/cabinets/NEW-001.json`:
+
+```json
+{
+  "steps": []
 }
 ```
 

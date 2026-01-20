@@ -59,31 +59,31 @@ export default function CabinetPage() {
   const cabinetName =
     typeof cabinet.name === "string"
       ? locale === "ar"
-        ? (cabinet as any).nameAr
+        ? (cabinet as any).nameAr || cabinet.name
         : cabinet.name
       : locale === "ar"
-      ? (cabinet.name as any).ar
-      : (cabinet.name as any).en;
+        ? (cabinet.name as any)?.ar || ""
+        : (cabinet.name as any)?.en || "";
 
   const description =
     typeof cabinet.description === "string"
       ? locale === "ar"
-        ? (cabinet as any).descriptionAr
+        ? (cabinet as any).descriptionAr || cabinet.description
         : cabinet.description
       : locale === "ar"
-      ? (cabinet.description as any)?.ar
-      : (cabinet.description as any)?.en;
+        ? (cabinet.description as any)?.ar || ""
+        : (cabinet.description as any)?.en || "";
 
   const tools =
     typeof (cabinet as any).requiredTools !== "undefined"
       ? locale === "ar"
-        ? (cabinet as any).requiredToolsAr
-        : (cabinet as any).requiredTools
+        ? (cabinet as any).requiredToolsAr || []
+        : (cabinet as any).requiredTools || []
       : (cabinet as any).tools
-      ? locale === "ar"
-        ? (cabinet as any).tools.ar
-        : (cabinet as any).tools.en
-      : [];
+        ? locale === "ar"
+          ? (cabinet as any).tools?.ar || []
+          : (cabinet as any).tools?.en || []
+        : [];
 
   return (
     <>
@@ -191,7 +191,7 @@ export default function CabinetPage() {
                     </span>
                   </div>
                   <p className="text-2xl font-bold text-green-600">
-                    {cabinet.steps.length}{" "}
+                    {cabinet.steps?.length || 0}{" "}
                     <span className="text-sm font-normal">
                       {t("cabinet.steps")}
                     </span>
@@ -240,7 +240,7 @@ export default function CabinetPage() {
               {/* Start Assembly Button */}
               <Link
                 href={`/cabinet/${cabinet.id}/step/${
-                  cabinet.steps[0]?.id || "1"
+                  cabinet.steps?.[0]?.id || "1"
                 }`}
                 className="block w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors text-center text-lg shadow-lg hover:shadow-xl"
               >

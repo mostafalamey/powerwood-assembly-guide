@@ -15,6 +15,21 @@
         "ar": "خزانة أرضية قياسية باب واحد مع رف قابل للتعديل"
       },
       "stepCount": 6
+    },
+    {
+      "id": "BC-003",
+      "name": {
+        "en": "2-Door Base Cabinet 90cm",
+        "ar": "خزانة ارضية بابين 90 سم"
+      },
+      "category": "base",
+      "estimatedTime": 22,
+      "description": {
+        "en": "Some desctiption",
+        "ar": "خزانة ارضية بابين"
+      },
+      "stepCount": 0,
+      "image": "/images/cabinets/BC-003.png"
     }
   ]
 }
