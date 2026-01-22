@@ -10,7 +10,50 @@
 
 ## ✅ Phase 5.5: UI/UX Refinements - COMPLETED
 
-## 🔄 Phase 6: Admin Panel - IN PROGRESS (80%)
+## 🔄 Phase 6: Admin Panel - IN PROGRESS (90%)
+
+### Latest: Animation Authoring Tool Enhanced (January 22, 2026)
+
+#### Visual 3D Step Authoring Tool ✅
+
+- **`pages/admin/cabinets/[id]/steps/authoring.tsx`** - Complete animation editor (1476 lines)
+  - Three.js scene with GLB model loading
+  - Object hierarchy tree view (expandable/collapsible)
+  - Transform gizmos (translate/rotate/scale modes)
+  - Keyboard shortcuts (G/R/S for mode switching)
+  - Timeline-based keyframe recording
+  - Camera position/target recording
+  - Animation preview with play/pause/scrub
+  - JSON export and import
+  - Step title display in header
+- **Keyframe Selection & Editing:**
+  - Click-to-select keyframes on timeline
+  - Inline properties editor below timeline
+  - Real-time editing: time, position (x/y/z), rotation (degrees), visibility
+  - Camera keyframe editing: position and target
+  - Automatic keyframe reordering on time change
+  - Rotation unit conversion (radians ↔ degrees)
+- **Timeline Filtering System:**
+  - Shows selected object's keyframes + all child objects
+  - Camera keyframes displayed when no object selected
+  - Hierarchical object traversal with Set-based ID collection
+  - Visual focus on relevant keyframes only
+- **Visibility & Shadow Controls:**
+  - `isFullyVisible()` helper for hierarchical visibility checking
+  - Raycasting filter excludes invisible objects from selection
+  - Shadow casting synchronized with object visibility
+  - Real-time shadow updates during animation playback
+  - Three update locations in animation code paths
+- **`components/admin/AuthoringSceneViewer.tsx`** - 3D scene for authoring (643 lines)
+  - Filtered raycasting based on visibility
+  - TransformControls integration
+  - Object selection with visual feedback
+  - Shadow setup on model load
+- **`components/admin/Timeline.tsx`** - Enhanced timeline (358 lines)
+  - Click vs drag detection (3px threshold)
+  - Keyframe selection callback system
+  - Visual keyframe markers
+  - Time scrubbing
 
 ## ✅ Phase 7: QR Code Generation - COMPLETED (Integrated into Phase 6)
 

@@ -7,6 +7,7 @@ import cabinetsIndex from "./cabinets-index.json";
 // This works with static export because imports are resolved at build time
 const cabinetFiles: Record<string, () => Promise<{ default: Cabinet }>> = {
   "BC-002": () => import("./cabinets/BC-002.json").then((m) => m as any),
+  "BC-003": () => import("./cabinets/BC-003.json").then((m) => m as any),
   // Add more cabinets here as they are created
 };
 
@@ -34,8 +35,12 @@ export function getCabinet(cabinetId: string): Cabinet | null {
     try {
       switch (cabinetId) {
         case "BC-002":
-          const cabinetData = require("./cabinets/BC-002.json");
-          steps = cabinetData.steps || [];
+          const bc002Data = require("./cabinets/BC-002.json");
+          steps = bc002Data.steps || [];
+          break;
+        case "BC-003":
+          const bc003Data = require("./cabinets/BC-003.json");
+          steps = bc003Data.steps || [];
           break;
         // Add more cases as cabinets are added
         default:

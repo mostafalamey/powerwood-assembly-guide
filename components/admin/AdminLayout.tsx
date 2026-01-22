@@ -27,64 +27,69 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <aside className="w-64 border-r border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 h-screen">
+          <div className="h-full flex flex-col">
+            <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800">
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white">
                 PWAssemblyGuide
               </h1>
-              <nav className="hidden md:flex space-x-4">
-                <Link
-                  href="/admin/cabinets"
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    isActive("/admin/cabinets") ||
-                    router.pathname.startsWith("/admin/cabinets")
-                      ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  Cabinets
-                </Link>
-                <Link
-                  href="/admin/qr-codes"
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    isActive("/admin/qr-codes")
-                      ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  QR Codes
-                </Link>
-                <Link
-                  href="/admin"
-                  className={`px-3 py-2 rounded-md text-sm font-medium ${
-                    isActive("/admin")
-                      ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  Dashboard
-                </Link>
-              </nav>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Admin Panel
+              </p>
             </div>
-            <div className="flex items-center space-x-4">
+
+            <nav className="flex-1 px-4 py-4 space-y-1">
+              <Link
+                href="/admin"
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive("/admin")
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                href="/admin/cabinets"
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive("/admin/cabinets") ||
+                  router.pathname.startsWith("/admin/cabinets")
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                <span>Cabinets</span>
+              </Link>
+              <Link
+                href="/admin/qr-codes"
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
+                  isActive("/admin/qr-codes")
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                <span>QR Codes</span>
+              </Link>
+            </nav>
+
+            <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800 space-y-3">
               <Link
                 href="/"
                 target="_blank"
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
               >
                 View Site
               </Link>
               <button
                 onClick={toggleTheme}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 focus:outline-none"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md"
                 title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
               >
                 {theme === "light" ? (
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -98,7 +103,7 @@ export default function AdminLayout({
                   </svg>
                 ) : (
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -111,38 +116,43 @@ export default function AdminLayout({
                     />
                   </svg>
                 )}
+                <span>Theme</span>
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                className="w-full px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
                 Logout
               </button>
             </div>
           </div>
-        </div>
-      </header>
+        </aside>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-6">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {title}
-          </h2>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-          {children}
-        </div>
-      </main>
+        {/* Content */}
+        <div className="flex-1 flex flex-col">
+          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
+            <div className="px-6 py-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                {title}
+              </h2>
+            </div>
+          </header>
 
-      {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            PWAssemblyGuide Admin Panel © {new Date().getFullYear()}
-          </p>
+          <main className="flex-1 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+              {children}
+            </div>
+          </main>
+
+          <footer className="border-t border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80">
+            <div className="px-6 py-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                PWAssemblyGuide Admin Panel © {new Date().getFullYear()}
+              </p>
+            </div>
+          </footer>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }

@@ -11,8 +11,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### In Progress
 
-- Visual 3D step authoring tool (Phase 6.4)
 - Step copy/reuse system (Phase 6.5)
+- Export/import animation templates (Phase 6.6)
+
+---
+
+## [0.8.0] - 2026-01-22
+
+### ✨ Added - Animation Authoring Tool Enhancements
+
+- **Keyframe Selection & Editing System:**
+  - Click-to-select keyframes on timeline (with drag/click differentiation)
+  - Inline keyframe properties editor below timeline
+  - Compact layout: time, position (x/y/z), rotation (degrees), visibility
+  - Camera keyframe editor: position and target properties
+  - Real-time property updates with input fields
+  - Rotation conversion between radians (storage) and degrees (UI)
+  - Keyframe time editing with automatic reordering
+
+- **Timeline Filtering System:**
+  - Smart filtering based on object selection
+  - Shows selected object's keyframes + all child objects
+  - Camera keyframes displayed when no object selected
+  - Hierarchical object traversal for complete filtering
+  - Visual focus on relevant keyframes only
+
+- **Visibility & Interaction Controls:**
+  - Invisible objects excluded from raycasting (not selectable)
+  - Hierarchical visibility checking (parent chain validation)
+  - Shadow casting synchronized with object visibility
+  - Real-time shadow updates during animation playback
+  - Prevents invisible objects from affecting scene lighting
+
+- **UI/UX Improvements:**
+  - Step title display in authoring page header
+  - Format: "Step 2: Attach one leg to the base panel"
+  - Compact inline properties editor preserves 3D viewport
+  - Responsive layout with flex-wrap for smaller screens
+  - Small input fields (w-20) with text-xs for space efficiency
+
+### 🔧 Technical Implementation
+
+- **AuthoringSceneViewer.tsx:**
+  - `isFullyVisible()` helper for hierarchical visibility checking
+  - Filtered raycasting pool (only visible meshes)
+  - Initial shadow setup based on object visibility
+
+- **authoring.tsx:**
+  - `selectedKeyframeTime` state for tracking selection
+  - `handleKeyframeSelect()` callback system
+  - `timelineKeyframes` computed filtering with Set and traverse
+  - Shadow casting updates in 3 animation code paths:
+    - During visibility fade transitions
+    - When holding at static visible/invisible state
+    - When holding at final keyframe
+  - Step data lookup from cabinet.steps for title display
+
+- **Timeline.tsx:**
+  - `onKeyframeSelect` prop and callback integration
+  - Click vs drag detection (3px threshold with hasMoved flag)
+  - Keyframe selection on mouse up without movement
+
+### 🐛 Fixed
+
+- Keyframe properties not displaying (nested transform data access)
+- Properties editor taking excessive vertical space
+- Invisible objects still selectable in 3D scene
+- Invisible objects casting shadows during animation
+- Timeline showing all keyframes regardless of selection
 
 ---
 

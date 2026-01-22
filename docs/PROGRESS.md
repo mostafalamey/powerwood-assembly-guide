@@ -1,8 +1,8 @@
 # PWAssemblyGuide - Development Progress
 
-**Last Updated:** January 20, 2026  
+**Last Updated:** January 22, 2026  
 **Current Phase:** Phase 6 (Admin Panel) - IN PROGRESS  
-**Overall Progress:** 58% (8.5 of 16 weeks)
+**Overall Progress:** 62% (9.0 of 16 weeks)
 
 ---
 
@@ -16,7 +16,7 @@
 | **Phase 4: Content**     | ⏭️ Skipped     | N/A        | Using BC_002 test data, skipped full content creation     |
 | **Phase 5: Audio**       | ✅ Complete    | 100%       | Audio player with multilingual support                    |
 | **Phase 5.5: UI/UX**     | ✅ Complete    | 100%       | Bug fixes, layout improvements, rendering quality         |
-| **Phase 6: Admin Panel** | 🔄 In Progress | 80%        | Auth, CRUD, step management, QR codes complete            |
+| **Phase 6: Admin Panel** | 🔄 In Progress | 90%        | Auth, CRUD, step management, QR codes, authoring tool     |
 | **Phase 7: QR Codes**    | ✅ Complete    | 100%       | Integrated into Admin Panel with print layout             |
 | **Phase 8: Polish**      | ⏳ Not Started | 0%         | Performance & UX                                          |
 | **Phase 9: Testing**     | ⏳ Not Started | 0%         | Device testing                                            |
@@ -628,15 +628,97 @@ Upcoming tasks:
 
 **Status:** ✅ Ahead of Schedule | **Velocity:** Excellent | **Confidence:** High 🟢
 
-**Phase 6 Progress!** Admin Panel 80% complete with authentication, cabinet management, step management UI, and QR code generation. Visual 3D authoring and step reuse features remain.
+**Phase 6 Progress!** Admin Panel 90% complete with authentication, cabinet management, step management UI, QR code generation, and visual animation authoring tool.
 
 ---
 
-## 📦 Phase 6: Admin Panel (January 19-20, 2026) - IN PROGRESS (80%)
+## 📦 Phase 6: Admin Panel (January 19-22, 2026) - IN PROGRESS (90%)
 
 **Started:** January 19, 2026  
-**Current Status:** 80% Complete  
-**Duration So Far:** 2 days
+**Current Status:** 90% Complete  
+**Duration So Far:** 3 days
+
+### Latest Update: Animation Authoring Tool Enhanced (January 22, 2026) ✅
+
+#### Keyframe Selection & Editing System
+
+- **Click-to-Select Keyframes:**
+  - Timeline.tsx enhanced with click detection (3px threshold to differentiate from drag)
+  - `onKeyframeSelect` callback prop integrated
+  - `selectedKeyframeTime` state tracks current selection
+  - Click triggers selection, drag moves keyframe
+- **Inline Keyframe Properties Editor:**
+  - Compact layout below timeline (preserves 3D viewport)
+  - **Object Keyframes:**
+    - Time input with automatic reordering
+    - Position: grouped x/y/z inputs (w-20 fields)
+    - Rotation: degrees display (converted from radians)
+    - Visibility: checkbox control
+  - **Camera Keyframes:**
+    - Position: x/y/z inputs
+    - Target: x/y/z inputs
+  - Real-time updates with `handleKeyframeMoved` and property change handlers
+  - Responsive flex-wrap layout for smaller screens
+
+#### Timeline Filtering System
+
+- **Smart Object-Based Filtering:**
+  - When object selected: shows keyframes for object + all children
+  - Uses hierarchical traverse with Set for efficient ID collection
+  - When no selection: displays camera keyframes only
+  - `timelineKeyframes` computed value updates on selection change
+- **Benefits:**
+  - Visual focus on relevant keyframes only
+  - Reduces clutter in complex animations
+  - Easier to see relationship between object movement and keyframes
+
+#### Visibility & Shadow Controls
+
+- **Raycasting Filter:**
+  - `isFullyVisible()` helper checks entire parent chain
+  - Only visible meshes included in raycasting pool
+  - Prevents invisible objects from being selected
+  - Hierarchical visibility validation (not just child.visible)
+
+- **Shadow Casting Synchronization:**
+  - AuthoringSceneViewer: Initial setup sets `castShadow = child.visible`
+  - Animation playback updates in 3 code paths:
+    - During visibility fade: `castShadow = nextVisible`
+    - Static visible state: `castShadow = true`
+    - Static invisible state: `castShadow = false`
+  - Real-time updates during animation scrubbing
+  - Prevents invisible objects from affecting scene lighting
+
+#### UI/UX Improvements
+
+- **Step Title in Header:**
+  - Format: "Cabinet: BC-003 - Step 2: Attach one leg to the base panel"
+  - Fetches step data from `cabinet.steps` array
+  - Shows English title by default
+  - Fallback to step number only if title missing
+
+- **Compact Design:**
+  - Inline flex layout with gap-4
+  - Small inputs (w-20, text-xs) for space efficiency
+  - Preserves maximum 3D viewport space
+  - Clear visual grouping of properties
+
+#### Technical Implementation
+
+- **Files Modified:**
+  - `components/admin/Timeline.tsx` (358 lines)
+    - Added click detection logic
+    - onKeyframeSelect callback integration
+  - `components/admin/AuthoringSceneViewer.tsx` (643 lines)
+    - isFullyVisible helper function
+    - Filtered raycasting implementation
+    - Shadow setup on model load
+  - `pages/admin/cabinets/[id]/steps/authoring.tsx` (1476 lines)
+    - selectedKeyframeTime state
+    - Keyframe properties editor UI (lines 1000-1370)
+    - Timeline filtering logic
+    - Shadow updates in animation code (3 locations)
+    - Step title lookup and display
 
 ### Data Structure Migration ✅
 
@@ -898,18 +980,39 @@ data/cabinets-loader.ts (updated for split structure)
 docs/DATA_STRUCTURE.md
 ```
 
-### Remaining Tasks (20%)
+### Remaining Tasks (10%)
 
-#### Phase 6.4: Visual 3D Step Authoring Tool (0%)
+#### Phase 6.4: Visual 3D Step Authoring Tool (90% COMPLETE)
 
-- [ ] Three.js scene editor with GLB loading
-- [ ] Object hierarchy browser (tree view)
-- [ ] Transform controls (move/rotate/scale with gizmos)
-- [ ] Timeline-based keyframe recording
-- [ ] Camera position recording
-- [ ] Animation preview playback
-- [ ] JSON export for step animations
-- [ ] Import existing animations for editing
+- ✅ Three.js scene editor with GLB loading
+- ✅ Object hierarchy browser (tree view)
+- ✅ Transform controls (move/rotate/scale with gizmos)
+- ✅ Timeline-based keyframe recording
+- ✅ Camera position recording
+- ✅ Animation preview playback
+- ✅ JSON export for step animations
+- ✅ Import existing animations for editing
+- ✅ **Keyframe Selection & Editing:**
+  - Click-to-select keyframes on timeline
+  - Inline properties editor (time, position, rotation, visibility)
+  - Camera keyframe editing (position + target)
+  - Real-time property updates
+- ✅ **Timeline Filtering:**
+  - Shows selected object's keyframes + children
+  - Camera keyframes when no selection
+  - Hierarchical object traversal
+- ✅ **Visibility Controls:**
+  - Invisible objects excluded from raycasting
+  - Hierarchical visibility checking (parent chain)
+  - Shadow casting synchronized with visibility
+  - Real-time shadow updates during playback
+- ✅ **UI Enhancements:**
+  - Step title display in header
+  - Compact inline properties editor
+  - Responsive layout preserving 3D viewport
+- [ ] Undo/redo system for keyframe edits
+- [ ] Keyframe interpolation curve editing
+- [ ] Bulk keyframe operations (delete multiple, shift all)
 
 #### Phase 6.5: Step Copy/Reuse System (0%)
 

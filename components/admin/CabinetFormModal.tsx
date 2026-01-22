@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import FileUploadField from "./FileUploadField";
 
 interface CabinetFormData {
   id: string;
@@ -149,6 +150,8 @@ export default function CabinetFormModal({
                   type="button"
                   onClick={onClose}
                   className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                  title="Close modal"
+                  aria-label="Close modal"
                 >
                   <svg
                     className="h-6 w-6"
@@ -241,6 +244,7 @@ export default function CabinetFormModal({
                   value={formData.category}
                   onChange={(e) => handleChange("category", e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  title="Select cabinet category"
                   required
                 >
                   <option value="base">Base Cabinets</option>
@@ -308,39 +312,27 @@ export default function CabinetFormModal({
                 </div>
               </div>
 
-              {/* Model Path */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  3D Model Path
-                </label>
-                <input
-                  type="text"
-                  value={formData.model || ""}
-                  onChange={(e) => handleChange("model", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="/models/BC_001.glb"
-                />
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Upload model file to /public/models/ first
-                </p>
-              </div>
+              {/* Model Upload */}
+              <FileUploadField
+                label="3D Model"
+                value={formData.model || ""}
+                onChange={(path) => handleChange("model", path)}
+                accept=".glb,.gltf"
+                placeholder="/models/BC_001.glb"
+                directory="models"
+                helpText="GLB or GLTF files (max 50MB)"
+              />
 
-              {/* Image Path */}
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Image Path
-                </label>
-                <input
-                  type="text"
-                  value={formData.image || ""}
-                  onChange={(e) => handleChange("image", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="/images/cabinets/BC-001.png"
-                />
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  Upload image to /public/images/cabinets/ first
-                </p>
-              </div>
+              {/* Image Upload */}
+              <FileUploadField
+                label="Cabinet Image"
+                value={formData.image || ""}
+                onChange={(path) => handleChange("image", path)}
+                accept="image/*,.png,.jpg,.jpeg,.webp"
+                placeholder="/images/cabinets/BC-001.png"
+                directory="images/cabinets"
+                helpText="PNG, JPG, or WebP images"
+              />
             </div>
 
             {/* Footer */}

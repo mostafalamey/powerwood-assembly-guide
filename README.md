@@ -2,9 +2,9 @@
 
 > Mobile-first, multilingual 3D web application for kitchen cabinet assembly instructions
 
-[![Status](https://img.shields.io/badge/status-in%20development-yellow)]()
-[![Phase](https://img.shields.io/badge/phase-6%20of%2010-blue)]()
-[![Progress](https://img.shields.io/badge/progress-58%25-green)]()
+![Status](https://img.shields.io/badge/status-in%20development-yellow)
+![Phase](https://img.shields.io/badge/phase-6%20of%2010-blue)
+![Progress](https://img.shields.io/badge/progress-58%25-green)
 
 ---
 
@@ -22,6 +22,7 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 - 🔊 **Audio Narration** - Listen while you work ✅
 - 🛠️ **Admin Panel** - Content management system ✅
 - 📋 **QR Generation** - Print-ready codes for packaging ✅
+- 🎬 **Animation Authoring** - Visual keyframe editor for step animations ✅
 - ⚡ **Fast & Offline** - Static hosting, PWA support (V2)
 
 ---
@@ -40,16 +41,16 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 
 ### Latest Updates
 
+- **Jan 22, 2026:** Phase 6 at 90% - Animation authoring tool with keyframe editing
 - **Jan 20, 2026:** Phase 6 at 80% - Admin panel with QR code print layout
 - **Jan 19, 2026:** Phase 6 started - Authentication, cabinet/step management
 - **Jan 18, 2026:** Completed Phase 5.5 - Critical UI/UX refinements
 - **Jan 17, 2026:** Completed Phase 5 - Audio integration
 - **Jan 15, 2026:** Completed Phase 3 - GSAP animation system
-- **Jan 14, 2026:** Completed Phase 2 - Enhanced 3D viewer
 
 ### Tech Stack
 
-```
+```tech
 Frontend:    Next.js 14 (Pages Router) + TypeScript 5.3
 3D Engine:   Three.js 0.160.0 + GSAP 3.12.2
 UI:          Tailwind CSS 3.4 (RTL support)
@@ -99,7 +100,7 @@ npm run start
 
 ## 📁 Project Structure
 
-```
+```folders
 AssemblyGuide/
 ├── components/
 │   ├── 3d/

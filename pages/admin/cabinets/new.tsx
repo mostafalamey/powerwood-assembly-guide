@@ -3,6 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import AdminLayout from "../../../components/admin/AdminLayout";
 import AuthGuard from "../../../components/admin/AuthGuard";
+import FileUploadField from "../../../components/admin/FileUploadField";
 
 interface CabinetFormData {
   id: string;
@@ -160,7 +161,10 @@ export default function NewCabinetPage() {
 
             {/* Category */}
             <div className="mb-6">
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Category <span className="text-red-500">*</span>
               </label>
               <select
@@ -235,39 +239,27 @@ export default function NewCabinetPage() {
               </div>
             </div>
 
-            {/* Model Path */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                3D Model Path
-              </label>
-              <input
-                type="text"
-                value={formData.model || ""}
-                onChange={(e) => handleChange("model", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="/models/BC_001.glb"
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                Upload model file to /public/models/ first
-              </p>
-            </div>
+            {/* Model Upload */}
+            <FileUploadField
+              label="3D Model"
+              value={formData.model || ""}
+              onChange={(path) => handleChange("model", path)}
+              accept=".glb,.gltf"
+              placeholder="/models/BC_001.glb"
+              directory="models"
+              helpText="GLB or GLTF files (max 50MB)"
+            />
 
-            {/* Image Path */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image Path
-              </label>
-              <input
-                type="text"
-                value={formData.image || ""}
-                onChange={(e) => handleChange("image", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="/images/cabinets/BC-001.png"
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                Upload image to /public/images/cabinets/ first
-              </p>
-            </div>
+            {/* Image Upload */}
+            <FileUploadField
+              label="Cabinet Image"
+              value={formData.image || ""}
+              onChange={(path) => handleChange("image", path)}
+              accept="image/*,.png,.jpg,.jpeg,.webp"
+              placeholder="/images/cabinets/BC-001.png"
+              directory="images/cabinets"
+              helpText="PNG, JPG, or WebP images"
+            />
 
             {/* Actions */}
             <div className="flex justify-end space-x-4 pt-6 border-t">

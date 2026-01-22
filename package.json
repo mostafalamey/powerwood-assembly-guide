@@ -15,6 +15,7 @@
         "@react-three/fiber": "^8.15.0",
         "@types/gsap": "^1.20.2",
         "bcryptjs": "^2.4.3",
+        "formidable": "^3.5.4",
         "gsap": "^3.14.2",
         "i18next": "^23.7.0",
         "next": "^14.2.0",
@@ -31,6 +32,7 @@
     },
     "devDependencies": {
         "@types/bcryptjs": "^2.4.6",
+        "@types/formidable": "^3.4.6",
         "@types/node": "^20.10.0",
         "@types/qrcode.react": "^1.0.5",
         "@types/react": "^18.2.0",

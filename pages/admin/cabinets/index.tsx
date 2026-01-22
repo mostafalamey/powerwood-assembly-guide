@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import AdminLayout from "../../../components/admin/AdminLayout";
 import AuthGuard from "../../../components/admin/AuthGuard";
-import CabinetFormModal from "../../../components/admin/CabinetFormModal";
 import Image from "next/image";
 
 interface Cabinet {
@@ -30,8 +29,6 @@ export default function CabinetsListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingCabinet, setEditingCabinet] = useState<Cabinet | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [dropdownPosition, setDropdownPosition] = useState<{
     top: number;
@@ -99,28 +96,12 @@ export default function CabinetsListPage() {
   };
 
   const handleEdit = (cabinet: Cabinet) => {
-    // Ensure description is present for the modal
-    const cabinetWithDescription = {
-      ...cabinet,
-      description: cabinet.description || { en: "", ar: "" },
-    };
-    setEditingCabinet(cabinetWithDescription);
-    setIsModalOpen(true);
+    router.push(`/admin/cabinets/${cabinet.id}/edit`);
     setActiveDropdown(null);
   };
 
   const handleAddNew = () => {
-    setEditingCabinet(null);
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-    setEditingCabinet(null);
-  };
-
-  const handleModalSuccess = () => {
-    fetchCabinets();
+    router.push("/admin/cabinets/new");
   };
 
   const toggleDropdown = (id: string, e: React.MouseEvent) => {
@@ -444,14 +425,6 @@ export default function CabinetsListPage() {
           )}
         </div>
       </AdminLayout>
-
-      {/* Cabinet Form Modal */}
-      <CabinetFormModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSuccess={handleModalSuccess}
-        editCabinet={editingCabinet}
-      />
     </AuthGuard>
   );
 }

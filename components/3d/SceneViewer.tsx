@@ -2,8 +2,12 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import gsap from "gsap";
-import { Step, StepAnimation } from "@/types/cabinet";
+import {
+  Step,
+  StepAnimation,
+  ObjectKeyframe,
+  CameraKeyframe,
+} from "@/types/cabinet";
 
 interface SceneViewerProps {
   modelUrl: string;
@@ -34,10 +38,11 @@ export default function SceneViewer({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const modelRef = useRef<THREE.Group | null>(null);
-  const animationMixerRef = useRef<THREE.AnimationMixer | null>(null);
-  const clockRef = useRef<THREE.Clock>(new THREE.Clock());
+  const currentAnimationRef = useRef<StepAnimation | null>(null);
   const [animationTrigger, setAnimationTrigger] = useState(0);
   const hasAutoStartedRef = useRef(false);
+  const [animationTime, setAnimationTime] = useState(0);
+  const [isAnimationPlaying, setIsAnimationPlaying] = useState(false);
   // Store original transforms for additive animations
   const originalTransformsRef = useRef<
     Map<
@@ -49,365 +54,305 @@ export default function SceneViewer({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Apply initial state without animation (for step load) - uses first keyframe
+  // Apply initial state without animation (for step load) - sets animation at time 0
   const applyInitialState = useCallback((animation: StepAnimation) => {
-    if (
-      !modelRef.current ||
-      !animation.keyframes ||
-      animation.keyframes.length === 0
-    )
+    if (!modelRef.current || !animation) return;
+
+    // Store animation and set time to 0 (initial state)
+    currentAnimationRef.current = animation;
+    setAnimationTime(0);
+    setIsAnimationPlaying(false);
+  }, []);
+
+  // Apply step animation using lerp/slerp interpolation (matches editor system)
+  const applyStepAnimation = useCallback((animation: StepAnimation) => {
+    if (!modelRef.current || !animation) {
       return;
+    }
 
-    const firstKeyframe = animation.keyframes[0];
+    // No animation data - just reset and return
+    if (
+      (!animation.objectKeyframes || animation.objectKeyframes.length === 0) &&
+      (!animation.cameraKeyframes || animation.cameraKeyframes.length === 0)
+    ) {
+      return;
+    }
 
-    firstKeyframe.objects.forEach((keyframeObj) => {
-      const object = modelRef.current!.getObjectByName(keyframeObj.name);
-      if (!object) {
-        return;
+    // Store animation data for playback
+    currentAnimationRef.current = animation;
+
+    // Start animation playback at time 0
+    setAnimationTime(0);
+    setIsAnimationPlaying(true);
+  }, []);
+
+  // Helper to get object path/ID
+  const getObjectId = (obj: any): string => {
+    const parts: string[] = [];
+    let current = obj;
+    while (current && current !== modelRef.current) {
+      if (current.name) parts.unshift(current.name);
+      current = current.parent;
+    }
+    return parts.join("/") || obj.uuid;
+  };
+
+  // Apply animation at current time using lerp/slerp
+  useEffect(() => {
+    if (!modelRef.current || !currentAnimationRef.current) return;
+
+    const animation = currentAnimationRef.current;
+
+    // Helper function to find object by ID
+    const findObjectById = (
+      obj: THREE.Object3D,
+      id: string,
+    ): THREE.Object3D | null => {
+      const objId = getObjectId(obj);
+      if (objId === id) return obj;
+      for (const child of obj.children) {
+        const found = findObjectById(child, id);
+        if (found) return found;
+      }
+      return null;
+    };
+
+    // Get unique object IDs
+    const uniqueObjectIds = [
+      ...new Set((animation.objectKeyframes || []).map((kf) => kf.objectId)),
+    ];
+
+    // Apply object transforms for each unique object
+    uniqueObjectIds.forEach((objectId) => {
+      const targetObj = findObjectById(modelRef.current!, objectId);
+      if (!targetObj) return;
+
+      // Get keyframes for this object sorted by time
+      const objKeyframes = (animation.objectKeyframes || [])
+        .filter((k) => k.objectId === objectId)
+        .sort((a, b) => a.time - b.time);
+
+      // Find the keyframes to interpolate between
+      let prevKf: ObjectKeyframe | null = null;
+      let nextKf: ObjectKeyframe | null = null;
+
+      for (let i = 0; i < objKeyframes.length; i++) {
+        if (objKeyframes[i].time <= animationTime) {
+          prevKf = objKeyframes[i];
+        }
+        if (objKeyframes[i].time > animationTime && !nextKf) {
+          nextKf = objKeyframes[i];
+        }
       }
 
-      // Get original transform
-      const originalTransform = originalTransformsRef.current.get(
-        keyframeObj.name,
-      );
-      if (!originalTransform) {
-        return;
-      }
+      // Apply transform based on keyframes
+      if (prevKf && nextKf) {
+        // Interpolate between keyframes
+        const t = (animationTime - prevKf.time) / (nextKf.time - prevKf.time);
 
-      // Set visibility
-      if (keyframeObj.visible !== undefined) {
-        object.visible = keyframeObj.visible;
-        object.traverse((child) => {
-          child.visible = keyframeObj.visible!;
+        // Lerp position
+        targetObj.position.set(
+          prevKf.transform.position.x +
+            (nextKf.transform.position.x - prevKf.transform.position.x) * t,
+          prevKf.transform.position.y +
+            (nextKf.transform.position.y - prevKf.transform.position.y) * t,
+          prevKf.transform.position.z +
+            (nextKf.transform.position.z - prevKf.transform.position.z) * t,
+        );
+
+        // Slerp rotation (using quaternions)
+        const prevQuat = new THREE.Quaternion();
+        prevQuat.setFromEuler(
+          new THREE.Euler(
+            prevKf.transform.rotation.x,
+            prevKf.transform.rotation.y,
+            prevKf.transform.rotation.z,
+          ),
+        );
+        const nextQuat = new THREE.Quaternion();
+        nextQuat.setFromEuler(
+          new THREE.Euler(
+            nextKf.transform.rotation.x,
+            nextKf.transform.rotation.y,
+            nextKf.transform.rotation.z,
+          ),
+        );
+        const interpolatedQuat = new THREE.Quaternion();
+        interpolatedQuat.slerpQuaternions(prevQuat, nextQuat, t);
+        targetObj.quaternion.copy(interpolatedQuat);
+
+        // Lerp scale
+        targetObj.scale.set(
+          prevKf.transform.scale.x +
+            (nextKf.transform.scale.x - prevKf.transform.scale.x) * t,
+          prevKf.transform.scale.y +
+            (nextKf.transform.scale.y - prevKf.transform.scale.y) * t,
+          prevKf.transform.scale.z +
+            (nextKf.transform.scale.z - prevKf.transform.scale.z) * t,
+        );
+
+        // Handle visibility with gradual opacity fade
+        const prevVisible = prevKf.visible ?? true;
+        const nextVisible = nextKf.visible ?? true;
+
+        if (prevVisible !== nextVisible) {
+          // Visibility is changing
+          targetObj.visible = true; // Keep visible during fade
+          targetObj.traverse((child: any) => {
+            if (child.isMesh && child.material) {
+              // Clone material if not already cloned to avoid affecting other objects
+              if (!child.material.userData.isCloned) {
+                child.material = child.material.clone();
+                child.material.userData.isCloned = true;
+              }
+              // Ensure material supports transparency
+              child.material.transparent = true;
+              // Fade in: 0 -> 1, Fade out: 1 -> 0
+              child.material.opacity = nextVisible ? t : 1 - t;
+            }
+          });
+        } else {
+          // Visibility not changing
+          targetObj.visible = prevVisible;
+          if (prevVisible) {
+            // Ensure full opacity when visible
+            targetObj.traverse((child: any) => {
+              if (child.isMesh && child.material) {
+                // Clone material if not already cloned
+                if (!child.material.userData.isCloned) {
+                  child.material = child.material.clone();
+                  child.material.userData.isCloned = true;
+                }
+                child.material.transparent = true;
+                child.material.opacity = 1;
+              }
+            });
+          }
+        }
+      } else if (prevKf) {
+        // Hold at last keyframe
+        targetObj.position.set(
+          prevKf.transform.position.x,
+          prevKf.transform.position.y,
+          prevKf.transform.position.z,
+        );
+        targetObj.rotation.set(
+          prevKf.transform.rotation.x,
+          prevKf.transform.rotation.y,
+          prevKf.transform.rotation.z,
+        );
+        targetObj.scale.set(
+          prevKf.transform.scale.x,
+          prevKf.transform.scale.y,
+          prevKf.transform.scale.z,
+        );
+        const visible = prevKf.visible ?? true;
+        targetObj.visible = visible;
+        // Set full opacity when visible, hide when not
+        targetObj.traverse((child: any) => {
+          if (child.isMesh && child.material) {
+            // Clone material if not already cloned
+            if (!child.material.userData.isCloned) {
+              child.material = child.material.clone();
+              child.material.userData.isCloned = true;
+            }
+            child.material.transparent = true;
+            child.material.opacity = visible ? 1 : 0;
+          }
         });
-      }
-
-      // Apply position (additive to original)
-      if (keyframeObj.position) {
-        object.position.set(
-          originalTransform.position.x + keyframeObj.position[0],
-          originalTransform.position.y + keyframeObj.position[1],
-          originalTransform.position.z + keyframeObj.position[2],
-        );
-      } else {
-        object.position.copy(originalTransform.position);
-      }
-
-      // Apply rotation (additive to original)
-      if (keyframeObj.rotation) {
-        object.rotation.set(
-          originalTransform.rotation.x + keyframeObj.rotation[0],
-          originalTransform.rotation.y + keyframeObj.rotation[1],
-          originalTransform.rotation.z + keyframeObj.rotation[2],
-        );
-      } else {
-        object.rotation.copy(originalTransform.rotation);
-      }
-
-      // Apply scale
-      if (keyframeObj.scale) {
-        object.scale.set(
-          keyframeObj.scale[0],
-          keyframeObj.scale[1],
-          keyframeObj.scale[2],
-        );
-      } else {
-        object.scale.copy(originalTransform.scale);
       }
     });
 
-    // Apply camera initial state if keyframes exist
+    // Apply camera transforms
     if (
-      animation.camera?.keyframes &&
-      animation.camera.keyframes.length > 0 &&
+      animation.cameraKeyframes &&
+      animation.cameraKeyframes.length > 0 &&
       cameraRef.current &&
       controlsRef.current
     ) {
-      const firstCameraKeyframe = animation.camera.keyframes[0];
+      // Get camera keyframes sorted by time
+      const sortedCameraKfs = [...animation.cameraKeyframes].sort(
+        (a, b) => a.time - b.time,
+      );
 
-      if (firstCameraKeyframe.position) {
-        cameraRef.current.position.set(
-          firstCameraKeyframe.position[0],
-          firstCameraKeyframe.position[1],
-          firstCameraKeyframe.position[2],
-        );
+      // Find the keyframes to interpolate between
+      let prevKf: CameraKeyframe | null = null;
+      let nextKf: CameraKeyframe | null = null;
+
+      for (let i = 0; i < sortedCameraKfs.length; i++) {
+        if (sortedCameraKfs[i].time <= animationTime) {
+          prevKf = sortedCameraKfs[i];
+        }
+        if (sortedCameraKfs[i].time > animationTime && !nextKf) {
+          nextKf = sortedCameraKfs[i];
+        }
       }
 
-      if (firstCameraKeyframe.target) {
+      // Apply camera transform based on keyframes
+      if (prevKf && nextKf) {
+        // Interpolate between keyframes
+        const t = (animationTime - prevKf.time) / (nextKf.time - prevKf.time);
+
+        // Lerp camera position and target
+        cameraRef.current.position.set(
+          prevKf.position.x + (nextKf.position.x - prevKf.position.x) * t,
+          prevKf.position.y + (nextKf.position.y - prevKf.position.y) * t,
+          prevKf.position.z + (nextKf.position.z - prevKf.position.z) * t,
+        );
+
         controlsRef.current.target.set(
-          firstCameraKeyframe.target[0],
-          firstCameraKeyframe.target[1],
-          firstCameraKeyframe.target[2],
+          prevKf.target.x + (nextKf.target.x - prevKf.target.x) * t,
+          prevKf.target.y + (nextKf.target.y - prevKf.target.y) * t,
+          prevKf.target.z + (nextKf.target.z - prevKf.target.z) * t,
+        );
+
+        controlsRef.current.update();
+      } else if (prevKf) {
+        // Hold at last keyframe
+        cameraRef.current.position.set(
+          prevKf.position.x,
+          prevKf.position.y,
+          prevKf.position.z,
+        );
+        controlsRef.current.target.set(
+          prevKf.target.x,
+          prevKf.target.y,
+          prevKf.target.z,
         );
         controlsRef.current.update();
       }
     }
-  }, []);
+  }, [animationTime]);
 
-  // Apply step animation using GSAP with keyframes
-  const applyStepAnimation = useCallback(
-    (animation: StepAnimation) => {
-      if (
-        !modelRef.current ||
-        !animation.keyframes ||
-        animation.keyframes.length === 0
-      ) {
-        return;
-      }
+  // Animation playback loop
+  useEffect(() => {
+    if (!isAnimationPlaying || !currentAnimationRef.current) return;
 
-      // Kill all active GSAP animations
-      if (modelRef.current) {
-        modelRef.current.traverse((child) => {
-          gsap.killTweensOf(child);
-          gsap.killTweensOf(child.position);
-          gsap.killTweensOf(child.rotation);
-          gsap.killTweensOf(child.scale);
-          if (child instanceof THREE.Mesh && child.material) {
-            gsap.killTweensOf(child.material);
-          }
-        });
-      }
+    const animation = currentAnimationRef.current;
+    const duration = animation.duration || 5; // Default 5 seconds
 
-      // Group objects by name to track their keyframes
-      const objectKeyframes = new Map<
-        string,
-        Array<{ time: number; data: any; easing?: string }>
-      >();
+    let lastTime = Date.now();
+    const animate = () => {
+      const now = Date.now();
+      const delta = (now - lastTime) / 1000; // Convert to seconds
+      lastTime = now;
 
-      animation.keyframes.forEach((keyframe) => {
-        keyframe.objects.forEach((obj) => {
-          if (!objectKeyframes.has(obj.name)) {
-            objectKeyframes.set(obj.name, []);
-          }
-          objectKeyframes.get(obj.name)!.push({
-            time: keyframe.time,
-            data: obj,
-            easing: keyframe.easing,
-          });
-        });
-      });
-
-      // Animate each object through its keyframes
-      objectKeyframes.forEach((keyframes, objectName) => {
-        const object = modelRef.current!.getObjectByName(objectName);
-        if (!object) {
-          return;
+      setAnimationTime((prev) => {
+        const newTime = prev + delta;
+        // Stop at end and call onAnimationComplete
+        if (newTime >= duration) {
+          setIsAnimationPlaying(false);
+          onAnimationComplete?.();
+          return duration;
         }
-
-        const original = originalTransformsRef.current.get(objectName);
-        if (!original) {
-          return;
-        }
-
-        // Sort keyframes by time
-        keyframes.sort((a, b) => a.time - b.time);
-
-        // Create GSAP timeline for this object
-        const tl = gsap.timeline();
-
-        keyframes.forEach((kf, index) => {
-          const prevKf = keyframes[index - 1];
-          const startTime = prevKf ? prevKf.time / 1000 : 0;
-          const endTime = kf.time / 1000;
-          const duration = endTime - startTime;
-          const easing = kf.easing || "power2.out";
-
-          // Handle visibility at exact keyframe time
-          if (kf.data.visible !== undefined) {
-            tl.call(
-              () => {
-                object.visible = kf.data.visible;
-                object.traverse((child) => {
-                  child.visible = kf.data.visible;
-                });
-              },
-              undefined,
-              endTime,
-            );
-          }
-
-          // Handle position - animate FROM previous keyframe TO this keyframe
-          if (kf.data.position && duration > 0) {
-            const targetPos = {
-              x: original.position.x + kf.data.position[0],
-              y: original.position.y + kf.data.position[1],
-              z: original.position.z + kf.data.position[2],
-            };
-            tl.to(
-              object.position,
-              { ...targetPos, duration, ease: easing },
-              startTime,
-            );
-          } else if (kf.data.position && index === 0) {
-            // First keyframe - instant position
-            tl.set(
-              object.position,
-              {
-                x: original.position.x + kf.data.position[0],
-                y: original.position.y + kf.data.position[1],
-                z: original.position.z + kf.data.position[2],
-              },
-              endTime,
-            );
-          }
-
-          // Handle rotation - animate FROM previous keyframe TO this keyframe
-          if (kf.data.rotation && duration > 0) {
-            const targetRot = {
-              x: original.rotation.x + kf.data.rotation[0],
-              y: original.rotation.y + kf.data.rotation[1],
-              z: original.rotation.z + kf.data.rotation[2],
-            };
-            tl.to(
-              object.rotation,
-              { ...targetRot, duration, ease: easing },
-              startTime,
-            );
-          } else if (kf.data.rotation && index === 0) {
-            // First keyframe - instant rotation
-            tl.set(
-              object.rotation,
-              {
-                x: original.rotation.x + kf.data.rotation[0],
-                y: original.rotation.y + kf.data.rotation[1],
-                z: original.rotation.z + kf.data.rotation[2],
-              },
-              endTime,
-            );
-          }
-
-          // Handle scale - animate FROM previous keyframe TO this keyframe
-          if (kf.data.scale && duration > 0) {
-            tl.to(
-              object.scale,
-              {
-                x: kf.data.scale[0],
-                y: kf.data.scale[1],
-                z: kf.data.scale[2],
-                duration,
-                ease: easing,
-              },
-              startTime,
-            );
-          } else if (kf.data.scale && index === 0) {
-            // First keyframe - instant scale
-            tl.set(
-              object.scale,
-              {
-                x: kf.data.scale[0],
-                y: kf.data.scale[1],
-                z: kf.data.scale[2],
-              },
-              endTime,
-            );
-          }
-        });
+        return newTime;
       });
+    };
 
-      // Animate camera if keyframes exist
-      if (
-        animation.camera?.keyframes &&
-        animation.camera.keyframes.length > 0 &&
-        cameraRef.current &&
-        controlsRef.current
-      ) {
-        const camera = cameraRef.current;
-        const controls = controlsRef.current;
-        const sortedKeyframes = [...animation.camera.keyframes].sort(
-          (a, b) => a.time - b.time,
-        );
-        const tl = gsap.timeline();
+    const intervalId = setInterval(animate, 1000 / 60); // 60 FPS
 
-        sortedKeyframes.forEach((kf, index) => {
-          const prevKf = sortedKeyframes[index - 1];
-          const startTime = prevKf ? prevKf.time / 1000 : 0;
-          const endTime = kf.time / 1000;
-          const duration = endTime - startTime;
-          const easing = kf.easing || "power2.out";
-
-          // Animate position FROM previous keyframe TO this keyframe
-          if (kf.position && duration > 0) {
-            tl.to(
-              camera.position,
-              {
-                x: kf.position[0],
-                y: kf.position[1],
-                z: kf.position[2],
-                duration,
-                ease: easing,
-              },
-              startTime,
-            );
-          } else if (kf.position && index === 0) {
-            // First keyframe - instant position
-            tl.set(
-              camera.position,
-              {
-                x: kf.position[0],
-                y: kf.position[1],
-                z: kf.position[2],
-              },
-              endTime,
-            );
-          }
-
-          // Animate target FROM previous keyframe TO this keyframe
-          if (kf.target && duration > 0) {
-            tl.to(
-              controls.target,
-              {
-                x: kf.target[0],
-                y: kf.target[1],
-                z: kf.target[2],
-                duration,
-                ease: easing,
-                onUpdate: () => {
-                  controls.update();
-                },
-              },
-              startTime,
-            );
-          } else if (kf.target && index === 0) {
-            // First keyframe - instant target
-            tl.call(
-              () => {
-                controls.target.set(kf.target[0], kf.target[1], kf.target[2]);
-                controls.update();
-              },
-              undefined,
-              endTime,
-            );
-          }
-        });
-      }
-
-      // Calculate total animation duration from keyframes and call onAnimationComplete when done
-      let maxKeyframeTime = 0;
-
-      // Find the maximum time from object keyframes
-      animation.keyframes.forEach((kf) => {
-        if (kf.time > maxKeyframeTime) {
-          maxKeyframeTime = kf.time;
-        }
-      });
-
-      // Check camera keyframes too
-      if (animation.camera?.keyframes) {
-        animation.camera.keyframes.forEach((kf) => {
-          if (kf.time > maxKeyframeTime) {
-            maxKeyframeTime = kf.time;
-          }
-        });
-      }
-
-      const totalDuration = maxKeyframeTime || animation.duration || 2500;
-
-      setTimeout(() => {
-        onAnimationComplete?.();
-      }, totalDuration);
-    },
-    [onAnimationComplete],
-  );
+    return () => clearInterval(intervalId);
+  }, [isAnimationPlaying, onAnimationComplete]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -586,18 +531,6 @@ export default function SceneViewer({
           });
         }
 
-        // Setup animation mixer if animations exist
-        if (gltf.animations && gltf.animations.length > 0) {
-          const mixer = new THREE.AnimationMixer(model);
-          animationMixerRef.current = mixer;
-
-          // Play the first animation by default if isPlaying is true
-          if (isPlaying && gltf.animations[0]) {
-            const action = mixer.clipAction(gltf.animations[0]);
-            action.play();
-          }
-        }
-
         setIsLoading(false);
         onLoad?.();
 
@@ -656,24 +589,6 @@ export default function SceneViewer({
       controlsRef.current.update();
     }
   }, [cameraPosition]);
-
-  // Control animation playback
-  useEffect(() => {
-    if (!animationMixerRef.current) return;
-
-    const mixer = animationMixerRef.current;
-    const actions = (mixer as any)._actions || [];
-
-    if (actions.length > 0) {
-      const action = actions[0];
-      if (isPlaying) {
-        action.paused = false;
-        action.play();
-      } else {
-        action.paused = true;
-      }
-    }
-  }, [isPlaying]);
 
   // Reset animation state when step changes
   useEffect(() => {

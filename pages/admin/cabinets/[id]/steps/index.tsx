@@ -184,9 +184,7 @@ export default function StepManagementPage() {
   return (
     <AuthGuard>
       <Head>
-        <title>
-          Manage Steps - {cabinet.name.en} - Admin Panel
-        </title>
+        <title>Manage Steps - {cabinet.name.en} - Admin Panel</title>
       </Head>
       <AdminLayout title={`Manage Steps: ${cabinet.name.en}`}>
         <div className="p-6">
@@ -261,9 +259,7 @@ export default function StepManagementPage() {
               </p>
               <div className="mt-6">
                 <button
-                  onClick={() =>
-                    router.push(`/admin/cabinets/${id}/steps/new`)
-                  }
+                  onClick={() => router.push(`/admin/cabinets/${id}/steps/new`)}
                   className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                 >
                   + Add Your First Step
@@ -331,6 +327,35 @@ export default function StepManagementPage() {
 
                           {/* Actions */}
                           <div className="flex items-center gap-2 ml-4">
+                            <button
+                              onClick={() =>
+                                router.push(
+                                  `/admin/cabinets/${id}/steps/authoring?step=${step.id}`,
+                                )
+                              }
+                              className="p-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                              title="Open Visual Editor"
+                            >
+                              <svg
+                                className="w-5 h-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 2a10 10 0 100 20 10 10 0 000-20z"
+                                />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M10 8.75v6.5L15.5 12 10 8.75z"
+                                />
+                              </svg>
+                            </button>
                             <button
                               onClick={() =>
                                 router.push(

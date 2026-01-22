@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import AdminLayout from "../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../components/admin/AuthGuard";
 import Link from "next/link";
+import FileUploadField from "../../../../components/admin/FileUploadField";
 
 interface CabinetFormData {
   id: string;
@@ -167,22 +168,22 @@ export default function EditCabinetPage() {
             </Link>
           </div>
 
-          <form onSubmit={handleSubmit} className="max-w-3xl">
+          <form onSubmit={handleSubmit} className="max-w-4xl space-y-4">
             {error && (
-              <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
+              <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4">
                 <p className="text-red-800 dark:text-red-200">{error}</p>
               </div>
             )}
 
             {/* Cabinet ID (Read-only) */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-4">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                 Cabinet ID
               </label>
               <input
                 type="text"
                 value={formData.id}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-gray-100 dark:bg-gray-900/50 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                 disabled
               />
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -191,33 +192,33 @@ export default function EditCabinetPage() {
             </div>
 
             {/* Name (English & Arabic) */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-4">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                 Cabinet Name <span className="text-red-500">*</span>
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-3 md:grid-cols-2">
                 <div>
-                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                     English
                   </label>
                   <input
                     type="text"
                     value={formData.name.en}
                     onChange={(e) => handleChange("name.en", e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
                     placeholder='2-Door Base Cabinet 36"'
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                     Arabic
                   </label>
                   <input
                     type="text"
                     value={formData.name.ar}
                     onChange={(e) => handleChange("name.ar", e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 text-right dark:bg-gray-900/60 dark:text-white"
                     placeholder="خزانة أرضية بابين 36 بوصة"
                     dir="rtl"
                     required
@@ -227,14 +228,15 @@ export default function EditCabinetPage() {
             </div>
 
             {/* Category */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-4">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                 Category <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.category}
+                title="category"
                 onChange={(e) => handleChange("category", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
                 required
               >
                 <option value="base">Base Cabinets</option>
@@ -248,8 +250,8 @@ export default function EditCabinetPage() {
             </div>
 
             {/* Estimated Time */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-4">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                 Estimated Assembly Time (minutes)
               </label>
               <input
@@ -258,20 +260,20 @@ export default function EditCabinetPage() {
                 onChange={(e) =>
                   handleChange("estimatedTime", parseInt(e.target.value) || 0)
                 }
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                className="w-full max-w-xs px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
                 placeholder="25"
                 min="0"
               />
             </div>
 
             {/* Description (English & Arabic) */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-4">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                 Description
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-3 md:grid-cols-2">
                 <div>
-                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                     English
                   </label>
                   <textarea
@@ -279,13 +281,13 @@ export default function EditCabinetPage() {
                     onChange={(e) =>
                       handleChange("description.en", e.target.value)
                     }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                    rows={3}
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
+                    rows={2}
                     placeholder="Standard 2-door base cabinet..."
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                  <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                     Arabic
                   </label>
                   <textarea
@@ -293,8 +295,8 @@ export default function EditCabinetPage() {
                     onChange={(e) =>
                       handleChange("description.ar", e.target.value)
                     }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right dark:bg-gray-700 dark:text-white"
-                    rows={3}
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 text-right dark:bg-gray-900/60 dark:text-white"
+                    rows={2}
                     placeholder="خزانة أرضية قياسية بابين..."
                     dir="rtl"
                   />
@@ -302,52 +304,40 @@ export default function EditCabinetPage() {
               </div>
             </div>
 
-            {/* Model Path */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                3D Model Path
-              </label>
-              <input
-                type="text"
-                value={formData.model || ""}
-                onChange={(e) => handleChange("model", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="/models/BC_001.glb"
-              />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Upload model file to /public/models/ first
-              </p>
-            </div>
+            {/* Model Upload */}
+            <FileUploadField
+              label="3D Model"
+              value={formData.model || ""}
+              onChange={(path) => handleChange("model", path)}
+              accept=".glb,.gltf"
+              placeholder="/models/BC_001.glb"
+              directory="models"
+              helpText="GLB or GLTF files (max 50MB)"
+            />
 
-            {/* Image Path */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Image Path
-              </label>
-              <input
-                type="text"
-                value={formData.image || ""}
-                onChange={(e) => handleChange("image", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="/images/cabinets/BC-001.png"
-              />
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Upload image to /public/images/cabinets/ first
-              </p>
-            </div>
+            {/* Image Upload */}
+            <FileUploadField
+              label="Cabinet Image"
+              value={formData.image || ""}
+              onChange={(path) => handleChange("image", path)}
+              accept="image/*,.png,.jpg,.jpeg,.webp"
+              placeholder="/images/cabinets/BC-001.png"
+              directory="images/cabinets"
+              helpText="PNG, JPG, or WebP images"
+            />
 
             {/* Step Count (Read-only info) */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="mb-4">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                 Assembly Steps
               </label>
-              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-md">
-                <span className="text-gray-700 dark:text-gray-300">
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-800/60 rounded-md">
+                <span className="text-sm text-gray-700 dark:text-gray-300">
                   {formData.steps?.length || 0} step(s) configured
                 </span>
                 <Link
                   href={`/admin/cabinets/${formData.id}/steps`}
-                  className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                  className="px-3 py-1.5 text-xs font-medium bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                 >
                   Manage Steps
                 </Link>
@@ -355,16 +345,16 @@ export default function EditCabinetPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
               <Link
                 href="/admin/cabinets"
-                className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 disabled={saving}
               >
                 {saving ? "Updating..." : "Update Cabinet"}

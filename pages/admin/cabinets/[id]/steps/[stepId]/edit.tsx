@@ -60,7 +60,7 @@ export default function EditStepPage() {
       if (response.ok) {
         const data = await response.json();
         setCabinet(data);
-        
+
         // Find the step to edit
         const step = data.steps?.find((s: StepFormData) => s.id === stepId);
         if (step) {
@@ -98,11 +98,11 @@ export default function EditStepPage() {
 
     try {
       const token = localStorage.getItem("admin_token");
-      
+
       // Update the step in the steps array
-      const updatedSteps = cabinet?.steps?.map((step) =>
-        step.id === stepId ? formData : step
-      ) || [];
+      const updatedSteps =
+        cabinet?.steps?.map((step) => (step.id === stepId ? formData : step)) ||
+        [];
 
       const response = await fetch("/api/cabinets", {
         method: "PUT",
@@ -210,25 +210,25 @@ export default function EditStepPage() {
           </div>
 
           {/* Form */}
-          <div className="max-w-4xl">
-            <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="max-w-5xl">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                   <p className="text-red-800 dark:text-red-200">{error}</p>
                 </div>
               )}
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 space-y-6">
+              <div className="bg-white/90 dark:bg-gray-800/80 backdrop-blur rounded-xl border border-gray-200/70 dark:border-gray-700/60 p-5 space-y-4">
                 {/* Step ID (Read-only) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Step Number
                   </label>
                   <input
                     type="text"
                     value={formData.id}
                     disabled
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400"
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Step order can be changed by dragging in the steps list
@@ -237,12 +237,12 @@ export default function EditStepPage() {
 
                 {/* Title (Bilingual) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Title <span className="text-red-500">*</span>
                   </label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-3 md:grid-cols-2">
                     <div>
-                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                         English
                       </label>
                       <input
@@ -251,13 +251,13 @@ export default function EditStepPage() {
                         onChange={(e) =>
                           handleChange("title.en", e.target.value)
                         }
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
                         placeholder="Attach one leg to base panel"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                         Arabic
                       </label>
                       <input
@@ -266,7 +266,7 @@ export default function EditStepPage() {
                         onChange={(e) =>
                           handleChange("title.ar", e.target.value)
                         }
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-right"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white text-right"
                         dir="rtl"
                         placeholder="تثبيت ساق واحدة على اللوحة الأساسية"
                         required
@@ -277,12 +277,12 @@ export default function EditStepPage() {
 
                 {/* Description (Bilingual) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Description <span className="text-red-500">*</span>
                   </label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-3 md:grid-cols-2">
                     <div>
-                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                         English
                       </label>
                       <textarea
@@ -290,14 +290,14 @@ export default function EditStepPage() {
                         onChange={(e) =>
                           handleChange("description.en", e.target.value)
                         }
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                        rows={6}
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
+                        rows={4}
                         placeholder="Detailed assembly instructions..."
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                         Arabic
                       </label>
                       <textarea
@@ -305,9 +305,9 @@ export default function EditStepPage() {
                         onChange={(e) =>
                           handleChange("description.ar", e.target.value)
                         }
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-right"
+                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white text-right"
                         dir="rtl"
-                        rows={6}
+                        rows={4}
                         placeholder="تعليمات التجميع التفصيلية..."
                         required
                       />
@@ -317,7 +317,7 @@ export default function EditStepPage() {
 
                 {/* Duration */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Estimated Duration (minutes)
                   </label>
                   <input
@@ -326,7 +326,7 @@ export default function EditStepPage() {
                     onChange={(e) =>
                       handleChange("duration", parseInt(e.target.value) || 0)
                     }
-                    className="w-full max-w-xs px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    className="w-full max-w-xs px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
                     min="1"
                     placeholder="3"
                   />
@@ -337,13 +337,13 @@ export default function EditStepPage() {
 
                 {/* Animation Status */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     3D Animation
                   </label>
                   {formData.animation ? (
-                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3">
+                    <div className="bg-green-50/80 dark:bg-green-900/20 border border-green-200/70 dark:border-green-800/70 rounded-lg p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
                           <svg
                             className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5"
                             fill="currentColor"
@@ -356,10 +356,10 @@ export default function EditStepPage() {
                             />
                           </svg>
                           <div>
-                            <h4 className="font-medium text-green-900 dark:text-green-200">
+                            <h4 className="font-medium text-green-900 dark:text-green-200 text-sm">
                               Animation Configured
                             </h4>
-                            <p className="text-sm text-green-800 dark:text-green-300 mt-1">
+                            <p className="text-xs text-green-800 dark:text-green-300 mt-0.5">
                               Duration: {formData.animation.duration}ms,{" "}
                               {formData.animation.keyframes?.length || 0}{" "}
                               keyframes
@@ -368,16 +368,16 @@ export default function EditStepPage() {
                         </div>
                         <Link
                           href={`/admin/cabinets/${id}/steps/authoring?step=${stepId}`}
-                          className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                          className="px-3 py-1.5 text-xs font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                         >
                           Edit in Visual Editor
                         </Link>
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start gap-3">
+                    <div className="bg-blue-50/80 dark:bg-blue-900/20 border border-blue-200/70 dark:border-blue-800/70 rounded-lg p-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
                           <svg
                             className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5"
                             fill="currentColor"
@@ -390,17 +390,17 @@ export default function EditStepPage() {
                             />
                           </svg>
                           <div>
-                            <h4 className="font-medium text-blue-900 dark:text-blue-200">
+                            <h4 className="font-medium text-blue-900 dark:text-blue-200 text-sm">
                               No Animation Yet
                             </h4>
-                            <p className="text-sm text-blue-800 dark:text-blue-300 mt-1">
+                            <p className="text-xs text-blue-800 dark:text-blue-300 mt-0.5">
                               Add 3D animation using the Visual Editor
                             </p>
                           </div>
                         </div>
                         <Link
                           href={`/admin/cabinets/${id}/steps/authoring?step=${stepId}`}
-                          className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          className="px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                         >
                           Create Animation
                         </Link>
@@ -414,7 +414,7 @@ export default function EditStepPage() {
               <div className="flex items-center justify-between">
                 <Link
                   href={`/admin/cabinets/${id}/steps`}
-                  className="px-6 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
                 >
                   Cancel
                 </Link>

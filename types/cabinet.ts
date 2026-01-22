@@ -1,31 +1,26 @@
-// Animation data structures for Phase 3 - Keyframe-based
-export interface KeyframeObject {
-  name: string; // Object name in GLB file
-  visible?: boolean; // Show or hide this object
-  position?: [number, number, number]; // Position [x, y, z]
-  rotation?: [number, number, number]; // Rotation [x, y, z] in radians
-  scale?: [number, number, number]; // Scale [x, y, z]
-}
-
-export interface AnimationKeyframe {
-  time: number; // Time in milliseconds from start
-  easing?: string; // Easing function (e.g., "power2.out", "linear")
-  objects: KeyframeObject[]; // Object states at this keyframe
+// Animation data structures - Unified format for editor and viewer
+export interface ObjectKeyframe {
+  time: number; // Time in seconds from start
+  objectId: string; // Object name or path in hierarchy
+  transform: {
+    position: { x: number; y: number; z: number };
+    rotation: { x: number; y: number; z: number };
+    scale: { x: number; y: number; z: number };
+  };
+  visible?: boolean;
 }
 
 export interface CameraKeyframe {
-  time: number; // Time in milliseconds from start
-  position: [number, number, number]; // Camera position [x, y, z]
-  target: [number, number, number]; // Camera look-at target [x, y, z]
-  easing?: string; // Easing function
+  time: number; // Time in seconds from start
+  position: { x: number; y: number; z: number };
+  target: { x: number; y: number; z: number };
+  zoom?: number;
 }
 
 export interface StepAnimation {
-  duration: number; // Total animation duration in milliseconds
-  keyframes: AnimationKeyframe[]; // Array of keyframes
-  camera?: {
-    keyframes: CameraKeyframe[]; // Camera animation keyframes
-  };
+  duration: number; // Total animation duration in seconds
+  objectKeyframes: ObjectKeyframe[];
+  cameraKeyframes: CameraKeyframe[];
 }
 
 export interface Step {
