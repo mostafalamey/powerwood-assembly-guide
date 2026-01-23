@@ -145,8 +145,8 @@ export default function EditCabinetPage() {
         <title>Edit Cabinet {formData.id} - Admin Panel</title>
       </Head>
       <AdminLayout title={`Edit Cabinet: ${formData.id}`}>
-        <div className="p-6">
-          <div className="mb-6">
+        <div className="p-4 sm:p-6">
+          <div className="mb-4 sm:mb-6">
             <Link
               href="/admin/cabinets"
               className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center"
@@ -196,7 +196,7 @@ export default function EditCabinetPage() {
               <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                 Cabinet Name <span className="text-red-500">*</span>
               </label>
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <div>
                   <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
                     English

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useRouter } from "next/router";
@@ -16,6 +16,7 @@ export default function AdminLayout({
   const { logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     if (confirm("Are you sure you want to log out?")) {
@@ -28,8 +29,24 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
       <div className="flex min-h-screen">
+        {/* Mobile overlay */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar */}
-        <aside className="w-64 border-r border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80 backdrop-blur sticky top-0 h-screen">
+        <aside
+          className={`
+            fixed lg:sticky top-0 h-screen z-50 lg:z-0
+            w-64 border-r border-gray-200 dark:border-gray-800 
+            bg-white/90 dark:bg-gray-900/80 backdrop-blur
+            transform transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          `}
+        >
           <div className="h-full flex flex-col">
             <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800">
               <h1 className="text-lg font-bold text-gray-900 dark:text-white">
@@ -48,6 +65,7 @@ export default function AdminLayout({
                     ? "bg-blue-600 text-white"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
+                onClick={() => setSidebarOpen(false)}
               >
                 <span>Dashboard</span>
               </Link>
@@ -59,6 +77,7 @@ export default function AdminLayout({
                     ? "bg-blue-600 text-white"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
+                onClick={() => setSidebarOpen(false)}
               >
                 <span>Cabinets</span>
               </Link>
@@ -69,6 +88,7 @@ export default function AdminLayout({
                     ? "bg-blue-600 text-white"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                 }`}
+                onClick={() => setSidebarOpen(false)}
               >
                 <span>QR Codes</span>
               </Link>
@@ -129,24 +149,43 @@ export default function AdminLayout({
         </aside>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col">
-          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800">
-            <div className="px-6 py-4">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="flex-1 flex flex-col min-w-0">
+          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
+            <div className="px-4 sm:px-6 py-4 flex items-center gap-4">
+              {/* Mobile menu button */}
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
                 {title}
               </h2>
             </div>
           </header>
 
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-4 sm:p-6">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
               {children}
             </div>
           </main>
 
           <footer className="border-t border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80">
-            <div className="px-6 py-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="px-4 sm:px-6 py-4">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 PWAssemblyGuide Admin Panel © {new Date().getFullYear()}
               </p>
             </div>

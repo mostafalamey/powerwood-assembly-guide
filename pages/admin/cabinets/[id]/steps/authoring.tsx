@@ -667,57 +667,58 @@ export default function StepAuthoringPage() {
       <AdminLayout title="Visual Step Editor">
         <div className="h-[calc(100vh-140px)] flex flex-col">
           {/* Top toolbar */}
-          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href={`/admin/cabinets/${id}/steps`}
-                className="text-blue-600 dark:text-blue-400 hover:underline text-sm flex items-center gap-1"
+          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4">
+            <Link
+              href={`/admin/cabinets/${id}/steps`}
+              className="text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm flex items-center gap-1"
+            >
+              <svg
+                className="w-3 h-3 sm:w-4 sm:h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                Back to Steps
-              </Link>
-              <span className="text-gray-400">|</span>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Cabinet: {id}
-                {step &&
-                  cabinet?.steps &&
-                  (() => {
-                    const stepData = cabinet.steps.find(
-                      (s: any) => s.id === step,
-                    );
-                    return stepData
-                      ? ` - Step ${step}: ${stepData.title?.en || ""}`
-                      : ` - Step: ${step}`;
-                  })()}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              <span className="hidden sm:inline">Back to Steps</span>
+              <span className="sm:hidden">Back</span>
+            </Link>
+            <span className="text-gray-400 hidden sm:inline">|</span>
+            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate flex-1 sm:flex-initial">
+              Cabinet: {id}
+              {step &&
+                cabinet?.steps &&
+                (() => {
+                  const stepData = cabinet.steps.find(
+                    (s: any) => s.id === step,
+                  );
+                  return stepData
+                    ? ` - Step ${step}: ${stepData.title?.en || ""}`
+                    : ` - Step: ${step}`;
+                })()}
+            </span>
+
+            {/* Right side controls */}
+            <div className="flex items-center gap-1 sm:gap-2 ml-auto">
               {/* Transform mode buttons */}
-              <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 rounded p-1">
+              <div className="hidden md:flex gap-1 bg-gray-100 dark:bg-gray-700 rounded p-1">
                 <button
                   onClick={() => setTransformMode("translate")}
                   disabled={!selectedObject}
                   title="Move (W)"
-                  className={`px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  className={`px-2 sm:px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
                     transformMode === "translate" && selectedObject
                       ? "bg-blue-600 text-white"
                       : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <svg
-                    className="w-4 h-4"
+                    className="w-3 h-3 sm:w-4 sm:h-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -734,14 +735,14 @@ export default function StepAuthoringPage() {
                   onClick={() => setTransformMode("rotate")}
                   disabled={!selectedObject}
                   title="Rotate (E)"
-                  className={`px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  className={`px-2 sm:px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
                     transformMode === "rotate" && selectedObject
                       ? "bg-blue-600 text-white"
                       : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <svg
-                    className="w-4 h-4"
+                    className="w-3 h-3 sm:w-4 sm:h-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -758,14 +759,14 @@ export default function StepAuthoringPage() {
                   onClick={() => setTransformMode("scale")}
                   disabled={!selectedObject}
                   title="Scale (R)"
-                  className={`px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  className={`px-2 sm:px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
                     transformMode === "scale" && selectedObject
                       ? "bg-blue-600 text-white"
                       : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <svg
-                    className="w-4 h-4"
+                    className="w-3 h-3 sm:w-4 sm:h-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -780,8 +781,8 @@ export default function StepAuthoringPage() {
                 </button>
               </div>
 
-              {/* Snap settings dropdown */}
-              <div className="relative" ref={snapDropdownRef}>
+              {/* Snap settings dropdown - Desktop only */}
+              <div className="hidden md:block relative" ref={snapDropdownRef}>
                 <button
                   onClick={() => setSnapDropdownOpen(!snapDropdownOpen)}
                   className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -913,17 +914,18 @@ export default function StepAuthoringPage() {
                 )}
               </div>
 
+              {/* Save button - always visible */}
               <button
                 onClick={handleSaveAnimation}
                 disabled={
                   !sceneReady ||
                   (objectKeyframes.length === 0 && cameraKeyframes.length === 0)
                 }
-                className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+                className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-2 font-medium"
                 title="Save animation to step"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3 h-3 sm:w-4 sm:h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -935,15 +937,16 @@ export default function StepAuthoringPage() {
                     d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
                   />
                 </svg>
-                Save Animation
+                <span className="hidden sm:inline">Save Animation</span>
+                <span className="sm:hidden">Save</span>
               </button>
             </div>
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 flex overflow-hidden flex-col md:flex-row">
             {/* 3D Viewport */}
-            <div className="flex-1 bg-gray-100 dark:bg-gray-900">
+            <div className="flex-1 bg-gray-100 dark:bg-gray-900 min-h-[50vh] md:min-h-0">
               <AuthoringSceneViewer
                 modelPath={modelPath}
                 selectedObject={selectedObject}
@@ -965,14 +968,14 @@ export default function StepAuthoringPage() {
               />
             </div>
 
-            {/* Right sidebar - Controls */}
-            <div className="w-80 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+            {/* Right sidebar - Controls (collapsible on mobile) */}
+            <div className="w-full md:w-80 bg-white dark:bg-gray-800 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 flex flex-col max-h-[40vh] md:max-h-none overflow-y-auto">
               {/* Scene Status Section */}
-              <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+              <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3">
                   Scene Status
                 </h3>
-                <div className="text-sm">
+                <div className="text-xs sm:text-sm">
                   {sceneReady ? (
                     <span className="text-green-600 dark:text-green-400">
                       ✓ Ready
@@ -1000,16 +1003,16 @@ export default function StepAuthoringPage() {
                   />
                 </div>
               ) : (
-                <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
                   {/* Model Upload */}
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                    <h4 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3">
                       Load 3D Model
                     </h4>
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       <label className="block">
-                        <div className="mb-2">
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                        <div className="mb-1 sm:mb-2">
+                          <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                             Select GLB/GLTF file:
                           </span>
                         </div>

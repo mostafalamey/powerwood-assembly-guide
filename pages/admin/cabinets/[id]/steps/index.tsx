@@ -187,19 +187,19 @@ export default function StepManagementPage() {
         <title>Manage Steps - {cabinet.name.en} - Admin Panel</title>
       </Head>
       <AdminLayout title={`Manage Steps: ${cabinet.name.en}`}>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Breadcrumb */}
-          <div className="mb-6 flex items-center gap-2 text-sm">
+          <div className="mb-4 sm:mb-6 flex items-center gap-2 text-xs sm:text-sm overflow-x-auto">
             <Link
               href="/admin/cabinets"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap"
             >
               Cabinets
             </Link>
             <span className="text-gray-400">/</span>
             <Link
               href={`/admin/cabinets/${id}/edit`}
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap"
             >
               {cabinet.id}
             </Link>
@@ -208,19 +208,19 @@ export default function StepManagementPage() {
           </div>
 
           {/* Header Actions */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                 Assembly Steps
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {steps.length} step{steps.length !== 1 ? "s" : ""}
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => router.push(`/admin/cabinets/${id}/steps/new`)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
               >
                 + Add Step
               </button>
@@ -228,9 +228,11 @@ export default function StepManagementPage() {
                 onClick={() =>
                   router.push(`/admin/cabinets/${id}/steps/authoring`)
                 }
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-1"
               >
-                🎨 Visual Editor
+                <span>🎨</span>
+                <span className="hidden sm:inline">Visual Editor</span>
+                <span className="sm:hidden">Editor</span>
               </button>
             </div>
           </div>
