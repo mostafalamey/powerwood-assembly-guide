@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { TransformControls } from "three/examples/jsm/controls/TransformControls";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { TransformControls } from "three/addons/controls/TransformControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 interface AuthoringSceneViewerProps {
   modelPath?: string;
@@ -45,7 +45,7 @@ export default function AuthoringSceneViewer({
   const loadedModelRef = useRef<THREE.Group | null>(null);
   const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
-  const previousSelectedRef = useRef<THREE.Object3D | null>(null);
+  const previousSelectedRef = useRef<THREE.Object3D | null | undefined>(null);
   const currentSelectionRef = useRef<THREE.Object3D | null>(null);
   const translationSnapRef = useRef<number | null>(translationSnap);
   const rotationSnapRef = useRef<number | null>(rotationSnap);
@@ -188,7 +188,7 @@ export default function AuthoringSceneViewer({
     let isDragging = false;
     let justFinishedDragging = false;
 
-    transformControls.addEventListener("dragging-changed", (event) => {
+    transformControls.addEventListener("dragging-changed", (event: any) => {
       controls.enabled = !event.value;
       isDragging = event.value;
 
@@ -519,7 +519,7 @@ export default function AuthoringSceneViewer({
         model.position.z = -center.z;
 
         // Enable shadows and customize materials
-        model.traverse((child) => {
+        model.traverse((child: THREE.Object3D) => {
           if (child instanceof THREE.Mesh) {
             // Only cast shadows if visible
             child.castShadow = child.visible;
@@ -561,7 +561,9 @@ export default function AuthoringSceneViewer({
           }
         });
 
-        sceneRef.current.add(model);
+        if (sceneRef.current) {
+          sceneRef.current.add(model);
+        }
 
         setLoadingModel(false);
         if (onModelLoaded) onModelLoaded(model);
