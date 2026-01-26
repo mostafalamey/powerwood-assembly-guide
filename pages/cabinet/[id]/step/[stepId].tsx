@@ -456,7 +456,6 @@ export default function StepPage() {
                   cabinetId={cabinet.id}
                   stepId={currentStep.id}
                   audioUrl={currentStep.audioUrl}
-                  audioUrl={currentStep.audioUrl}
                   autoPlay={false}
                   onPlayPause={handleAudioPlayPause}
                 />

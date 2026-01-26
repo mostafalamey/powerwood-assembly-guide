@@ -262,8 +262,11 @@ export default function EditStepPage() {
     }
   };
 
-  const uploadAudioFile = async (file: File, langCode: "eng" | "arb") => {
-    if (!file) return;
+  const uploadAudioFile = async (
+    file: File,
+    langCode: "eng" | "arb",
+  ): Promise<boolean> => {
+    if (!file) return false;
 
     const isMp3 =
       file.type === "audio/mpeg" || file.name.toLowerCase().endsWith(".mp3");
