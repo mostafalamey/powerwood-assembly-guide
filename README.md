@@ -4,7 +4,7 @@
 
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 ![Phase](https://img.shields.io/badge/phase-6%20of%2010-blue)
-![Progress](https://img.shields.io/badge/progress-58%25-green)
+![Progress](https://img.shields.io/badge/progress-62%25-green)
 
 ---
 
@@ -36,11 +36,12 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 - ✅ **Phase 3: Step System** (100%) - GSAP animations, completion tracking
 - ✅ **Phase 5: Audio** (100%) - Multilingual narration
 - ✅ **Phase 5.5: UI/UX** (100%) - Bug fixes, layout improvements
-- 🚧 **Phase 6: Admin Panel** (80%) - Auth, CRUD, step management, QR codes
+- 🚧 **Phase 6: Admin Panel** (90%) - Auth, CRUD, step management, QR codes, audio workflow
 - ⏳ **Phase 8-10** - Upcoming
 
 ### Latest Updates
 
+- **Jan 26, 2026:** Audio workflow unified (JSON `audioUrl`), admin uploads deferred to Save, visual editor audio sync
 - **Jan 22, 2026:** Phase 6 at 90% - Animation authoring tool with keyframe editing
 - **Jan 20, 2026:** Phase 6 at 80% - Admin panel with QR code print layout
 - **Jan 19, 2026:** Phase 6 started - Authentication, cabinet/step management

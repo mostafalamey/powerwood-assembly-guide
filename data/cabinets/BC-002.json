@@ -11,6 +11,10 @@
         "en": "Locate the base panel which has 4 cups for the legs on one side. Turn the panel upside down, so that the cups are facing up, take one leg and align it with one of the cups. Press firmly untill you hear a click, indicating the leg is securely attached.",
         "ar": "حدد اللوحة الأساسية التي تحتوي على 4 أكواب للأرجل على جانب واحد. اقلب اللوحة رأسا على عقب بحيث تواجه الأكواب للأعلى خذ ساقا واحدة وقم بمحاذاتها مع أحد الأكواب. اضغط بقوة حتى تسمع نقرة مما يشير إلى أن الساق مثبتة بأمان."
       },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_002/step1.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_002/step1.mp3"
+      },
       "duration": 3,
       "animation": {
         "duration": 19,
@@ -450,6 +454,10 @@
       "description": {
         "en": "Attach the remaining three legs, then carefully flip the base panel to its correct orientation. Avoid applying any sideways force to the legs during this process.",
         "ar": "ثبت الأرجل الثلاثة المتبقية، ثم اقلب اللوحة الأساسية إلى وضعها الصحيح. تجنب تطبيق أي قوة جانبية على الأرجل أثناء هذه العملية."
+      },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_002/step2.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_002/step2.mp3"
       },
       "duration": 5,
       "animation": {
@@ -1147,6 +1155,10 @@
         "en": "Decide which side you want the door to open from, this will determine which side panel to attach first. Take the side panel that has the hinge clips on it, this is the panel that will hold the door. align the panel with the base and press firmly until you hear a click, indicating the panel is securely attached. Make sure the groove on the side panel aligns with the one on the base panel.",
         "ar": "قرر من أي جانب تريد فتح الباب، فهذا سيحدد أي لوحة جانبية يجب تثبيتها أولاً. خذ اللوحة الجانبية التي تحتوي على مشابك المفصل عليها، هذه هي اللوحة التي ستحمل الباب. قم بمحاذاة اللوحة مع القاعدة واضغط بقوة حتى تسمع نقرة، مما يشير إلى أن اللوحة مثبتة بأمان. تأكد من محاذاة الأخدود على اللوحة الجانبية مع الأخدود على لوحة القاعدة."
       },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_002/step3.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_002/step3.mp3"
+      },
       "duration": 3,
       "animation": {
         "duration": 2.5,
@@ -1741,6 +1753,10 @@
         "en": "Position and attach the other side panel to the base the same way.",
         "ar": "ضع وثبت اللوحة الجانبية الأخرى على لوحة القاعدة بنفس الطريقة."
       },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_002/step4.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_002/step4.mp3"
+      },
       "duration": 3,
       "animation": {
         "duration": 2.5,
@@ -2133,6 +2149,10 @@
         "en": "Take the back panel, which is a thin sheet, and align it with the grooves on the side panels. Slide it down into the grooves until it fits snugly, ensuring the panel is flush with the edges of the side panels.",
         "ar": "خذ اللوحة الخلفية، وهي ورقة رفيعة، وقم بمحاذاتها مع الأخاديد على اللوحات الجانبية. قم بإدخالها في الأخاديد حتى تناسبها بإحكام، مع التأكد من أن اللوحة مستوية مع حواف اللوحات الجانبية."
       },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_002/step5.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_002/step5.mp3"
+      },
       "duration": 3,
       "animation": {
         "duration": 2.5,
@@ -2480,6 +2500,10 @@
       "description": {
         "en": "Take the top panel, and align it with the top edges of the side and back panels. Press down firmly until you hear a click, indicating the panel is securely attached and completing the cabinet assembly.",
         "ar": "خذ اللوحة العلوية وقم بمحاذاتها مع الحواف العلوية للوحات الجانبية والخلفية. اضغط بقوة حتى تسمع نقرة، مما يشير إلى أن اللوحة مثبتة بإحكام وتكمل تجميع الخزانة."
+      },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_002/step6.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_002/step6.mp3"
       },
       "duration": 3,
       "animation": {

@@ -17,6 +17,7 @@ interface StepFormData {
   };
   duration?: number;
   animation?: any;
+  audioUrl?: { en?: string; ar?: string };
 }
 
 interface Cabinet {
@@ -42,6 +43,46 @@ export default function NewStepPage() {
     duration: 3,
   });
 
+  const getAudioDirectory = (langCode: "eng" | "arb") => {
+    const cabinetId = String(id || "");
+    const prefix = cabinetId.split("-")[0];
+    let category = "";
+
+    switch (prefix) {
+      case "BC":
+        category = "BaseCabinets";
+        break;
+      case "WC":
+        category = "WallCabinets";
+        break;
+      case "HC":
+        category = "HighCabinets";
+        break;
+      case "TC":
+        category = "TallCabinets";
+        break;
+      case "CB":
+        category = "CornerBase";
+        break;
+      case "CW":
+        category = "CornerWall";
+        break;
+      case "FL":
+        category = "Fillers";
+        break;
+      default:
+        category = "BaseCabinets";
+    }
+
+    const formattedId = cabinetId.replace("-", "_");
+    return `audio/${langCode}/${category}/${formattedId}`;
+  };
+
+  const getAudioPublicPathForLocale = (lang: "en" | "ar", step: string) => {
+    const langCode = lang === "ar" ? "arb" : "eng";
+    return `/${getAudioDirectory(langCode)}/step${step}.mp3`;
+  };
+
   useEffect(() => {
     if (id) {
       fetchCabinet();
@@ -62,7 +103,14 @@ export default function NewStepPage() {
         setCabinet(data);
         // Set the next step ID
         const nextStepId = ((data.steps?.length || 0) + 1).toString();
-        setFormData((prev) => ({ ...prev, id: nextStepId }));
+        setFormData((prev) => ({
+          ...prev,
+          id: nextStepId,
+          audioUrl: {
+            en: getAudioPublicPathForLocale("en", nextStepId),
+            ar: getAudioPublicPathForLocale("ar", nextStepId),
+          },
+        }));
       } else {
         setError("Failed to load cabinet");
       }

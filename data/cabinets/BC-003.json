@@ -585,6 +585,10 @@
             }
           }
         ]
+      },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_003/step1.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_003/step1.mp3"
       }
     },
     {
@@ -1193,6 +1197,9 @@
             }
           }
         ]
+      },
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_003/step2.mp3"
       }
     }
   ]

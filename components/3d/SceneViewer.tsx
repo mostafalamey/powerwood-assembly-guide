@@ -43,6 +43,8 @@ export default function SceneViewer({
   const hasAutoStartedRef = useRef(false);
   const [animationTime, setAnimationTime] = useState(0);
   const [isAnimationPlaying, setIsAnimationPlaying] = useState(false);
+  const animationTimeRef = useRef(0);
+  const hasCompletedRef = useRef(false);
   // Store original transforms for additive animations
   const originalTransformsRef = useRef<
     Map<
@@ -61,7 +63,9 @@ export default function SceneViewer({
     // Store animation and set time to 0 (initial state)
     currentAnimationRef.current = animation;
     setAnimationTime(0);
+    animationTimeRef.current = 0;
     setIsAnimationPlaying(false);
+    hasCompletedRef.current = false;
   }, []);
 
   // Apply step animation using lerp/slerp interpolation (matches editor system)
@@ -83,8 +87,14 @@ export default function SceneViewer({
 
     // Start animation playback at time 0
     setAnimationTime(0);
+    animationTimeRef.current = 0;
     setIsAnimationPlaying(true);
+    hasCompletedRef.current = false;
   }, []);
+
+  useEffect(() => {
+    animationTimeRef.current = animationTime;
+  }, [animationTime]);
 
   // Helper to get object path/ID
   const getObjectId = (obj: any): string => {
@@ -337,16 +347,16 @@ export default function SceneViewer({
       const delta = (now - lastTime) / 1000; // Convert to seconds
       lastTime = now;
 
-      setAnimationTime((prev) => {
-        const newTime = prev + delta;
-        // Stop at end and call onAnimationComplete
-        if (newTime >= duration) {
-          setIsAnimationPlaying(false);
-          onAnimationComplete?.();
-          return duration;
-        }
-        return newTime;
-      });
+      const newTime = animationTimeRef.current + delta;
+      const clampedTime = Math.min(newTime, duration);
+      animationTimeRef.current = clampedTime;
+      setAnimationTime(clampedTime);
+
+      if (clampedTime >= duration && !hasCompletedRef.current) {
+        hasCompletedRef.current = true;
+        setIsAnimationPlaying(false);
+        onAnimationComplete?.();
+      }
     };
 
     const intervalId = setInterval(animate, 1000 / 60); // 60 FPS
@@ -594,6 +604,8 @@ export default function SceneViewer({
   useEffect(() => {
     hasAutoStartedRef.current = false;
     setAnimationTrigger(0); // Reset trigger counter on step change
+    hasCompletedRef.current = false;
+    animationTimeRef.current = 0;
   }, [currentStep]);
 
   // Apply step animation when step changes (if auto-start enabled) or when manually restarted

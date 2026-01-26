@@ -30,7 +30,7 @@ export interface Step {
   model?: string; // Optional - can inherit from cabinet
   cameraPosition?: { x: number; y: number; z: number };
   animation?: StepAnimation; // Optional animation data
-  audioUrl?: { en: string; ar: string };
+  audioUrl?: { en?: string; ar?: string };
   tools?: string[];
   toolsRequired?: string[]; // Legacy field
   duration?: string | number;

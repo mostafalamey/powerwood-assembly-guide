@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import formidable, { Fields, Files } from "formidable";
 import fs from "fs";
 import path from "path";
+import { validateToken } from "../../lib/auth";
 
 export const config = {
   api: {
@@ -12,8 +13,8 @@ export const config = {
 // Simple auth check
 const verifyToken = (req: NextApiRequest): boolean => {
   const token = req.headers.authorization?.replace("Bearer ", "");
-  const validToken = process.env.ADMIN_PASSWORD || "admin123";
-  return token === validToken;
+  if (!token) return false;
+  return validateToken(token);
 };
 
 export default async function handler(
@@ -41,6 +42,9 @@ export default async function handler(
     const directory = Array.isArray(fields.directory)
       ? fields.directory[0]
       : fields.directory || "uploads";
+    const requestedFilename = Array.isArray(fields.filename)
+      ? fields.filename[0]
+      : fields.filename;
 
     if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
@@ -56,10 +60,18 @@ export default async function handler(
 
     // Generate filename
     const originalName = file.originalFilename || "file";
-    const ext = path.extname(originalName);
-    const baseName = path.basename(originalName, ext);
-    const timestamp = Date.now();
-    const filename = `${baseName}-${timestamp}${ext}`;
+    const originalExt = path.extname(originalName);
+    let filename = "";
+
+    if (requestedFilename) {
+      const safeName = path.basename(String(requestedFilename));
+      const hasExt = path.extname(safeName).length > 0;
+      filename = hasExt ? safeName : `${safeName}${originalExt}`;
+    } else {
+      const baseName = path.basename(originalName, originalExt);
+      const timestamp = Date.now();
+      filename = `${baseName}-${timestamp}${originalExt}`;
+    }
 
     const targetPath = path.join(targetDir, filename);
 

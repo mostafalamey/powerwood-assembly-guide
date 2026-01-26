@@ -16,6 +16,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.9.0] - 2026-01-26
+
+### ✨ Added - Audio Workflow & Editor Sync
+
+- **Audio URLs in Step JSON:** `audioUrl` stored per step and used as the single source of truth
+- **Admin Audio Uploads:** EN/AR drop zones with deferred upload until Save
+- **Upload Endpoint:** Supports `filename` for deterministic `step{n}.mp3` names
+- **Step List Indicator:** ✓ Audio badge in step manager when audio exists
+- **Visual Editor Audio Sync:** Audio plays with animation; timeline follows audio time
+- **Timeline Duration Sync:** Duration updates from audio metadata
+
+### 🐛 Fixed
+
+- Animation completion warning caused by render-phase state updates
+- Audio player recovery when the first step lacks audio but later steps have it
+
+---
+
 ## [0.8.0] - 2026-01-22
 
 ### ✨ Added - Animation Authoring Tool Enhancements

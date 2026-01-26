@@ -4,6 +4,7 @@ import { useTranslation } from "@/lib/i18n";
 interface AudioPlayerProps {
   cabinetId: string;
   stepId: string;
+  audioUrl?: { en?: string; ar?: string };
   autoPlay?: boolean;
   onEnded?: () => void;
   onPlayPause?: (isPlaying: boolean) => void;
@@ -12,6 +13,7 @@ interface AudioPlayerProps {
 export default function AudioPlayer({
   cabinetId,
   stepId,
+  audioUrl,
   autoPlay = false,
   onEnded,
   onPlayPause,
@@ -26,45 +28,9 @@ export default function AudioPlayer({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // Determine audio file path based on cabinet category
+  // Determine audio file path from step JSON
   const getAudioPath = () => {
-    // Extract category from cabinet ID (e.g., "BC-002" -> "BaseCabinets")
-    const prefix = cabinetId.split("-")[0];
-    let category = "";
-
-    switch (prefix) {
-      case "BC":
-        category = "BaseCabinets";
-        break;
-      case "WC":
-        category = "WallCabinets";
-        break;
-      case "HC":
-        category = "HighCabinets";
-        break;
-      case "TC":
-        category = "TallCabinets";
-        break;
-      case "CB":
-        category = "CornerBase";
-        break;
-      case "CW":
-        category = "CornerWall";
-        break;
-      case "FL":
-        category = "Fillers";
-        break;
-      default:
-        category = "BaseCabinets";
-    }
-
-    // Format: BC-002 -> BC_002
-    const formattedId = cabinetId.replace("-", "_");
-
-    // Language code: 'en' -> 'eng', 'ar' -> 'arb'
-    const langCode = locale === "ar" ? "arb" : "eng";
-
-    return `/audio/${langCode}/${category}/${formattedId}/step${stepId}.mp3`;
+    return locale === "ar" ? audioUrl?.ar : audioUrl?.en;
   };
 
   // Load new audio when step or language changes
@@ -80,6 +46,17 @@ export default function AudioPlayer({
     setIsPlaying(false);
     setCurrentTime(0);
     setDuration(0);
+
+    if (!audioPath) {
+      audio.pause();
+      audio.src = "";
+      setIsLoading(false);
+      setHasError(true);
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
+      return;
+    }
 
     // Load new audio
     audio.src = audioPath;
@@ -195,18 +172,16 @@ export default function AudioPlayer({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  if (hasError) {
-    return (
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 text-center text-sm text-gray-500">
-        {t("audioNotAvailable") ||
-          "Audio narration not available for this step"}
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white dark:bg-gray-900 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
       <audio ref={audioRef} preload="auto" />
+
+      {hasError && (
+        <div className="mb-2 rounded-md bg-gray-100 dark:bg-gray-800 p-2 text-center text-xs text-gray-500">
+          {t("audioNotAvailable") ||
+            "Audio narration not available for this step"}
+        </div>
+      )}
 
       <div className="flex items-center gap-3">
         {/* Play/Pause Button */}

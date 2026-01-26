@@ -1,6 +1,6 @@
 # PWAssemblyGuide - Development Progress
 
-**Last Updated:** January 22, 2026  
+**Last Updated:** January 26, 2026  
 **Current Phase:** Phase 6 (Admin Panel) - IN PROGRESS  
 **Overall Progress:** 62% (9.0 of 16 weeks)
 
@@ -637,6 +637,31 @@ Upcoming tasks:
 **Started:** January 19, 2026  
 **Current Status:** 90% Complete  
 **Duration So Far:** 3 days
+
+### Latest Update: Audio Workflow + Editor Sync (January 26, 2026) ✅
+
+#### Audio Management (Admin)
+
+- **Step Audio Uploads UI:** English/Arabic drop zones added to the Edit Step page
+- **Deferred Upload Flow:** Files are queued on select and uploaded only on Save
+- **Deterministic Filenames:** Upload endpoint supports `filename` so `step{n}.mp3` is enforced
+- **Audio Presence Indicators:** Step list now shows ✓ Audio when `audioUrl` exists
+
+#### Audio Data Model & Viewer
+
+- **Single Source of Truth:** Step `audioUrl` stored in cabinet JSON and used by viewer
+- **BC-002 Backfilled:** Added `audioUrl` for all 6 steps
+- **AudioPlayer Behavior:** Uses only `audioUrl` from JSON; no implicit path fallback
+
+#### Visual Editor Audio Sync
+
+- **Playback Sync:** Audio plays with animation and drives timeline time
+- **Duration Sync:** Timeline duration updates from audio metadata
+- **Stability Fixes:** Improved playback fallback when audio fails
+
+#### Animation Runtime Fix
+
+- **Render Warning Resolved:** `onAnimationComplete` no longer triggers render-phase updates
 
 ### Latest Update: Animation Authoring Tool Enhanced (January 22, 2026) ✅
 

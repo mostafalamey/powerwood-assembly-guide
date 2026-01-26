@@ -17,6 +17,7 @@ interface Step {
   };
   duration?: number;
   animation?: any;
+  audioUrl?: { en?: string; ar?: string };
 }
 
 interface Cabinet {
@@ -322,6 +323,11 @@ export default function StepManagementPage() {
                               {step.animation && (
                                 <span className="text-xs text-green-600 dark:text-green-400">
                                   ✓ Animation
+                                </span>
+                              )}
+                              {(step.audioUrl?.en || step.audioUrl?.ar) && (
+                                <span className="text-xs text-green-600 dark:text-green-400">
+                                  ✓ Audio
                                 </span>
                               )}
                             </div>

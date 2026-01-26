@@ -36,6 +36,9 @@ export default function StepAuthoringPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [objectKeyframes, setObjectKeyframes] = useState<ObjectKeyframe[]>([]);
   const [cameraKeyframes, setCameraKeyframes] = useState<CameraKeyframe[]>([]);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [useAudioSync, setUseAudioSync] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [selectedKeyframeTime, setSelectedKeyframeTime] = useState<
     number | null
   >(null);
@@ -63,6 +66,13 @@ export default function StepAuthoringPage() {
           if (data.model) {
             setModelPath(data.model);
           }
+
+          if (step && data.steps) {
+            const stepData = data.steps.find((s: any) => s.id === step);
+            const nextAudioUrl =
+              stepData?.audioUrl?.en || stepData?.audioUrl?.ar || null;
+            setAudioUrl(nextAudioUrl);
+          }
         }
       } catch (err) {
         console.error("Error loading cabinet:", err);
@@ -71,6 +81,14 @@ export default function StepAuthoringPage() {
 
     fetchCabinet();
   }, [id]);
+
+  useEffect(() => {
+    if (!step || !cabinet?.steps) return;
+    const stepData = cabinet.steps.find((s: any) => s.id === step);
+    const nextAudioUrl =
+      stepData?.audioUrl?.en || stepData?.audioUrl?.ar || null;
+    setAudioUrl(nextAudioUrl);
+  }, [step, cabinet]);
 
   const handleSceneReady = useCallback((scene: any, camera: any) => {
     setSceneReady(true);
@@ -98,6 +116,9 @@ export default function StepAuthoringPage() {
 
   const handleTimeChange = useCallback((time: number) => {
     setCurrentTime(time);
+    if (audioRef.current && audioUrl) {
+      audioRef.current.currentTime = time;
+    }
   }, []);
 
   // Click outside to close snap dropdown
@@ -597,9 +618,9 @@ export default function StepAuthoringPage() {
     }
   }, [currentTime, objectKeyframes, cameraKeyframes, loadedModelRef]);
 
-  // Animation playback loop
+  // Animation playback loop (fallback when no audio or audio failed)
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || useAudioSync) return;
 
     let lastTime = Date.now();
     const animate = () => {
@@ -620,7 +641,82 @@ export default function StepAuthoringPage() {
     const intervalId = setInterval(animate, 1000 / 60); // 60 FPS
 
     return () => clearInterval(intervalId);
-  }, [isPlaying, duration]);
+  }, [isPlaying, duration, useAudioSync]);
+
+  // Audio setup for current step
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+    if (!audioUrl) {
+      audio.pause();
+      audio.src = "";
+      setUseAudioSync(false);
+      return;
+    }
+
+    audio.src = audioUrl;
+    audio.load();
+    audio.currentTime = 0;
+
+    const handleLoadedMetadata = () => {
+      if (!Number.isNaN(audio.duration) && audio.duration > 0) {
+        setDuration(audio.duration);
+      }
+    };
+
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    return () => {
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    };
+  }, [audioUrl]);
+
+  // Sync timeline with audio while playing
+  useEffect(() => {
+    if (!isPlaying || !audioRef.current || !audioUrl) return;
+
+    const audio = audioRef.current;
+    audio.currentTime = currentTime;
+    const playPromise = audio.play();
+    if (playPromise) {
+      playPromise
+        .then(() => setUseAudioSync(true))
+        .catch(() => {
+          setUseAudioSync(false);
+          setIsPlaying(false);
+        });
+    } else {
+      setUseAudioSync(false);
+    }
+
+    let rafId: number;
+    const tick = () => {
+      if (audioRef.current) {
+        setCurrentTime(audioRef.current.currentTime || 0);
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+    };
+
+    audio.addEventListener("ended", handleEnded);
+
+    return () => {
+      audio.removeEventListener("ended", handleEnded);
+      cancelAnimationFrame(rafId);
+      audio.pause();
+    };
+  }, [isPlaying, audioUrl]);
+
+  // Pause audio when playback stops
+  useEffect(() => {
+    if (isPlaying || !audioRef.current) return;
+    audioRef.current.pause();
+    setUseAudioSync(false);
+  }, [isPlaying]);
 
   // Load cabinet step animation on mount
   useEffect(() => {
@@ -666,6 +762,7 @@ export default function StepAuthoringPage() {
       </Head>
       <AdminLayout title="Visual Step Editor">
         <div className="h-[calc(100vh-140px)] flex flex-col">
+          <audio ref={audioRef} className="hidden" preload="auto" />
           {/* Top toolbar */}
           <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4">
             <Link
