@@ -18,6 +18,7 @@ interface Step {
   duration?: number;
   animation?: any;
   audioUrl?: { en?: string; ar?: string };
+  tools?: { en?: string[]; ar?: string[] };
 }
 
 interface Cabinet {
@@ -29,6 +30,12 @@ interface Cabinet {
   steps?: Step[];
 }
 
+interface CabinetIndexItem {
+  id: string;
+  name: { en: string; ar: string };
+  category?: string;
+}
+
 export default function StepManagementPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -37,6 +44,13 @@ export default function StepManagementPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
+  const [cabinetIndex, setCabinetIndex] = useState<CabinetIndexItem[]>([]);
+  const [sourceCabinetId, setSourceCabinetId] = useState<string>("");
+  const [sourceSteps, setSourceSteps] = useState<Step[]>([]);
+  const [copySearch, setCopySearch] = useState("");
+  const [copyLoading, setCopyLoading] = useState(false);
+  const [copyInsertIndex, setCopyInsertIndex] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -66,6 +80,46 @@ export default function StepManagementPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getAudioDirectory = (langCode: "eng" | "arb") => {
+    const cabinetId = String(id || "");
+    const prefix = cabinetId.split("-")[0];
+    let category = "";
+
+    switch (prefix) {
+      case "BC":
+        category = "BaseCabinets";
+        break;
+      case "WC":
+        category = "WallCabinets";
+        break;
+      case "HC":
+        category = "HighCabinets";
+        break;
+      case "TC":
+        category = "TallCabinets";
+        break;
+      case "CB":
+        category = "CornerBase";
+        break;
+      case "CW":
+        category = "CornerWall";
+        break;
+      case "FL":
+        category = "Fillers";
+        break;
+      default:
+        category = "BaseCabinets";
+    }
+
+    const formattedId = cabinetId.replace("-", "_");
+    return `audio/${langCode}/${category}/${formattedId}`;
+  };
+
+  const getAudioPublicPathForLocale = (lang: "en" | "ar", step: string) => {
+    const langCode = lang === "ar" ? "arb" : "eng";
+    return `/${getAudioDirectory(langCode)}/step${step}.mp3`;
   };
 
   const saveSteps = async (updatedSteps: Step[]) => {
@@ -124,6 +178,103 @@ export default function StepManagementPage() {
     setDraggedIndex(null);
     // Save the reordered steps
     await saveSteps(steps);
+  };
+
+  const openCopyModal = async () => {
+    setIsCopyModalOpen(true);
+    setCopySearch("");
+    setSourceCabinetId("");
+    setSourceSteps([]);
+    setCopyInsertIndex(steps.length + 1);
+
+    try {
+      const token = localStorage.getItem("admin_token");
+      const response = await fetch("/api/cabinets", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCabinetIndex(data || []);
+      }
+    } catch (err) {
+      console.error("Error loading cabinet list:", err);
+    }
+  };
+
+  const loadSourceSteps = async (cabinetId: string) => {
+    if (!cabinetId) return;
+    setCopyLoading(true);
+
+    try {
+      const token = localStorage.getItem("admin_token");
+      const response = await fetch(`/api/cabinets?id=${cabinetId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSourceSteps(data.steps || []);
+      } else {
+        setSourceSteps([]);
+      }
+    } catch (err) {
+      console.error("Error loading source steps:", err);
+      setSourceSteps([]);
+    } finally {
+      setCopyLoading(false);
+    }
+  };
+
+  const handleSelectSourceCabinet = async (cabinetId: string) => {
+    setSourceCabinetId(cabinetId);
+    await loadSourceSteps(cabinetId);
+  };
+
+  const handleCopyStep = async (sourceStep: Step) => {
+    if (!cabinet) return;
+
+    const insertIndex = Math.max(
+      1,
+      Math.min(copyInsertIndex, steps.length + 1),
+    );
+    const copiedStep: Step = {
+      ...sourceStep,
+      audioUrl: sourceStep.audioUrl
+        ? {
+            en: getAudioPublicPathForLocale("en", insertIndex.toString()),
+            ar: getAudioPublicPathForLocale("ar", insertIndex.toString()),
+          }
+        : undefined,
+    };
+
+    const updatedSteps = [...steps];
+    updatedSteps.splice(insertIndex - 1, 0, copiedStep);
+
+    const renumberedSteps = updatedSteps.map((step, idx) => {
+      const nextStepId = (idx + 1).toString();
+      return {
+        ...step,
+        id: nextStepId,
+        audioUrl: step.audioUrl
+          ? {
+              en: getAudioPublicPathForLocale("en", nextStepId),
+              ar: getAudioPublicPathForLocale("ar", nextStepId),
+            }
+          : undefined,
+      };
+    });
+
+    const newStepId = insertIndex.toString();
+    const saved = await saveSteps(renumberedSteps);
+    if (!saved) return;
+
+    setIsCopyModalOpen(false);
+    router.push(`/admin/cabinets/${id}/steps/${newStepId}/edit`);
   };
 
   const handleDeleteStep = async (stepId: string) => {
@@ -224,6 +375,12 @@ export default function StepManagementPage() {
                 className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
               >
                 + Add Step
+              </button>
+              <button
+                onClick={openCopyModal}
+                className="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+              >
+                ♻️ Copy/Reuse Step
               </button>
               <button
                 onClick={() =>
@@ -423,6 +580,144 @@ export default function StepManagementPage() {
             </div>
           )}
         </div>
+
+        {isCopyModalOpen && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[85vh] overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Copy/Reuse Step
+                </h3>
+                <button
+                  onClick={() => setIsCopyModalOpen(false)}
+                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  title="Close"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-4 space-y-4">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
+                      Source Cabinet
+                    </label>
+                    <select
+                      value={sourceCabinetId}
+                      onChange={(e) =>
+                        handleSelectSourceCabinet(e.target.value)
+                      }
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      <option value="">Select cabinet...</option>
+                      {cabinetIndex.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.id} - {item.name.en}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
+                      Search Steps
+                    </label>
+                    <input
+                      type="text"
+                      value={copySearch}
+                      onChange={(e) => setCopySearch(e.target.value)}
+                      placeholder="Search by title or description"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
+                      Insert Position
+                    </label>
+                    <select
+                      value={copyInsertIndex}
+                      onChange={(e) =>
+                        setCopyInsertIndex(Number(e.target.value))
+                      }
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    >
+                      {Array.from(
+                        { length: steps.length + 1 },
+                        (_, idx) => idx + 1,
+                      ).map((position) => (
+                        <option key={position} value={position}>
+                          {position}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                  <div className="max-h-[50vh] overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
+                    {copyLoading && (
+                      <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
+                        Loading steps...
+                      </div>
+                    )}
+                    {!copyLoading &&
+                      sourceCabinetId &&
+                      sourceSteps.length === 0 && (
+                        <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
+                          No steps available in this cabinet.
+                        </div>
+                      )}
+                    {!copyLoading &&
+                      sourceSteps
+                        .filter((step) => {
+                          const query = copySearch.toLowerCase();
+                          if (!query) return true;
+                          return (
+                            step.title.en.toLowerCase().includes(query) ||
+                            step.title.ar.toLowerCase().includes(query) ||
+                            step.description.en.toLowerCase().includes(query) ||
+                            step.description.ar.toLowerCase().includes(query) ||
+                            step.id.includes(query)
+                          );
+                        })
+                        .map((step) => (
+                          <div
+                            key={`${sourceCabinetId}-${step.id}`}
+                            className="p-4 flex items-start justify-between gap-4"
+                          >
+                            <div className="flex-1">
+                              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                Step {step.id}: {step.title.en}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                                {step.description.en}
+                              </div>
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex gap-3">
+                                {step.duration && (
+                                  <span>⏱️ {step.duration} min</span>
+                                )}
+                                {step.animation && <span>✓ Animation</span>}
+                                {(step.audioUrl?.en || step.audioUrl?.ar) && (
+                                  <span>✓ Audio</span>
+                                )}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => handleCopyStep(step)}
+                              className="px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                        ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </AdminLayout>
     </AuthGuard>
   );

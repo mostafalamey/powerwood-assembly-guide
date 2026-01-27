@@ -32,6 +32,180 @@ export default function SceneViewer({
   onError,
   onAnimationComplete,
 }: SceneViewerProps) {
+  const applyEasing = useCallback((t: number, easing?: string) => {
+    const clamped = Math.max(0, Math.min(1, t));
+    const easeOutBounce = (value: number) => {
+      const n1 = 7.5625;
+      const d1 = 2.75;
+
+      if (value < 1 / d1) {
+        return n1 * value * value;
+      }
+      if (value < 2 / d1) {
+        const adjusted = value - 1.5 / d1;
+        return n1 * adjusted * adjusted + 0.75;
+      }
+      if (value < 2.5 / d1) {
+        const adjusted = value - 2.25 / d1;
+        return n1 * adjusted * adjusted + 0.9375;
+      }
+      const adjusted = value - 2.625 / d1;
+      return n1 * adjusted * adjusted + 0.984375;
+    };
+    const easeInBounce = (value: number) => 1 - easeOutBounce(1 - value);
+    const easeInOutBounce = (value: number) =>
+      value < 0.5
+        ? (1 - easeOutBounce(1 - 2 * value)) / 2
+        : (1 + easeOutBounce(2 * value - 1)) / 2;
+
+    switch (easing) {
+      case "easeInQuad":
+      case "power2.in":
+        return clamped * clamped;
+      case "easeOutQuad":
+      case "power2.out":
+        return clamped * (2 - clamped);
+      case "easeInOutQuad":
+      case "power2.inOut":
+        return clamped < 0.5
+          ? 2 * clamped * clamped
+          : -1 + (4 - 2 * clamped) * clamped;
+      case "easeInCubic":
+      case "power3.in":
+        return clamped * clamped * clamped;
+      case "easeOutCubic":
+      case "power3.out":
+        return 1 - Math.pow(1 - clamped, 3);
+      case "easeInOutCubic":
+      case "power3.inOut":
+        return clamped < 0.5
+          ? 4 * clamped * clamped * clamped
+          : 1 - Math.pow(-2 * clamped + 2, 3) / 2;
+      case "easeInQuart":
+      case "power4.in":
+        return Math.pow(clamped, 4);
+      case "easeOutQuart":
+      case "power4.out":
+        return 1 - Math.pow(1 - clamped, 4);
+      case "easeInOutQuart":
+      case "power4.inOut":
+        return clamped < 0.5
+          ? 8 * Math.pow(clamped, 4)
+          : 1 - Math.pow(-2 * clamped + 2, 4) / 2;
+      case "easeInQuint":
+      case "power5.in":
+        return Math.pow(clamped, 5);
+      case "easeOutQuint":
+      case "power5.out":
+        return 1 - Math.pow(1 - clamped, 5);
+      case "easeInOutQuint":
+      case "power5.inOut":
+        return clamped < 0.5
+          ? 16 * Math.pow(clamped, 5)
+          : 1 - Math.pow(-2 * clamped + 2, 5) / 2;
+      case "easeInSine":
+      case "sine.in":
+        return 1 - Math.cos((clamped * Math.PI) / 2);
+      case "easeOutSine":
+      case "sine.out":
+        return Math.sin((clamped * Math.PI) / 2);
+      case "easeInOutSine":
+      case "sine.inOut":
+        return -(Math.cos(Math.PI * clamped) - 1) / 2;
+      case "easeInExpo":
+      case "expo.in":
+        return clamped === 0 ? 0 : Math.pow(2, 10 * clamped - 10);
+      case "easeOutExpo":
+      case "expo.out":
+        return clamped === 1 ? 1 : 1 - Math.pow(2, -10 * clamped);
+      case "easeInOutExpo":
+      case "expo.inOut":
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return clamped < 0.5
+          ? Math.pow(2, 20 * clamped - 10) / 2
+          : (2 - Math.pow(2, -20 * clamped + 10)) / 2;
+      case "easeInCirc":
+      case "circ.in":
+        return 1 - Math.sqrt(1 - Math.pow(clamped, 2));
+      case "easeOutCirc":
+      case "circ.out":
+        return Math.sqrt(1 - Math.pow(clamped - 1, 2));
+      case "easeInOutCirc":
+      case "circ.inOut":
+        return clamped < 0.5
+          ? (1 - Math.sqrt(1 - Math.pow(2 * clamped, 2))) / 2
+          : (Math.sqrt(1 - Math.pow(-2 * clamped + 2, 2)) + 1) / 2;
+      case "easeInBack":
+      case "back.in":
+        return (
+          2.70158 * clamped * clamped * clamped - 1.70158 * clamped * clamped
+        );
+      case "easeOutBack":
+      case "back.out":
+        return (
+          1 +
+          2.70158 * Math.pow(clamped - 1, 3) +
+          1.70158 * Math.pow(clamped - 1, 2)
+        );
+      case "easeInOutBack":
+      case "back.inOut": {
+        const c2 = 1.70158 * 1.525;
+        return clamped < 0.5
+          ? (Math.pow(2 * clamped, 2) * ((c2 + 1) * 2 * clamped - c2)) / 2
+          : (Math.pow(2 * clamped - 2, 2) *
+              ((c2 + 1) * (2 * clamped - 2) + c2) +
+              2) /
+              2;
+      }
+      case "easeInElastic":
+      case "elastic.in": {
+        const c4 = (2 * Math.PI) / 3;
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return (
+          -Math.pow(2, 10 * clamped - 10) *
+          Math.sin((clamped * 10 - 10.75) * c4)
+        );
+      }
+      case "easeOutElastic":
+      case "elastic.out": {
+        const c4 = (2 * Math.PI) / 3;
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return (
+          Math.pow(2, -10 * clamped) * Math.sin((clamped * 10 - 0.75) * c4) + 1
+        );
+      }
+      case "easeInOutElastic":
+      case "elastic.inOut": {
+        const c5 = (2 * Math.PI) / 4.5;
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return clamped < 0.5
+          ? -(
+              Math.pow(2, 20 * clamped - 10) *
+              Math.sin((20 * clamped - 11.125) * c5)
+            ) / 2
+          : (Math.pow(2, -20 * clamped + 10) *
+              Math.sin((20 * clamped - 11.125) * c5)) /
+              2 +
+              1;
+      }
+      case "easeInBounce":
+      case "bounce.in":
+        return easeInBounce(clamped);
+      case "easeOutBounce":
+      case "bounce.out":
+        return easeOutBounce(clamped);
+      case "easeInOutBounce":
+      case "bounce.inOut":
+        return easeInOutBounce(clamped);
+      case "linear":
+      default:
+        return clamped;
+    }
+  }, []);
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -56,45 +230,94 @@ export default function SceneViewer({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Apply initial state without animation (for step load) - sets animation at time 0
-  const applyInitialState = useCallback((animation: StepAnimation) => {
-    if (!modelRef.current || !animation) return;
+  const normalizeAnimationToOffsets = useCallback(
+    (animation: StepAnimation) => {
+      if (!animation || animation.isOffset) return animation;
+      if (originalTransformsRef.current.size === 0) return animation;
 
-    // Store animation and set time to 0 (initial state)
-    currentAnimationRef.current = animation;
-    setAnimationTime(0);
-    animationTimeRef.current = 0;
-    setIsAnimationPlaying(false);
-    hasCompletedRef.current = false;
-  }, []);
+      const nextObjectKeyframes = (animation.objectKeyframes || []).map(
+        (kf) => {
+          const original = originalTransformsRef.current.get(kf.objectId);
+          if (!original) return kf;
+
+          return {
+            ...kf,
+            transform: {
+              position: {
+                x: kf.transform.position.x - original.position.x,
+                y: kf.transform.position.y - original.position.y,
+                z: kf.transform.position.z - original.position.z,
+              },
+              rotation: {
+                x: kf.transform.rotation.x - original.rotation.x,
+                y: kf.transform.rotation.y - original.rotation.y,
+                z: kf.transform.rotation.z - original.rotation.z,
+              },
+              scale: { ...kf.transform.scale },
+            },
+          };
+        },
+      );
+
+      return {
+        ...animation,
+        isOffset: true,
+        objectKeyframes: nextObjectKeyframes,
+      };
+    },
+    [],
+  );
+
+  // Apply initial state without animation (for step load) - sets animation at time 0
+  const applyInitialState = useCallback(
+    (animation: StepAnimation) => {
+      if (!modelRef.current || !animation) return;
+
+      const normalized = normalizeAnimationToOffsets(animation);
+
+      // Store animation and set time to 0 (initial state)
+      currentAnimationRef.current = normalized;
+      setAnimationTime(0);
+      animationTimeRef.current = 0;
+      setIsAnimationPlaying(false);
+      hasCompletedRef.current = false;
+    },
+    [normalizeAnimationToOffsets],
+  );
 
   // Apply step animation using lerp/slerp interpolation (matches editor system)
-  const applyStepAnimation = useCallback((animation: StepAnimation) => {
-    if (!modelRef.current || !animation) {
-      return;
-    }
+  const applyStepAnimation = useCallback(
+    (animation: StepAnimation) => {
+      if (!modelRef.current || !animation) {
+        return;
+      }
 
-    // No animation data - just reset and return
-    if (
-      (!animation.objectKeyframes || animation.objectKeyframes.length === 0) &&
-      (!animation.cameraKeyframes || animation.cameraKeyframes.length === 0)
-    ) {
-      return;
-    }
+      const normalized = normalizeAnimationToOffsets(animation);
 
-    // Store animation data for playback
-    currentAnimationRef.current = animation;
+      // No animation data - just reset and return
+      if (
+        (!normalized.objectKeyframes ||
+          normalized.objectKeyframes.length === 0) &&
+        (!normalized.cameraKeyframes || normalized.cameraKeyframes.length === 0)
+      ) {
+        return;
+      }
 
-    // Start animation playback at time 0
-    setAnimationTime(0);
-    animationTimeRef.current = 0;
-    setIsAnimationPlaying(true);
-    hasCompletedRef.current = false;
-  }, []);
+      // Store animation data for playback
+      currentAnimationRef.current = normalized;
+
+      // Start animation playback at time 0
+      setAnimationTime(0);
+      animationTimeRef.current = 0;
+      setIsAnimationPlaying(true);
+      hasCompletedRef.current = false;
+    },
+    [normalizeAnimationToOffsets],
+  );
 
   useEffect(() => {
     animationTimeRef.current = animationTime;
-  }, [animationTime]);
+  }, [animationTime, applyEasing]);
 
   // Helper to get object path/ID
   const getObjectId = (obj: any): string => {
@@ -137,6 +360,10 @@ export default function SceneViewer({
       const targetObj = findObjectById(modelRef.current!, objectId);
       if (!targetObj) return;
 
+      const original = originalTransformsRef.current.get(objectId);
+      const basePosition = original?.position ?? new THREE.Vector3();
+      const baseRotation = original?.rotation ?? new THREE.Euler();
+
       // Get keyframes for this object sorted by time
       const objKeyframes = (animation.objectKeyframes || [])
         .filter((k) => k.objectId === objectId)
@@ -158,34 +385,47 @@ export default function SceneViewer({
       // Apply transform based on keyframes
       if (prevKf && nextKf) {
         // Interpolate between keyframes
-        const t = (animationTime - prevKf.time) / (nextKf.time - prevKf.time);
+        const t = applyEasing(
+          (animationTime - prevKf.time) / (nextKf.time - prevKf.time),
+          nextKf.easing,
+        );
+
+        const prevPosition = {
+          x: basePosition.x + prevKf.transform.position.x,
+          y: basePosition.y + prevKf.transform.position.y,
+          z: basePosition.z + prevKf.transform.position.z,
+        };
+        const nextPosition = {
+          x: basePosition.x + nextKf.transform.position.x,
+          y: basePosition.y + nextKf.transform.position.y,
+          z: basePosition.z + nextKf.transform.position.z,
+        };
+        const prevRotation = {
+          x: baseRotation.x + prevKf.transform.rotation.x,
+          y: baseRotation.y + prevKf.transform.rotation.y,
+          z: baseRotation.z + prevKf.transform.rotation.z,
+        };
+        const nextRotation = {
+          x: baseRotation.x + nextKf.transform.rotation.x,
+          y: baseRotation.y + nextKf.transform.rotation.y,
+          z: baseRotation.z + nextKf.transform.rotation.z,
+        };
 
         // Lerp position
         targetObj.position.set(
-          prevKf.transform.position.x +
-            (nextKf.transform.position.x - prevKf.transform.position.x) * t,
-          prevKf.transform.position.y +
-            (nextKf.transform.position.y - prevKf.transform.position.y) * t,
-          prevKf.transform.position.z +
-            (nextKf.transform.position.z - prevKf.transform.position.z) * t,
+          prevPosition.x + (nextPosition.x - prevPosition.x) * t,
+          prevPosition.y + (nextPosition.y - prevPosition.y) * t,
+          prevPosition.z + (nextPosition.z - prevPosition.z) * t,
         );
 
         // Slerp rotation (using quaternions)
         const prevQuat = new THREE.Quaternion();
         prevQuat.setFromEuler(
-          new THREE.Euler(
-            prevKf.transform.rotation.x,
-            prevKf.transform.rotation.y,
-            prevKf.transform.rotation.z,
-          ),
+          new THREE.Euler(prevRotation.x, prevRotation.y, prevRotation.z),
         );
         const nextQuat = new THREE.Quaternion();
         nextQuat.setFromEuler(
-          new THREE.Euler(
-            nextKf.transform.rotation.x,
-            nextKf.transform.rotation.y,
-            nextKf.transform.rotation.z,
-          ),
+          new THREE.Euler(nextRotation.x, nextRotation.y, nextRotation.z),
         );
         const interpolatedQuat = new THREE.Quaternion();
         interpolatedQuat.slerpQuaternions(prevQuat, nextQuat, t);
@@ -242,14 +482,14 @@ export default function SceneViewer({
       } else if (prevKf) {
         // Hold at last keyframe
         targetObj.position.set(
-          prevKf.transform.position.x,
-          prevKf.transform.position.y,
-          prevKf.transform.position.z,
+          basePosition.x + prevKf.transform.position.x,
+          basePosition.y + prevKf.transform.position.y,
+          basePosition.z + prevKf.transform.position.z,
         );
         targetObj.rotation.set(
-          prevKf.transform.rotation.x,
-          prevKf.transform.rotation.y,
-          prevKf.transform.rotation.z,
+          baseRotation.x + prevKf.transform.rotation.x,
+          baseRotation.y + prevKf.transform.rotation.y,
+          baseRotation.z + prevKf.transform.rotation.z,
         );
         targetObj.scale.set(
           prevKf.transform.scale.x,
@@ -301,7 +541,10 @@ export default function SceneViewer({
       // Apply camera transform based on keyframes
       if (prevKf && nextKf) {
         // Interpolate between keyframes
-        const t = (animationTime - prevKf.time) / (nextKf.time - prevKf.time);
+        const t = applyEasing(
+          (animationTime - prevKf.time) / (nextKf.time - prevKf.time),
+          nextKf.easing,
+        );
 
         // Lerp camera position and target
         cameraRef.current.position.set(
@@ -518,16 +761,15 @@ export default function SceneViewer({
         scene.add(model);
         modelRef.current = model;
 
-        // Store original transforms for all named objects (for additive animations)
+        // Store original transforms for all objects (for offset animations)
         originalTransformsRef.current.clear();
         model.traverse((child: any) => {
-          if (child.name) {
-            originalTransformsRef.current.set(child.name, {
-              position: child.position.clone(),
-              rotation: child.rotation.clone(),
-              scale: child.scale.clone(),
-            });
-          }
+          const objectId = getObjectId(child);
+          originalTransformsRef.current.set(objectId, {
+            position: child.position.clone(),
+            rotation: child.rotation.clone(),
+            scale: child.scale.clone(),
+          });
         });
 
         // Apply initial step animation - handles all visibility

@@ -10,9 +10,24 @@
 
 ## ✅ Phase 5.5: UI/UX Refinements - COMPLETED
 
-## 🔄 Phase 6: Admin Panel - IN PROGRESS (90%)
+## ✅ Phase 6: Admin Panel - COMPLETED (100%)
 
-### Latest: Animation Authoring Tool Enhanced (January 22, 2026)
+### Latest: Authoring Workflow + Reuse System (January 27, 2026)
+
+#### Keyframe Authoring Finalization ✅
+
+- Undo/redo history stack with toolbar buttons + shortcuts
+- Expanded easing set with curve preview
+- Bulk keyframe ops (delete at time, shift all)
+- Offset-based keyframes for reusable animations
+
+#### Step Copy/Reuse System ✅
+
+- Browse and filter steps across cabinets
+- Copy into current cabinet with insert position
+- Auto-regenerated audio URLs on copy
+
+### Previous: Animation Authoring Tool Enhanced (January 22, 2026)
 
 #### Visual 3D Step Authoring Tool ✅
 
@@ -243,9 +258,14 @@
 - **Categories:** 7
 - **Sample cabinets:** 2
 
-## 🎯 Next Steps - Phase 6: Admin Panel (Remaining 20%)
+## 🎯 Next Steps - Phase 8: Polish (Not Started)
 
-### Completed Features (80%)
+### Planned Focus Areas
+
+- Performance profiling and optimization
+- UX refinements across admin and viewer flows
+- Error handling and empty states polish
+- Mobile layout and accessibility sweep
 
 #### 6.1 Authentication System ✅
 

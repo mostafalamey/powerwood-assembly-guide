@@ -2,6 +2,7 @@
 export interface ObjectKeyframe {
   time: number; // Time in seconds from start
   objectId: string; // Object name or path in hierarchy
+  easing?: string;
   transform: {
     position: { x: number; y: number; z: number };
     rotation: { x: number; y: number; z: number };
@@ -12,6 +13,7 @@ export interface ObjectKeyframe {
 
 export interface CameraKeyframe {
   time: number; // Time in seconds from start
+  easing?: string;
   position: { x: number; y: number; z: number };
   target: { x: number; y: number; z: number };
   zoom?: number;
@@ -19,6 +21,7 @@ export interface CameraKeyframe {
 
 export interface StepAnimation {
   duration: number; // Total animation duration in seconds
+  isOffset?: boolean;
   objectKeyframes: ObjectKeyframe[];
   cameraKeyframes: CameraKeyframe[];
 }

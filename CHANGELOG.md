@@ -11,8 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### In Progress
 
-- Step copy/reuse system (Phase 6.5)
 - Export/import animation templates (Phase 6.6)
+
+---
+
+## [0.10.0] - 2026-01-27
+
+### ✨ Added - Phase 6 Completion
+
+- **Offset-Based Keyframes:** Authoring now records transforms as offsets for cross-cabinet reuse
+- **Undo/Redo System:** History stack with toolbar buttons and keyboard shortcuts
+- **Expanded Easing Set:** Quad → bounce, with curve preview in editor
+- **Bulk Keyframe Ops:** Delete at time + shift all keyframes by delta
+- **Step Copy/Reuse:** Browse steps across cabinets, filter, and copy into target cabinet
+- **Insert Position:** Copy step into a specific index with automatic renumbering
+
+### 🐛 Fixed
+
+- Prevented accidental keyframe movement on selection
+
+### 📝 Documentation
+
+- Updated progress and implementation status for Phase 6 completion
 
 ---
 

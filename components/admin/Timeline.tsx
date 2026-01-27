@@ -108,8 +108,8 @@ export default function Timeline({
       const movedDistance = Math.abs(e.clientX - dragStartX);
       if (movedDistance > 3) {
         setHasMoved(true);
+        updateKeyframeTimeFromMouse(e, draggingKeyframe);
       }
-      updateKeyframeTimeFromMouse(e, draggingKeyframe);
     } else if (isDragging) {
       // Dragging the scrubber
       updateTimeFromMouse(e);

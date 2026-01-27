@@ -28,7 +28,7 @@
         "en": "Some desctiption",
         "ar": "خزانة ارضية بابين"
       },
-      "stepCount": 2,
+      "stepCount": 4,
       "image": "/images/cabinets/BC-003.png",
       "model": "/models/BC_003.glb"
     }

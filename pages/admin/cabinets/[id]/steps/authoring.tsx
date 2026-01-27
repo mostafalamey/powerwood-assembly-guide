@@ -45,6 +45,34 @@ export default function StepAuthoringPage() {
   const [snapDropdownOpen, setSnapDropdownOpen] = useState(false);
   const snapDropdownRef = useRef<HTMLDivElement>(null);
   const [, forceUpdate] = useState({});
+  const [bulkShiftSeconds, setBulkShiftSeconds] = useState(0.25);
+  const [isOffsetAnimation, setIsOffsetAnimation] = useState(false);
+  const hasConvertedOffsetsRef = useRef(false);
+  const originalTransformsRef = useRef<
+    Map<
+      string,
+      { position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3 }
+    >
+  >(new Map());
+  const [historyPast, setHistoryPast] = useState<
+    {
+      objectKeyframes: ObjectKeyframe[];
+      cameraKeyframes: CameraKeyframe[];
+      duration: number;
+      selectedKeyframeTime: number | null;
+      currentTime: number;
+    }[]
+  >([]);
+  const [historyFuture, setHistoryFuture] = useState<
+    {
+      objectKeyframes: ObjectKeyframe[];
+      cameraKeyframes: CameraKeyframe[];
+      duration: number;
+      selectedKeyframeTime: number | null;
+      currentTime: number;
+    }[]
+  >([]);
+  const isRestoringHistoryRef = useRef(false);
 
   // Fetch cabinet data to get the model path
   useEffect(() => {
@@ -98,6 +126,15 @@ export default function StepAuthoringPage() {
     setModelLoaded(true);
     setLoadError(null);
     loadedModelRef.current = model;
+    originalTransformsRef.current.clear();
+    model.traverse((child: any) => {
+      const objectId = getObjectId(child);
+      originalTransformsRef.current.set(objectId, {
+        position: child.position.clone(),
+        rotation: child.rotation.clone(),
+        scale: child.scale.clone(),
+      });
+    });
     forceUpdate({}); // Force one update to show the tree
   }, []);
 
@@ -174,6 +211,7 @@ export default function StepAuthoringPage() {
     try {
       const animationData: StepAnimation = {
         duration,
+        isOffset: true,
         objectKeyframes,
         cameraKeyframes,
       };
@@ -206,6 +244,8 @@ export default function StepAuthoringPage() {
     if (!animationData) return;
 
     try {
+      hasConvertedOffsetsRef.current = false;
+      setIsOffsetAnimation(!!animationData.isOffset);
       setDuration(animationData.duration);
       setObjectKeyframes(animationData.objectKeyframes || []);
       setCameraKeyframes(animationData.cameraKeyframes || []);
@@ -228,6 +268,8 @@ export default function StepAuthoringPage() {
           const json = e.target?.result as string;
           const animation: StepAnimation = JSON.parse(json);
 
+          hasConvertedOffsetsRef.current = false;
+          setIsOffsetAnimation(!!animation.isOffset);
           setDuration(animation.duration);
           setObjectKeyframes(animation.objectKeyframes);
           setCameraKeyframes(animation.cameraKeyframes);
@@ -254,24 +296,428 @@ export default function StepAuthoringPage() {
     return parts.join("/") || obj.uuid;
   };
 
+  const easingOptions = [
+    { value: "linear", label: "Linear" },
+    { value: "easeInQuad", label: "Ease In (Quad)" },
+    { value: "easeOutQuad", label: "Ease Out (Quad)" },
+    { value: "easeInOutQuad", label: "Ease In Out (Quad)" },
+    { value: "easeInCubic", label: "Ease In (Cubic)" },
+    { value: "easeOutCubic", label: "Ease Out (Cubic)" },
+    { value: "easeInOutCubic", label: "Ease In Out (Cubic)" },
+    { value: "easeInQuart", label: "Ease In (Quart)" },
+    { value: "easeOutQuart", label: "Ease Out (Quart)" },
+    { value: "easeInOutQuart", label: "Ease In Out (Quart)" },
+    { value: "easeInQuint", label: "Ease In (Quint)" },
+    { value: "easeOutQuint", label: "Ease Out (Quint)" },
+    { value: "easeInOutQuint", label: "Ease In Out (Quint)" },
+    { value: "easeInSine", label: "Ease In (Sine)" },
+    { value: "easeOutSine", label: "Ease Out (Sine)" },
+    { value: "easeInOutSine", label: "Ease In Out (Sine)" },
+    { value: "easeInExpo", label: "Ease In (Expo)" },
+    { value: "easeOutExpo", label: "Ease Out (Expo)" },
+    { value: "easeInOutExpo", label: "Ease In Out (Expo)" },
+    { value: "easeInCirc", label: "Ease In (Circ)" },
+    { value: "easeOutCirc", label: "Ease Out (Circ)" },
+    { value: "easeInOutCirc", label: "Ease In Out (Circ)" },
+    { value: "easeInBack", label: "Ease In (Back)" },
+    { value: "easeOutBack", label: "Ease Out (Back)" },
+    { value: "easeInOutBack", label: "Ease In Out (Back)" },
+    { value: "easeInElastic", label: "Ease In (Elastic)" },
+    { value: "easeOutElastic", label: "Ease Out (Elastic)" },
+    { value: "easeInOutElastic", label: "Ease In Out (Elastic)" },
+    { value: "easeInBounce", label: "Ease In (Bounce)" },
+    { value: "easeOutBounce", label: "Ease Out (Bounce)" },
+    { value: "easeInOutBounce", label: "Ease In Out (Bounce)" },
+  ];
+
+  const applyEasing = useCallback((t: number, easing?: string) => {
+    const clamped = Math.max(0, Math.min(1, t));
+    const easeOutBounce = (value: number) => {
+      const n1 = 7.5625;
+      const d1 = 2.75;
+
+      if (value < 1 / d1) {
+        return n1 * value * value;
+      }
+      if (value < 2 / d1) {
+        const adjusted = value - 1.5 / d1;
+        return n1 * adjusted * adjusted + 0.75;
+      }
+      if (value < 2.5 / d1) {
+        const adjusted = value - 2.25 / d1;
+        return n1 * adjusted * adjusted + 0.9375;
+      }
+      const adjusted = value - 2.625 / d1;
+      return n1 * adjusted * adjusted + 0.984375;
+    };
+    const easeInBounce = (value: number) => 1 - easeOutBounce(1 - value);
+    const easeInOutBounce = (value: number) =>
+      value < 0.5
+        ? (1 - easeOutBounce(1 - 2 * value)) / 2
+        : (1 + easeOutBounce(2 * value - 1)) / 2;
+
+    switch (easing) {
+      case "easeInQuad":
+      case "power2.in":
+        return clamped * clamped;
+      case "easeOutQuad":
+      case "power2.out":
+        return clamped * (2 - clamped);
+      case "easeInOutQuad":
+      case "power2.inOut":
+        return clamped < 0.5
+          ? 2 * clamped * clamped
+          : -1 + (4 - 2 * clamped) * clamped;
+      case "easeInCubic":
+      case "power3.in":
+        return clamped * clamped * clamped;
+      case "easeOutCubic":
+      case "power3.out":
+        return 1 - Math.pow(1 - clamped, 3);
+      case "easeInOutCubic":
+      case "power3.inOut":
+        return clamped < 0.5
+          ? 4 * clamped * clamped * clamped
+          : 1 - Math.pow(-2 * clamped + 2, 3) / 2;
+      case "easeInQuart":
+      case "power4.in":
+        return Math.pow(clamped, 4);
+      case "easeOutQuart":
+      case "power4.out":
+        return 1 - Math.pow(1 - clamped, 4);
+      case "easeInOutQuart":
+      case "power4.inOut":
+        return clamped < 0.5
+          ? 8 * Math.pow(clamped, 4)
+          : 1 - Math.pow(-2 * clamped + 2, 4) / 2;
+      case "easeInQuint":
+      case "power5.in":
+        return Math.pow(clamped, 5);
+      case "easeOutQuint":
+      case "power5.out":
+        return 1 - Math.pow(1 - clamped, 5);
+      case "easeInOutQuint":
+      case "power5.inOut":
+        return clamped < 0.5
+          ? 16 * Math.pow(clamped, 5)
+          : 1 - Math.pow(-2 * clamped + 2, 5) / 2;
+      case "easeInSine":
+      case "sine.in":
+        return 1 - Math.cos((clamped * Math.PI) / 2);
+      case "easeOutSine":
+      case "sine.out":
+        return Math.sin((clamped * Math.PI) / 2);
+      case "easeInOutSine":
+      case "sine.inOut":
+        return -(Math.cos(Math.PI * clamped) - 1) / 2;
+      case "easeInExpo":
+      case "expo.in":
+        return clamped === 0 ? 0 : Math.pow(2, 10 * clamped - 10);
+      case "easeOutExpo":
+      case "expo.out":
+        return clamped === 1 ? 1 : 1 - Math.pow(2, -10 * clamped);
+      case "easeInOutExpo":
+      case "expo.inOut":
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return clamped < 0.5
+          ? Math.pow(2, 20 * clamped - 10) / 2
+          : (2 - Math.pow(2, -20 * clamped + 10)) / 2;
+      case "easeInCirc":
+      case "circ.in":
+        return 1 - Math.sqrt(1 - Math.pow(clamped, 2));
+      case "easeOutCirc":
+      case "circ.out":
+        return Math.sqrt(1 - Math.pow(clamped - 1, 2));
+      case "easeInOutCirc":
+      case "circ.inOut":
+        return clamped < 0.5
+          ? (1 - Math.sqrt(1 - Math.pow(2 * clamped, 2))) / 2
+          : (Math.sqrt(1 - Math.pow(-2 * clamped + 2, 2)) + 1) / 2;
+      case "easeInBack":
+      case "back.in":
+        return (
+          2.70158 * clamped * clamped * clamped - 1.70158 * clamped * clamped
+        );
+      case "easeOutBack":
+      case "back.out":
+        return (
+          1 +
+          2.70158 * Math.pow(clamped - 1, 3) +
+          1.70158 * Math.pow(clamped - 1, 2)
+        );
+      case "easeInOutBack":
+      case "back.inOut": {
+        const c2 = 1.70158 * 1.525;
+        return clamped < 0.5
+          ? (Math.pow(2 * clamped, 2) * ((c2 + 1) * 2 * clamped - c2)) / 2
+          : (Math.pow(2 * clamped - 2, 2) *
+              ((c2 + 1) * (2 * clamped - 2) + c2) +
+              2) /
+              2;
+      }
+      case "easeInElastic":
+      case "elastic.in": {
+        const c4 = (2 * Math.PI) / 3;
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return (
+          -Math.pow(2, 10 * clamped - 10) *
+          Math.sin((clamped * 10 - 10.75) * c4)
+        );
+      }
+      case "easeOutElastic":
+      case "elastic.out": {
+        const c4 = (2 * Math.PI) / 3;
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return (
+          Math.pow(2, -10 * clamped) * Math.sin((clamped * 10 - 0.75) * c4) + 1
+        );
+      }
+      case "easeInOutElastic":
+      case "elastic.inOut": {
+        const c5 = (2 * Math.PI) / 4.5;
+        if (clamped === 0) return 0;
+        if (clamped === 1) return 1;
+        return clamped < 0.5
+          ? -(
+              Math.pow(2, 20 * clamped - 10) *
+              Math.sin((20 * clamped - 11.125) * c5)
+            ) / 2
+          : (Math.pow(2, -20 * clamped + 10) *
+              Math.sin((20 * clamped - 11.125) * c5)) /
+              2 +
+              1;
+      }
+      case "easeInBounce":
+      case "bounce.in":
+        return easeInBounce(clamped);
+      case "easeOutBounce":
+      case "bounce.out":
+        return easeOutBounce(clamped);
+      case "easeInOutBounce":
+      case "bounce.inOut":
+        return easeInOutBounce(clamped);
+      case "linear":
+      default:
+        return clamped;
+    }
+  }, []);
+
+  const getEasingPath = useCallback(
+    (easing?: string) => {
+      const width = 120;
+      const height = 60;
+      const steps = 36;
+      let path = "";
+
+      for (let i = 0; i <= steps; i += 1) {
+        const t = i / steps;
+        const eased = applyEasing(t, easing);
+        const x = t * width;
+        const y = height - eased * height;
+        path += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
+      }
+
+      return path;
+    },
+    [applyEasing],
+  );
+
+  const normalizeAnimationToOffsets = useCallback(
+    (animation: StepAnimation) => {
+      if (!animation || animation.isOffset) return animation;
+      if (originalTransformsRef.current.size === 0) return animation;
+
+      const nextObjectKeyframes = (animation.objectKeyframes || []).map(
+        (kf) => {
+          const original = originalTransformsRef.current.get(kf.objectId);
+          if (!original) return kf;
+
+          return {
+            ...kf,
+            transform: {
+              position: {
+                x: kf.transform.position.x - original.position.x,
+                y: kf.transform.position.y - original.position.y,
+                z: kf.transform.position.z - original.position.z,
+              },
+              rotation: {
+                x: kf.transform.rotation.x - original.rotation.x,
+                y: kf.transform.rotation.y - original.rotation.y,
+                z: kf.transform.rotation.z - original.rotation.z,
+              },
+              scale: { ...kf.transform.scale },
+            },
+          };
+        },
+      );
+
+      return {
+        ...animation,
+        isOffset: true,
+        objectKeyframes: nextObjectKeyframes,
+      };
+    },
+    [],
+  );
+
+  const cloneObjectKeyframes = useCallback(
+    (frames: ObjectKeyframe[]) =>
+      frames.map((kf) => ({
+        ...kf,
+        transform: {
+          position: { ...kf.transform.position },
+          rotation: { ...kf.transform.rotation },
+          scale: { ...kf.transform.scale },
+        },
+      })),
+    [],
+  );
+
+  const cloneCameraKeyframes = useCallback(
+    (frames: CameraKeyframe[]) =>
+      frames.map((kf) => ({
+        ...kf,
+        position: { ...kf.position },
+        target: { ...kf.target },
+      })),
+    [],
+  );
+
+  const getHistorySnapshot = useCallback(
+    () => ({
+      objectKeyframes: cloneObjectKeyframes(objectKeyframes),
+      cameraKeyframes: cloneCameraKeyframes(cameraKeyframes),
+      duration,
+      selectedKeyframeTime,
+      currentTime,
+    }),
+    [
+      cloneObjectKeyframes,
+      cloneCameraKeyframes,
+      objectKeyframes,
+      cameraKeyframes,
+      duration,
+      selectedKeyframeTime,
+      currentTime,
+    ],
+  );
+
+  const pushHistory = useCallback(() => {
+    if (isRestoringHistoryRef.current) return;
+    const snapshot = getHistorySnapshot();
+    setHistoryPast((prev) => [...prev, snapshot].slice(-50));
+    setHistoryFuture([]);
+  }, [getHistorySnapshot]);
+
+  const handleUndo = useCallback(() => {
+    setHistoryPast((prev) => {
+      if (prev.length === 0) return prev;
+      const previous = prev[prev.length - 1];
+      const snapshot = getHistorySnapshot();
+      setHistoryFuture((future) => [snapshot, ...future]);
+
+      isRestoringHistoryRef.current = true;
+      setObjectKeyframes(previous.objectKeyframes);
+      setCameraKeyframes(previous.cameraKeyframes);
+      setDuration(previous.duration);
+      setSelectedKeyframeTime(previous.selectedKeyframeTime);
+      setCurrentTime(previous.currentTime);
+      isRestoringHistoryRef.current = false;
+
+      return prev.slice(0, -1);
+    });
+  }, [getHistorySnapshot]);
+
+  const handleRedo = useCallback(() => {
+    setHistoryFuture((prev) => {
+      if (prev.length === 0) return prev;
+      const next = prev[0];
+      const snapshot = getHistorySnapshot();
+      setHistoryPast((past) => [...past, snapshot].slice(-50));
+
+      isRestoringHistoryRef.current = true;
+      setObjectKeyframes(next.objectKeyframes);
+      setCameraKeyframes(next.cameraKeyframes);
+      setDuration(next.duration);
+      setSelectedKeyframeTime(next.selectedKeyframeTime);
+      setCurrentTime(next.currentTime);
+      isRestoringHistoryRef.current = false;
+
+      return prev.slice(1);
+    });
+  }, [getHistorySnapshot]);
+
+  const handleBeginEdit = useCallback(() => {
+    pushHistory();
+  }, [pushHistory]);
+
+  // Undo / Redo shortcuts
+  useEffect(() => {
+    const handleHistoryKeys = (event: KeyboardEvent) => {
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      const ctrlOrCmd = isMac ? event.metaKey : event.ctrlKey;
+      if (!ctrlOrCmd) return;
+
+      const key = event.key.toLowerCase();
+      if (key === "z" && event.shiftKey) {
+        event.preventDefault();
+        handleRedo();
+      } else if (key === "z") {
+        event.preventDefault();
+        handleUndo();
+      } else if (key === "y") {
+        event.preventDefault();
+        handleRedo();
+      }
+    };
+
+    window.addEventListener("keydown", handleHistoryKeys);
+    return () => window.removeEventListener("keydown", handleHistoryKeys);
+  }, [handleUndo, handleRedo]);
+
   // Record keyframe for selected object
   const handleRecordKeyframe = useCallback(() => {
     if (!selectedObject) return;
 
+    pushHistory();
+
     const objectId = getObjectId(selectedObject);
+    const original = originalTransformsRef.current.get(objectId);
     const newKeyframe: ObjectKeyframe = {
       time: currentTime,
       objectId,
       transform: {
         position: {
-          x: selectedObject.position.x,
-          y: selectedObject.position.y,
-          z: selectedObject.position.z,
+          x: original
+            ? selectedObject.position.x - original.position.x
+            : selectedObject.position.x,
+          y: original
+            ? selectedObject.position.y - original.position.y
+            : selectedObject.position.y,
+          z: original
+            ? selectedObject.position.z - original.position.z
+            : selectedObject.position.z,
         },
         rotation: {
-          x: selectedObject.rotation.x,
-          y: selectedObject.rotation.y,
-          z: selectedObject.rotation.z,
+          x: original
+            ? selectedObject.rotation.x - original.rotation.x
+            : selectedObject.rotation.x,
+          y: original
+            ? selectedObject.rotation.y - original.rotation.y
+            : selectedObject.rotation.y,
+          z: original
+            ? selectedObject.rotation.z - original.rotation.z
+            : selectedObject.rotation.z,
         },
         scale: {
           x: selectedObject.scale.x,
@@ -290,12 +736,15 @@ export default function StepAuthoringPage() {
       // Add new keyframe and sort by time
       return [...filtered, newKeyframe].sort((a, b) => a.time - b.time);
     });
-  }, [selectedObject, currentTime]);
+    setIsOffsetAnimation(true);
+  }, [selectedObject, currentTime, pushHistory]);
 
   // Record camera keyframe
   const handleRecordCameraKeyframe = useCallback(() => {
     const cameraState = (window as any).__getCameraState?.();
     if (!cameraState) return;
+
+    pushHistory();
 
     const newKeyframe: CameraKeyframe = {
       time: currentTime,
@@ -317,16 +766,19 @@ export default function StepAuthoringPage() {
       // Add new keyframe and sort by time
       return [...filtered, newKeyframe].sort((a, b) => a.time - b.time);
     });
-  }, [currentTime]);
+  }, [currentTime, pushHistory]);
 
   // Delete camera keyframe
   const handleDeleteCameraKeyframe = useCallback(() => {
+    pushHistory();
     setCameraKeyframes((prev) => prev.filter((kf) => kf.time !== currentTime));
-  }, [currentTime]);
+  }, [currentTime, pushHistory]);
 
   // Delete keyframe at current time for selected object
   const handleDeleteKeyframe = useCallback(() => {
     if (!selectedObject) return;
+
+    pushHistory();
 
     const objectId = getObjectId(selectedObject);
     setObjectKeyframes((prev) =>
@@ -334,11 +786,13 @@ export default function StepAuthoringPage() {
         (kf) => !(kf.time === currentTime && kf.objectId === objectId),
       ),
     );
-  }, [selectedObject, currentTime]);
+  }, [selectedObject, currentTime, pushHistory]);
 
   // Handle keyframe moved on timeline
   const handleKeyframeMoved = useCallback(
     (oldTime: number, newTime: number) => {
+      if (oldTime === newTime) return;
+      pushHistory();
       // Update object keyframes
       setObjectKeyframes((prev) =>
         prev
@@ -358,13 +812,66 @@ export default function StepAuthoringPage() {
         setSelectedKeyframeTime(newTime);
       }
     },
-    [selectedKeyframeTime],
+    [selectedKeyframeTime, pushHistory],
   );
 
   // Handle keyframe selection
   const handleKeyframeSelect = useCallback((time: number) => {
     setSelectedKeyframeTime(time);
   }, []);
+
+  const handleDeleteAllKeyframesAtTime = useCallback(() => {
+    if (selectedKeyframeTime === null) return;
+    pushHistory();
+
+    setObjectKeyframes((prev) =>
+      prev.filter((kf) => kf.time !== selectedKeyframeTime),
+    );
+    setCameraKeyframes((prev) =>
+      prev.filter((kf) => kf.time !== selectedKeyframeTime),
+    );
+    setSelectedKeyframeTime(null);
+  }, [selectedKeyframeTime, pushHistory]);
+
+  const handleShiftAllKeyframes = useCallback(() => {
+    if (!bulkShiftSeconds || Number.isNaN(bulkShiftSeconds)) return;
+    pushHistory();
+
+    const delta = bulkShiftSeconds;
+    const clampTime = (time: number) => Math.max(0, time + delta);
+
+    setObjectKeyframes((prev) =>
+      prev
+        .map((kf) => ({ ...kf, time: clampTime(kf.time) }))
+        .sort((a, b) => a.time - b.time),
+    );
+    setCameraKeyframes((prev) =>
+      prev
+        .map((kf) => ({ ...kf, time: clampTime(kf.time) }))
+        .sort((a, b) => a.time - b.time),
+    );
+
+    if (selectedKeyframeTime !== null) {
+      setSelectedKeyframeTime(Math.max(0, selectedKeyframeTime + delta));
+    }
+
+    const allTimes = [
+      ...objectKeyframes.map((kf) => clampTime(kf.time)),
+      ...cameraKeyframes.map((kf) => clampTime(kf.time)),
+      duration,
+    ];
+    const nextDuration = Math.max(0, ...allTimes);
+    if (nextDuration !== duration) {
+      setDuration(nextDuration);
+    }
+  }, [
+    bulkShiftSeconds,
+    selectedKeyframeTime,
+    objectKeyframes,
+    cameraKeyframes,
+    duration,
+    pushHistory,
+  ]);
 
   // Get all unique keyframe times for timeline
   const allKeyframeTimes = [
@@ -422,6 +929,10 @@ export default function StepAuthoringPage() {
       const targetObj = findObjectById(loadedModelRef.current!, objectId);
       if (!targetObj) return;
 
+      const original = originalTransformsRef.current.get(objectId);
+      const basePosition = original?.position ?? new THREE.Vector3();
+      const baseRotation = original?.rotation ?? new THREE.Euler();
+
       // Get keyframes for this object sorted by time
       const objKeyframes = objectKeyframes
         .filter((k) => k.objectId === objectId)
@@ -443,34 +954,47 @@ export default function StepAuthoringPage() {
       // Apply transform based on keyframes
       if (prevKf && nextKf) {
         // Interpolate between keyframes
-        const t = (currentTime - prevKf.time) / (nextKf.time - prevKf.time);
+        const t = applyEasing(
+          (currentTime - prevKf.time) / (nextKf.time - prevKf.time),
+          nextKf.easing,
+        );
+
+        const prevPosition = {
+          x: basePosition.x + prevKf.transform.position.x,
+          y: basePosition.y + prevKf.transform.position.y,
+          z: basePosition.z + prevKf.transform.position.z,
+        };
+        const nextPosition = {
+          x: basePosition.x + nextKf.transform.position.x,
+          y: basePosition.y + nextKf.transform.position.y,
+          z: basePosition.z + nextKf.transform.position.z,
+        };
+        const prevRotation = {
+          x: baseRotation.x + prevKf.transform.rotation.x,
+          y: baseRotation.y + prevKf.transform.rotation.y,
+          z: baseRotation.z + prevKf.transform.rotation.z,
+        };
+        const nextRotation = {
+          x: baseRotation.x + nextKf.transform.rotation.x,
+          y: baseRotation.y + nextKf.transform.rotation.y,
+          z: baseRotation.z + nextKf.transform.rotation.z,
+        };
 
         // Lerp position
         targetObj.position.set(
-          prevKf.transform.position.x +
-            (nextKf.transform.position.x - prevKf.transform.position.x) * t,
-          prevKf.transform.position.y +
-            (nextKf.transform.position.y - prevKf.transform.position.y) * t,
-          prevKf.transform.position.z +
-            (nextKf.transform.position.z - prevKf.transform.position.z) * t,
+          prevPosition.x + (nextPosition.x - prevPosition.x) * t,
+          prevPosition.y + (nextPosition.y - prevPosition.y) * t,
+          prevPosition.z + (nextPosition.z - prevPosition.z) * t,
         );
 
         // Slerp rotation (using quaternions)
         const prevQuat = new THREE.Quaternion();
         prevQuat.setFromEuler(
-          new THREE.Euler(
-            prevKf.transform.rotation.x,
-            prevKf.transform.rotation.y,
-            prevKf.transform.rotation.z,
-          ),
+          new THREE.Euler(prevRotation.x, prevRotation.y, prevRotation.z),
         );
         const nextQuat = new THREE.Quaternion();
         nextQuat.setFromEuler(
-          new THREE.Euler(
-            nextKf.transform.rotation.x,
-            nextKf.transform.rotation.y,
-            nextKf.transform.rotation.z,
-          ),
+          new THREE.Euler(nextRotation.x, nextRotation.y, nextRotation.z),
         );
         const interpolatedQuat = new THREE.Quaternion();
         interpolatedQuat.slerpQuaternions(prevQuat, nextQuat, t);
@@ -537,14 +1061,14 @@ export default function StepAuthoringPage() {
       } else if (prevKf) {
         // Hold at last keyframe
         targetObj.position.set(
-          prevKf.transform.position.x,
-          prevKf.transform.position.y,
-          prevKf.transform.position.z,
+          basePosition.x + prevKf.transform.position.x,
+          basePosition.y + prevKf.transform.position.y,
+          basePosition.z + prevKf.transform.position.z,
         );
         targetObj.rotation.set(
-          prevKf.transform.rotation.x,
-          prevKf.transform.rotation.y,
-          prevKf.transform.rotation.z,
+          baseRotation.x + prevKf.transform.rotation.x,
+          baseRotation.y + prevKf.transform.rotation.y,
+          baseRotation.z + prevKf.transform.rotation.z,
         );
         targetObj.scale.set(
           prevKf.transform.scale.x,
@@ -594,7 +1118,10 @@ export default function StepAuthoringPage() {
       // Apply camera transform based on keyframes
       if (prevKf && nextKf) {
         // Interpolate between keyframes
-        const t = (currentTime - prevKf.time) / (nextKf.time - prevKf.time);
+        const t = applyEasing(
+          (currentTime - prevKf.time) / (nextKf.time - prevKf.time),
+          nextKf.easing,
+        );
 
         // Lerp camera position and target
         const position = {
@@ -616,7 +1143,42 @@ export default function StepAuthoringPage() {
         (window as any).__setCameraState?.(prevKf.position, prevKf.target);
       }
     }
-  }, [currentTime, objectKeyframes, cameraKeyframes, loadedModelRef]);
+  }, [
+    currentTime,
+    objectKeyframes,
+    cameraKeyframes,
+    loadedModelRef,
+    applyEasing,
+  ]);
+
+  useEffect(() => {
+    if (!modelLoaded) return;
+    if (isOffsetAnimation) return;
+    if (hasConvertedOffsetsRef.current) return;
+    if (originalTransformsRef.current.size === 0) return;
+    if (objectKeyframes.length === 0 && cameraKeyframes.length === 0) return;
+
+    const normalized = normalizeAnimationToOffsets({
+      duration,
+      objectKeyframes,
+      cameraKeyframes,
+      isOffset: false,
+    });
+
+    if (normalized.isOffset) {
+      setObjectKeyframes(normalized.objectKeyframes || []);
+      setCameraKeyframes(normalized.cameraKeyframes || []);
+      setIsOffsetAnimation(true);
+      hasConvertedOffsetsRef.current = true;
+    }
+  }, [
+    modelLoaded,
+    isOffsetAnimation,
+    duration,
+    objectKeyframes,
+    cameraKeyframes,
+    normalizeAnimationToOffsets,
+  ]);
 
   // Animation playback loop (fallback when no audio or audio failed)
   useEffect(() => {
@@ -761,7 +1323,7 @@ export default function StepAuthoringPage() {
         <title>Visual Step Editor - Admin Panel</title>
       </Head>
       <AdminLayout title="Visual Step Editor">
-        <div className="h-[calc(100vh-140px)] flex flex-col">
+        <div className="min-h-[calc(100vh-140px)] flex flex-col">
           <audio ref={audioRef} className="hidden" preload="auto" />
           {/* Top toolbar */}
           <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4">
@@ -1011,6 +1573,50 @@ export default function StepAuthoringPage() {
                 )}
               </div>
 
+              {/* Undo / Redo */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleUndo}
+                  disabled={historyPast.length === 0}
+                  className="px-2 py-2 text-xs sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Undo (Ctrl+Z / ⌘Z)"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 7v6h6M21 17a8 8 0 00-8-8H9"
+                    />
+                  </svg>
+                </button>
+                <button
+                  onClick={handleRedo}
+                  disabled={historyFuture.length === 0}
+                  className="px-2 py-2 text-xs sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Redo (Ctrl+Y / ⌘Shift+Z)"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 7v6h-6M3 17a8 8 0 018-8h4"
+                    />
+                  </svg>
+                </button>
+              </div>
+
               {/* Save button - always visible */}
               <button
                 onClick={handleSaveAnimation}
@@ -1041,7 +1647,7 @@ export default function StepAuthoringPage() {
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 flex overflow-hidden flex-col md:flex-row">
+          <div className="flex-1 flex flex-col md:flex-row">
             {/* 3D Viewport */}
             <div className="flex-1 bg-gray-100 dark:bg-gray-900 min-h-[50vh] md:min-h-0">
               <AuthoringSceneViewer
@@ -1239,6 +1845,142 @@ export default function StepAuthoringPage() {
                       />
                     </div>
 
+                    {/* Easing */}
+                    {objectKf && (
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Easing:
+                        </label>
+                        <select
+                          value={objectKf.easing || "linear"}
+                          onFocus={handleBeginEdit}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setObjectKeyframes((prev) =>
+                              prev.map((kf) =>
+                                kf.time === selectedKeyframeTime &&
+                                kf.objectId === objectKf.objectId
+                                  ? {
+                                      ...kf,
+                                      easing:
+                                        value === "linear" ? undefined : value,
+                                    }
+                                  : kf,
+                              ),
+                            );
+                          }}
+                          className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        >
+                          {easingOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    {cameraKf && (
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Easing:
+                        </label>
+                        <select
+                          value={cameraKf.easing || "linear"}
+                          onFocus={handleBeginEdit}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setCameraKeyframes((prev) =>
+                              prev.map((kf) =>
+                                kf.time === selectedKeyframeTime
+                                  ? {
+                                      ...kf,
+                                      easing:
+                                        value === "linear" ? undefined : value,
+                                    }
+                                  : kf,
+                              ),
+                            );
+                          }}
+                          className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        >
+                          {easingOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    {(objectKf || cameraKf) && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Curve:
+                        </span>
+                        <svg
+                          width="120"
+                          height="60"
+                          viewBox="0 0 120 60"
+                          className="border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900"
+                        >
+                          <line
+                            x1="0"
+                            y1="60"
+                            x2="120"
+                            y2="0"
+                            stroke="rgba(148,163,184,0.5)"
+                            strokeWidth="1"
+                            strokeDasharray="3 3"
+                          />
+                          <path
+                            d={getEasingPath(
+                              (objectKf?.easing || cameraKf?.easing) ??
+                                "linear",
+                            )}
+                            fill="none"
+                            stroke="#3b82f6"
+                            strokeWidth="2"
+                          />
+                        </svg>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                        Bulk:
+                      </span>
+                      <button
+                        onClick={handleDeleteAllKeyframesAtTime}
+                        className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                        title="Delete all keyframes at selected time"
+                      >
+                        Delete Time
+                      </button>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          step="0.05"
+                          value={bulkShiftSeconds}
+                          onChange={(e) =>
+                            setBulkShiftSeconds(Number(e.target.value))
+                          }
+                          className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          title="Shift all keyframes by seconds"
+                        />
+                        <span className="text-xs text-gray-500 dark:text-gray-500">
+                          s
+                        </span>
+                      </div>
+                      <button
+                        onClick={handleShiftAllKeyframes}
+                        className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                        title="Shift all keyframes by delta"
+                      >
+                        Shift All
+                      </button>
+                    </div>
+
                     {/* Position */}
                     {objectKf?.transform?.position && (
                       <>
@@ -1254,6 +1996,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.01"
                               value={objectKf.transform.position.x}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setObjectKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1284,6 +2027,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.01"
                               value={objectKf.transform.position.y}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setObjectKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1314,6 +2058,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.01"
                               value={objectKf.transform.position.z}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setObjectKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1357,6 +2102,7 @@ export default function StepAuthoringPage() {
                               value={THREE.MathUtils.radToDeg(
                                 objectKf.transform.rotation.x,
                               )}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setObjectKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1391,6 +2137,7 @@ export default function StepAuthoringPage() {
                               value={THREE.MathUtils.radToDeg(
                                 objectKf.transform.rotation.y,
                               )}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setObjectKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1425,6 +2172,7 @@ export default function StepAuthoringPage() {
                               value={THREE.MathUtils.radToDeg(
                                 objectKf.transform.rotation.z,
                               )}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setObjectKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1463,6 +2211,7 @@ export default function StepAuthoringPage() {
                           type="checkbox"
                           checked={objectKf.visible ?? true}
                           onChange={(e) => {
+                            handleBeginEdit();
                             setObjectKeyframes((prev) =>
                               prev.map((kf) =>
                                 kf.time === selectedKeyframeTime &&
@@ -1492,6 +2241,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.1"
                               value={cameraKf.position.x}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setCameraKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1518,6 +2268,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.1"
                               value={cameraKf.position.y}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setCameraKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1544,6 +2295,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.1"
                               value={cameraKf.position.z}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setCameraKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1577,6 +2329,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.1"
                               value={cameraKf.target.x}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setCameraKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1603,6 +2356,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.1"
                               value={cameraKf.target.y}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setCameraKeyframes((prev) =>
                                   prev.map((kf) =>
@@ -1629,6 +2383,7 @@ export default function StepAuthoringPage() {
                               type="number"
                               step="0.1"
                               value={cameraKf.target.z}
+                              onFocus={handleBeginEdit}
                               onChange={(e) => {
                                 setCameraKeyframes((prev) =>
                                   prev.map((kf) =>
