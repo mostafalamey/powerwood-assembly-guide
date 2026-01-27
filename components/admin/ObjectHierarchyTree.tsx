@@ -86,19 +86,13 @@ export default function ObjectHierarchyTree({
               className="w-4 h-4 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
               title={isExpanded ? "Collapse" : "Expand"}
             >
-              <svg
-                className={`w-3 h-3 transition-transform ${
+              <span
+                className={`material-symbols-rounded text-sm transition-transform ${
                   isExpanded ? "rotate-90" : ""
                 }`}
-                fill="currentColor"
-                viewBox="0 0 20 20"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
+                chevron_right
+              </span>
             </button>
           )}
           {!hasChildren && <div className="w-4" />}
@@ -106,33 +100,17 @@ export default function ObjectHierarchyTree({
           {/* Object Type Icon */}
           <div className="w-4 h-4 flex items-center justify-center">
             {node.type === "Mesh" ? (
-              <svg
-                className="w-3 h-3 text-purple-500"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
-              </svg>
+              <span className="material-symbols-rounded text-sm text-purple-500">
+                category
+              </span>
             ) : node.type === "Group" ? (
-              <svg
-                className="w-3 h-3 text-blue-500"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm2 0v8h12V6H4z" />
-              </svg>
+              <span className="material-symbols-rounded text-sm text-blue-500">
+                folder
+              </span>
             ) : (
-              <svg
-                className="w-3 h-3 text-gray-500"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <span className="material-symbols-rounded text-sm text-gray-500">
+                add_circle
+              </span>
             )}
           </div>
 
@@ -153,39 +131,13 @@ export default function ObjectHierarchyTree({
             title={node.visible ? "Hide" : "Show"}
           >
             {node.visible ? (
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
+              <span className="material-symbols-rounded text-base">
+                visibility
+              </span>
             ) : (
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                />
-              </svg>
+              <span className="material-symbols-rounded text-base">
+                visibility_off
+              </span>
             )}
           </button>
         </div>

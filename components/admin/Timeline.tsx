@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 
 interface TimelineProps {
   duration: number; // Total duration in seconds
@@ -16,6 +22,9 @@ interface TimelineProps {
   canRecordObjectKeyframe?: boolean;
   onKeyframeMoved?: (oldTime: number, newTime: number) => void;
   onKeyframeSelect?: (time: number) => void;
+  onKeyframeDuplicate?: (sourceTime: number, newTime: number) => void;
+  onKeyframeDeselect?: () => void;
+  selectedKeyframeTime?: number | null;
 }
 
 export default function Timeline({
@@ -34,40 +43,89 @@ export default function Timeline({
   canRecordObjectKeyframe = false,
   onKeyframeMoved,
   onKeyframeSelect,
+  onKeyframeDuplicate,
+  onKeyframeDeselect,
+  selectedKeyframeTime = null,
 }: TimelineProps) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [draggingKeyframe, setDraggingKeyframe] = useState<number | null>(null);
   const [dragStartX, setDragStartX] = useState(0);
   const [hasMoved, setHasMoved] = useState(false);
+  const [scrubStartX, setScrubStartX] = useState(0);
+  const [scrubHasMoved, setScrubHasMoved] = useState(false);
+  const [isDuplicateDrag, setIsDuplicateDrag] = useState(false);
+  const [duplicateOriginTime, setDuplicateOriginTime] = useState<number | null>(
+    null,
+  );
+  const [hasCreatedDuplicate, setHasCreatedDuplicate] = useState(false);
 
-  const updateTimeFromMouse = (e: MouseEvent | React.MouseEvent) => {
-    if (!timelineRef.current) return;
+  const sortedKeyframes = useMemo(() => {
+    if (!keyframes.length) return [];
+    return Array.from(new Set(keyframes)).sort((a, b) => a - b);
+  }, [keyframes]);
 
-    const rect = timelineRef.current.getBoundingClientRect();
-    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-    const percentage = x / rect.width;
-    let newTime = percentage * duration;
+  const timeFractions = useMemo(
+    () => Array.from({ length: 11 }, (_, i) => i / 10),
+    [],
+  );
 
-    // Snap to nearest keyframe if within threshold
-    if (keyframes.length > 0) {
-      const snapThreshold = 0.05; // Snap within 0.05 seconds
-      const nearestKeyframe = keyframes.reduce((nearest, kf) => {
-        const distance = Math.abs(kf - newTime);
-        const nearestDistance = Math.abs(nearest - newTime);
-        return distance < nearestDistance ? kf : nearest;
-      }, keyframes[0]);
+  const findNearestKeyframe = useCallback(
+    (time: number) => {
+      if (sortedKeyframes.length === 0) return null;
+      let lo = 0;
+      let hi = sortedKeyframes.length - 1;
 
-      if (Math.abs(nearestKeyframe - newTime) <= snapThreshold) {
-        newTime = nearestKeyframe;
+      while (lo <= hi) {
+        const mid = Math.floor((lo + hi) / 2);
+        const value = sortedKeyframes[mid];
+        if (value === time) return value;
+        if (value < time) lo = mid + 1;
+        else hi = mid - 1;
       }
-    }
 
-    onTimeChange(newTime);
-  };
+      const leftIndex = Math.max(0, hi);
+      const rightIndex = Math.min(sortedKeyframes.length - 1, lo);
+      const left = sortedKeyframes[leftIndex];
+      const right = sortedKeyframes[rightIndex];
 
-  const updateKeyframeTimeFromMouse = (e: MouseEvent, oldTime: number) => {
-    if (!timelineRef.current || !onKeyframeMoved) return;
+      return Math.abs(left - time) <= Math.abs(right - time) ? left : right;
+    },
+    [sortedKeyframes],
+  );
+
+  const updateTimeFromMouse = useCallback(
+    (e: MouseEvent | React.MouseEvent) => {
+      if (!timelineRef.current) return;
+
+      const rect = timelineRef.current.getBoundingClientRect();
+      const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+      const percentage = x / rect.width;
+      let newTime = percentage * duration;
+
+      // Snap to nearest keyframe if within threshold
+      if (sortedKeyframes.length > 0) {
+        const snapThreshold = 0.05; // Snap within 0.05 seconds
+        const nearestKeyframe = findNearestKeyframe(newTime);
+
+        if (
+          nearestKeyframe !== null &&
+          Math.abs(nearestKeyframe - newTime) <= snapThreshold
+        ) {
+          newTime = nearestKeyframe;
+        }
+      }
+
+      // Snap to 0.01s precision
+      newTime = Math.round(newTime * 100) / 100;
+
+      onTimeChange(newTime);
+    },
+    [duration, findNearestKeyframe, onTimeChange, sortedKeyframes.length],
+  );
+
+  const getKeyframeTimeFromMouse = (e: MouseEvent) => {
+    if (!timelineRef.current) return null;
 
     const rect = timelineRef.current.getBoundingClientRect();
     const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
@@ -80,15 +138,13 @@ export default function Timeline({
     // Round to 2 decimal places
     newTime = Math.round(newTime * 100) / 100;
 
-    // Only update if time changed
-    if (newTime !== oldTime) {
-      onKeyframeMoved(oldTime, newTime);
-      setDraggingKeyframe(newTime);
-    }
+    return newTime;
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);
+    setScrubStartX(e.clientX);
+    setScrubHasMoved(false);
     updateTimeFromMouse(e);
   };
 
@@ -100,6 +156,9 @@ export default function Timeline({
     setDraggingKeyframe(keyframeTime);
     setDragStartX(e.clientX);
     setHasMoved(false);
+    setIsDuplicateDrag(e.shiftKey);
+    setDuplicateOriginTime(e.shiftKey ? keyframeTime : null);
+    setHasCreatedDuplicate(false);
   };
 
   const handleMouseMove = (e: MouseEvent) => {
@@ -108,10 +167,29 @@ export default function Timeline({
       const movedDistance = Math.abs(e.clientX - dragStartX);
       if (movedDistance > 3) {
         setHasMoved(true);
-        updateKeyframeTimeFromMouse(e, draggingKeyframe);
+        const newTime = getKeyframeTimeFromMouse(e);
+        if (newTime === null || newTime === draggingKeyframe) return;
+        if (isDuplicateDrag && onKeyframeDuplicate) {
+          if (!hasCreatedDuplicate) {
+            const sourceTime = duplicateOriginTime ?? draggingKeyframe;
+            onKeyframeDuplicate(sourceTime, newTime);
+            setDraggingKeyframe(newTime);
+            setHasCreatedDuplicate(true);
+          } else if (onKeyframeMoved) {
+            onKeyframeMoved(draggingKeyframe, newTime);
+            setDraggingKeyframe(newTime);
+          }
+        } else if (onKeyframeMoved) {
+          onKeyframeMoved(draggingKeyframe, newTime);
+          setDraggingKeyframe(newTime);
+        }
       }
     } else if (isDragging) {
       // Dragging the scrubber
+      const movedDistance = Math.abs(e.clientX - scrubStartX);
+      if (movedDistance > 3 && !scrubHasMoved) {
+        setScrubHasMoved(true);
+      }
       updateTimeFromMouse(e);
     }
   };
@@ -123,10 +201,16 @@ export default function Timeline({
       if (onKeyframeSelect) {
         onKeyframeSelect(draggingKeyframe);
       }
+    } else if (draggingKeyframe === null && isDragging && !scrubHasMoved) {
+      onKeyframeDeselect?.();
     }
     setIsDragging(false);
     setDraggingKeyframe(null);
     setHasMoved(false);
+    setScrubHasMoved(false);
+    setIsDuplicateDrag(false);
+    setDuplicateOriginTime(null);
+    setHasCreatedDuplicate(false);
   };
 
   useEffect(() => {
@@ -139,12 +223,12 @@ export default function Timeline({
         window.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [isDragging, draggingKeyframe]);
+  }, [isDragging, draggingKeyframe, handleMouseMove, handleMouseUp]);
 
   const formatTime = (seconds: number) => {
     const secs = Math.floor(seconds);
-    const ms = Math.floor((seconds % 1) * 100);
-    return `${secs}.${ms.toString().padStart(2, "0")}`;
+    const ms = Math.floor((seconds % 1) * 1000);
+    return `${secs}.${ms.toString().padStart(3, "0")}`;
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -161,23 +245,9 @@ export default function Timeline({
             className="p-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             title={isPlaying ? "Pause" : "Play"}
           >
-            {isPlaying ? (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
+            <span className="material-symbols-rounded text-lg">
+              {isPlaying ? "pause" : "play_arrow"}
+            </span>
           </button>
 
           {/* Time display */}
@@ -194,25 +264,9 @@ export default function Timeline({
             className="p-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition-colors"
             title="Record Camera Keyframe"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
+            <span className="material-symbols-rounded text-lg">
+              photo_camera
+            </span>
           </button>
 
           {/* Camera Delete button */}
@@ -222,19 +276,7 @@ export default function Timeline({
             className="p-2 rounded bg-gray-600 text-white hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Delete Camera Keyframe"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
+            <span className="material-symbols-rounded text-lg">delete</span>
           </button>
 
           {/* Object Record button */}
@@ -244,9 +286,9 @@ export default function Timeline({
             className="p-2 rounded bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Record Object Keyframe"
           >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <circle cx="10" cy="10" r="6" />
-            </svg>
+            <span className="material-symbols-rounded text-lg">
+              fiber_manual_record
+            </span>
           </button>
 
           {/* Object Delete button */}
@@ -256,19 +298,7 @@ export default function Timeline({
             className="p-2 rounded bg-gray-600 text-white hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Delete Object Keyframe"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
+            <span className="material-symbols-rounded text-lg">delete</span>
           </button>
         </div>
 
@@ -301,6 +331,11 @@ export default function Timeline({
         onMouseDown={handleMouseDown}
         className="relative h-12 bg-gray-200 dark:bg-gray-700 rounded cursor-pointer select-none"
       >
+        {sortedKeyframes.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-500 dark:text-gray-400 pointer-events-none">
+            No keyframes yet
+          </div>
+        )}
         {/* Progress bar */}
         <div
           className="absolute top-0 left-0 h-full bg-blue-500 opacity-20 rounded-l pointer-events-none"
@@ -308,12 +343,17 @@ export default function Timeline({
         />
 
         {/* Keyframe markers */}
-        {keyframes.map((kfTime, index) => {
+        {sortedKeyframes.map((kfTime) => {
           const kfPercent = duration > 0 ? (kfTime / duration) * 100 : 0;
+          const isSelected = selectedKeyframeTime === kfTime;
           return (
             <div
-              key={index}
-              className="absolute top-0 w-2 h-full bg-yellow-500 cursor-move hover:bg-yellow-400 transition-colors"
+              key={kfTime}
+              className={`absolute top-0 w-2 h-full cursor-move transition-colors ${
+                isSelected
+                  ? "bg-orange-700 ring-2 ring-orange-200"
+                  : "bg-yellow-500 hover:bg-yellow-400"
+              }`}
               style={{ left: `${kfPercent}%`, marginLeft: "-4px" }}
               title={`Keyframe at ${formatTime(kfTime)} - Click to jump, drag to move`}
               onMouseDown={(e) => handleKeyframeMouseDown(e, kfTime)}
@@ -323,7 +363,7 @@ export default function Timeline({
 
         {/* Time markers */}
         <div className="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
-          {Array.from({ length: 11 }, (_, i) => i / 10).map((fraction) => (
+          {timeFractions.map((fraction) => (
             <div
               key={fraction}
               className="h-2 w-px bg-gray-400 dark:bg-gray-500"
@@ -344,13 +384,13 @@ export default function Timeline({
 
       {/* Time ticks */}
       <div className="relative mt-1 h-4">
-        {Array.from({ length: 11 }, (_, i) => {
-          const time = (duration * i) / 10;
+        {timeFractions.map((fraction) => {
+          const time = duration * fraction;
           return (
             <div
-              key={i}
+              key={fraction}
               className="absolute text-xs text-gray-500 dark:text-gray-400 transform -translate-x-1/2"
-              style={{ left: `${(i / 10) * 100}%` }}
+              style={{ left: `${fraction * 100}%` }}
             >
               {formatTime(time)}
             </div>

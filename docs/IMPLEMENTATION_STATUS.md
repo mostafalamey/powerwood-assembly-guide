@@ -72,6 +72,17 @@
 
 ## ✅ Phase 7: QR Code Generation - COMPLETED (Integrated into Phase 6)
 
+## ✅ Phase 8: Polish - COMPLETED
+
+### Highlights (January 27, 2026)
+
+- Performance optimizations in 3D authoring and runtime viewers
+- Timeline rendering and keyframe selection UX refinements
+- 3-column authoring layout and always-open keyframe editor
+- Toast notifications across admin flows
+- Admin sidebar collapse polish and icon standardization
+- Material Symbols icons via Google Fonts across the UI
+
 ### What's Been Implemented
 
 #### Phase 2: 3D Viewer Core (Weeks 3-4)

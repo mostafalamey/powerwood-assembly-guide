@@ -189,19 +189,9 @@ export default function StepPage() {
                 ) : (
                   <div className="flex items-center justify-center bg-gray-100 h-full">
                     <div className="text-center p-6">
-                      <svg
-                        className="w-16 h-16 text-gray-400 mx-auto mb-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                        />
-                      </svg>
+                      <span className="material-symbols-rounded text-5xl text-gray-400 mx-auto mb-4 block">
+                        view_in_ar
+                      </span>
                       <p className="text-gray-600 font-medium">
                         3D Model Not Available
                       </p>
@@ -219,19 +209,9 @@ export default function StepPage() {
                   className="absolute top-3 right-3 w-10 h-10 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-colors z-10"
                   aria-label="Restart animation"
                 >
-                  <svg
-                    className="w-5 h-5 text-gray-700"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
+                  <span className="material-symbols-rounded text-lg text-gray-700">
+                    restart_alt
+                  </span>
                 </button>
               )}
             </div>
@@ -262,21 +242,13 @@ export default function StepPage() {
                     {stepTitle}
                   </h1>
                 </div>
-                <svg
-                  className={`w-5 h-5 text-gray-500 transition-transform ${
+                <span
+                  className={`material-symbols-rounded text-lg text-gray-500 transition-transform ${
                     isDescriptionExpanded ? "rotate-180" : ""
                   }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                  expand_more
+                </span>
               </button>
 
               {/* Collapsible Content */}
@@ -315,19 +287,9 @@ export default function StepPage() {
                   {/* Duration */}
                   {currentStep.duration && (
                     <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
+                      <span className="material-symbols-rounded text-base">
+                        schedule
+                      </span>
                       <span>{currentStep.duration}</span>
                     </div>
                   )}
@@ -403,19 +365,9 @@ export default function StepPage() {
                   ) : (
                     <div className="flex items-center justify-center bg-gray-100 h-full">
                       <div className="text-center p-6">
-                        <svg
-                          className="w-20 h-20 text-gray-400 mx-auto mb-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                          />
-                        </svg>
+                        <span className="material-symbols-rounded text-6xl text-gray-400 mx-auto mb-4 block">
+                          view_in_ar
+                        </span>
                         <p className="text-gray-600 font-medium text-lg">
                           3D Model Not Available
                         </p>
@@ -433,19 +385,9 @@ export default function StepPage() {
                     className="absolute top-3 right-3 w-10 h-10 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-colors z-10"
                     aria-label="Restart animation"
                   >
-                    <svg
-                      className="w-5 h-5 text-gray-700"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
+                    <span className="material-symbols-rounded text-lg text-gray-700">
+                      restart_alt
+                    </span>
                   </button>
                 )}
               </div>
@@ -493,19 +435,9 @@ export default function StepPage() {
                 {/* Duration */}
                 {currentStep.duration && (
                   <div className="mt-4 flex items-center gap-2 text-gray-600">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <span className="material-symbols-rounded text-lg">
+                      schedule
+                    </span>
                     <span>{currentStep.duration}</span>
                   </div>
                 )}

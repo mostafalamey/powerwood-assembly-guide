@@ -54,36 +54,12 @@ export default function StepNavigation({
             }`}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg transition-colors"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <span className="material-symbols-rounded text-lg">arrow_back</span>
             <span className="font-medium">{t("navigation.previous")}</span>
           </Link>
         ) : (
           <div className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg text-gray-400 cursor-not-allowed">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <span className="material-symbols-rounded text-lg">arrow_back</span>
             <span className="font-medium">{t("navigation.previous")}</span>
           </div>
         )}
@@ -92,19 +68,9 @@ export default function StepNavigation({
           isAnimating ? (
             <div className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary-400 text-white rounded-lg cursor-not-allowed opacity-70">
               <span className="font-medium">{t("navigation.next")}</span>
-              <svg
-                className="w-5 h-5 animate-pulse"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <span className="material-symbols-rounded text-lg animate-pulse">
+                arrow_forward
+              </span>
             </div>
           ) : (
             <Link
@@ -114,19 +80,9 @@ export default function StepNavigation({
               className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
             >
               <span className="font-medium">{t("navigation.next")}</span>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <span className="material-symbols-rounded text-lg">
+                arrow_forward
+              </span>
             </Link>
           )
         ) : (
@@ -134,19 +90,9 @@ export default function StepNavigation({
             href={`/cabinet/${cabinetId}`}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <span className="material-symbols-rounded text-lg">
+              check_circle
+            </span>
             <span className="font-medium">Complete</span>
           </Link>
         )}
@@ -162,8 +108,8 @@ export default function StepNavigation({
                   ? (step as any).titleAr
                   : step.title
                 : locale === "ar"
-                ? step.title.ar
-                : step.title.en;
+                  ? step.title.ar
+                  : step.title.en;
             const isActive = index === currentStepIndex;
             const isCompleted = index < currentStepIndex;
             const isFutureStep = index > currentStepIndex;
@@ -206,8 +152,8 @@ export default function StepNavigation({
                   isActive
                     ? "bg-primary-100 border-2 border-primary-500"
                     : isCompleted
-                    ? "bg-green-50 hover:bg-green-100"
-                    : "bg-gray-50 hover:bg-gray-100"
+                      ? "bg-green-50 hover:bg-green-100"
+                      : "bg-gray-50 hover:bg-gray-100"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -216,22 +162,14 @@ export default function StepNavigation({
                       isActive
                         ? "bg-primary-600 text-white"
                         : isCompleted
-                        ? "bg-green-600 text-white"
-                        : "bg-gray-300 text-gray-600"
+                          ? "bg-green-600 text-white"
+                          : "bg-gray-300 text-gray-600"
                     }`}
                   >
                     {isCompleted ? (
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <span className="material-symbols-rounded text-lg">
+                        check
+                      </span>
                     ) : (
                       index + 1
                     )}

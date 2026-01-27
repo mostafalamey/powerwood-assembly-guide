@@ -292,32 +292,17 @@ export default function AuthoringSceneViewer({
         }
       }
 
-      // Check for model objects (filter out invisible objects)
-      // Helper to check if object and all ancestors are visible
-      const isFullyVisible = (obj: THREE.Object3D): boolean => {
-        let current: THREE.Object3D | null = obj;
-        while (current) {
-          if (!current.visible) return false;
-          current = current.parent;
-        }
-        return true;
-      };
-
-      const visibleMeshes: THREE.Object3D[] = [];
-      loadedModelRef.current.traverse((child) => {
-        // Only include meshes that are fully visible (including all parent visibility)
-        if (child instanceof THREE.Mesh && isFullyVisible(child)) {
-          visibleMeshes.push(child);
-        }
-      });
-
       const intersects = raycasterRef.current.intersectObjects(
-        visibleMeshes,
-        false, // Don't recurse since we already traversed
+        [loadedModelRef.current],
+        true,
       );
 
-      if (intersects.length > 0) {
-        const clickedMesh = intersects[0].object;
+      const firstVisibleHit = intersects.find(
+        (hit) => hit.object instanceof THREE.Mesh && hit.object.visible,
+      );
+
+      if (firstVisibleHit) {
+        const clickedMesh = firstVisibleHit.object;
         const currentlySelected = currentSelectionRef.current;
 
         // Dig-down functionality:

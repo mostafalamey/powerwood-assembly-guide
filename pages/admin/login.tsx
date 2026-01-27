@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../../contexts/AuthContext";
 import Head from "next/head";
+import { useToast } from "../../components/admin/ToastProvider";
 
 export default function AdminLogin() {
+  const toast = useToast();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,9 +21,11 @@ export default function AdminLogin() {
     const success = await login(username, password);
 
     if (success) {
+      toast.success("Signed in successfully.");
       router.push("/admin/cabinets");
     } else {
       setError("Invalid username or password");
+      toast.error("Invalid username or password.");
       setLoading(false);
     }
   };

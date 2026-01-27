@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -8,6 +14,7 @@ import AuthGuard from "../../../../../components/admin/AuthGuard";
 import AuthoringSceneViewer from "../../../../../components/admin/AuthoringSceneViewer";
 import ObjectHierarchyTree from "../../../../../components/admin/ObjectHierarchyTree";
 import Timeline from "../../../../../components/admin/Timeline";
+import { useToast } from "../../../../../components/admin/ToastProvider";
 import {
   ObjectKeyframe,
   CameraKeyframe,
@@ -15,6 +22,7 @@ import {
 } from "../../../../../types/animation";
 
 export default function StepAuthoringPage() {
+  const toast = useToast();
   const router = useRouter();
   const { id, step } = router.query;
   const [sceneReady, setSceneReady] = useState(false);
@@ -54,6 +62,10 @@ export default function StepAuthoringPage() {
       { position: THREE.Vector3; rotation: THREE.Euler; scale: THREE.Vector3 }
     >
   >(new Map());
+  const objectLookupRef = useRef<Map<string, THREE.Object3D>>(new Map());
+  const tempPrevQuatRef = useRef(new THREE.Quaternion());
+  const tempNextQuatRef = useRef(new THREE.Quaternion());
+  const tempInterpolatedQuatRef = useRef(new THREE.Quaternion());
   const [historyPast, setHistoryPast] = useState<
     {
       objectKeyframes: ObjectKeyframe[];
@@ -73,6 +85,44 @@ export default function StepAuthoringPage() {
     }[]
   >([]);
   const isRestoringHistoryRef = useRef(false);
+  const copiedKeyframeRef = useRef<
+    | {
+        type: "object";
+        data: Pick<ObjectKeyframe, "transform" | "visible" | "easing">;
+      }
+    | {
+        type: "camera";
+        data: Pick<CameraKeyframe, "position" | "target" | "easing">;
+      }
+    | null
+  >(null);
+  const [copiedKeyframeType, setCopiedKeyframeType] = useState<
+    "object" | "camera" | null
+  >(null);
+
+  const objectKeyframesById = useMemo(() => {
+    const map = new Map<string, ObjectKeyframe[]>();
+    for (const kf of objectKeyframes) {
+      const list = map.get(kf.objectId);
+      if (list) {
+        list.push(kf);
+      } else {
+        map.set(kf.objectId, [kf]);
+      }
+    }
+    map.forEach((list) => list.sort((a, b) => a.time - b.time));
+    return map;
+  }, [objectKeyframes]);
+
+  const uniqueObjectIds = useMemo(
+    () => Array.from(objectKeyframesById.keys()),
+    [objectKeyframesById],
+  );
+
+  const sortedCameraKeyframes = useMemo(
+    () => [...cameraKeyframes].sort((a, b) => a.time - b.time),
+    [cameraKeyframes],
+  );
 
   // Fetch cabinet data to get the model path
   useEffect(() => {
@@ -127,6 +177,7 @@ export default function StepAuthoringPage() {
     setLoadError(null);
     loadedModelRef.current = model;
     originalTransformsRef.current.clear();
+    objectLookupRef.current.clear();
     model.traverse((child: any) => {
       const objectId = getObjectId(child);
       originalTransformsRef.current.set(objectId, {
@@ -134,6 +185,7 @@ export default function StepAuthoringPage() {
         rotation: child.rotation.clone(),
         scale: child.scale.clone(),
       });
+      objectLookupRef.current.set(objectId, child);
     });
     forceUpdate({}); // Force one update to show the tree
   }, []);
@@ -148,8 +200,16 @@ export default function StepAuthoringPage() {
   }, []);
 
   const handlePlayPause = useCallback(() => {
-    setIsPlaying((prev) => !prev);
-  }, []);
+    setIsPlaying((prev) => {
+      if (!prev && currentTime >= duration) {
+        setCurrentTime(0);
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+        }
+      }
+      return !prev;
+    });
+  }, [currentTime, duration]);
 
   const handleTimeChange = useCallback((time: number) => {
     setCurrentTime(time);
@@ -231,13 +291,12 @@ export default function StepAuthoringPage() {
       if (!response.ok) {
         throw new Error("Failed to save animation");
       }
-
-      alert("Animation saved successfully!");
+      toast.success("Animation saved successfully!");
     } catch (error) {
       console.error("Error saving animation:", error);
-      alert("Failed to save animation. Please try again.");
+      toast.error("Failed to save animation. Please try again.");
     }
-  }, [id, step, duration, objectKeyframes, cameraKeyframes]);
+  }, [id, step, duration, objectKeyframes, cameraKeyframes, toast]);
 
   // Load animation from cabinet JSON
   const loadAnimation = useCallback((animationData: StepAnimation) => {
@@ -277,12 +336,14 @@ export default function StepAuthoringPage() {
           setIsPlaying(false);
         } catch (error) {
           console.error("Failed to load animation:", error);
-          alert("Failed to load animation file. Please check the file format.");
+          toast.error(
+            "Failed to load animation file. Please check the file format.",
+          );
         }
       };
       reader.readAsText(file);
     },
-    [],
+    [toast],
   );
 
   // Helper to get object path/ID
@@ -525,6 +586,11 @@ export default function StepAuthoringPage() {
     [applyEasing],
   );
 
+  const roundTo3 = useCallback((value: number) => {
+    if (Number.isNaN(value)) return 0;
+    return Math.round(value * 1000) / 1000;
+  }, []);
+
   const normalizeAnimationToOffsets = useCallback(
     (animation: StepAnimation) => {
       if (!animation || animation.isOffset) return animation;
@@ -691,10 +757,12 @@ export default function StepAuthoringPage() {
 
     pushHistory();
 
+    const recordTime = Math.round(currentTime * 100) / 100;
+
     const objectId = getObjectId(selectedObject);
     const original = originalTransformsRef.current.get(objectId);
     const newKeyframe: ObjectKeyframe = {
-      time: currentTime,
+      time: recordTime,
       objectId,
       transform: {
         position: {
@@ -731,7 +799,7 @@ export default function StepAuthoringPage() {
     setObjectKeyframes((prev) => {
       // Remove existing keyframe at same time for same object
       const filtered = prev.filter(
-        (kf) => !(kf.time === currentTime && kf.objectId === objectId),
+        (kf) => !(kf.time === recordTime && kf.objectId === objectId),
       );
       // Add new keyframe and sort by time
       return [...filtered, newKeyframe].sort((a, b) => a.time - b.time);
@@ -746,8 +814,10 @@ export default function StepAuthoringPage() {
 
     pushHistory();
 
+    const recordTime = Math.round(currentTime * 100) / 100;
+
     const newKeyframe: CameraKeyframe = {
-      time: currentTime,
+      time: recordTime,
       position: {
         x: cameraState.position.x,
         y: cameraState.position.y,
@@ -762,7 +832,7 @@ export default function StepAuthoringPage() {
 
     setCameraKeyframes((prev) => {
       // Remove existing keyframe at same time
-      const filtered = prev.filter((kf) => kf.time !== currentTime);
+      const filtered = prev.filter((kf) => kf.time !== recordTime);
       // Add new keyframe and sort by time
       return [...filtered, newKeyframe].sort((a, b) => a.time - b.time);
     });
@@ -788,37 +858,219 @@ export default function StepAuthoringPage() {
     );
   }, [selectedObject, currentTime, pushHistory]);
 
+  const resolveKeyframeCollision = useCallback(
+    (candidate: number, isOccupied: (time: number) => boolean) => {
+      if (!isOccupied(candidate)) return candidate;
+      const step = 0.01;
+      const maxSteps = Math.ceil(duration / step);
+      for (let i = 1; i <= maxSteps; i += 1) {
+        const forward = roundTo3(candidate + i * step);
+        if (forward <= duration && !isOccupied(forward)) return forward;
+        const backward = roundTo3(candidate - i * step);
+        if (backward >= 0 && !isOccupied(backward)) return backward;
+      }
+      return candidate;
+    },
+    [duration, roundTo3],
+  );
+
   // Handle keyframe moved on timeline
   const handleKeyframeMoved = useCallback(
     (oldTime: number, newTime: number) => {
       if (oldTime === newTime) return;
       pushHistory();
-      // Update object keyframes
-      setObjectKeyframes((prev) =>
-        prev
-          .map((kf) => (kf.time === oldTime ? { ...kf, time: newTime } : kf))
-          .sort((a, b) => a.time - b.time),
-      );
+      const nextTime = Math.round(newTime * 1000) / 1000;
+      let resolvedTime = nextTime;
 
-      // Update camera keyframes
-      setCameraKeyframes((prev) =>
-        prev
-          .map((kf) => (kf.time === oldTime ? { ...kf, time: newTime } : kf))
-          .sort((a, b) => a.time - b.time),
-      );
+      if (selectedObject) {
+        const selectedObjectId = getObjectId(selectedObject);
+        setObjectKeyframes((prev) => {
+          const isOccupied = (time: number) =>
+            prev.some(
+              (kf) =>
+                kf.objectId === selectedObjectId &&
+                kf.time === time &&
+                kf.time !== oldTime,
+            );
+          resolvedTime = resolveKeyframeCollision(nextTime, isOccupied);
+          return prev
+            .map((kf) =>
+              kf.time === oldTime && kf.objectId === selectedObjectId
+                ? { ...kf, time: resolvedTime }
+                : kf,
+            )
+            .sort((a, b) => a.time - b.time);
+        });
+      } else {
+        setCameraKeyframes((prev) => {
+          const isOccupied = (time: number) =>
+            prev.some((kf) => kf.time === time && kf.time !== oldTime);
+          resolvedTime = resolveKeyframeCollision(nextTime, isOccupied);
+          return prev
+            .map((kf) =>
+              kf.time === oldTime ? { ...kf, time: resolvedTime } : kf,
+            )
+            .sort((a, b) => a.time - b.time);
+        });
+      }
 
       // Update selected keyframe time if it was moved
       if (selectedKeyframeTime === oldTime) {
-        setSelectedKeyframeTime(newTime);
+        setSelectedKeyframeTime(resolvedTime);
       }
     },
-    [selectedKeyframeTime, pushHistory],
+    [
+      selectedKeyframeTime,
+      pushHistory,
+      selectedObject,
+      resolveKeyframeCollision,
+    ],
+  );
+
+  const handleKeyframeDuplicated = useCallback(
+    (sourceTime: number, newTime: number) => {
+      if (sourceTime === newTime) return;
+      pushHistory();
+      const nextTime = Math.round(newTime * 1000) / 1000;
+
+      if (selectedObject) {
+        const selectedObjectId = getObjectId(selectedObject);
+        setObjectKeyframes((prev) => {
+          const source = prev.find(
+            (kf) => kf.time === sourceTime && kf.objectId === selectedObjectId,
+          );
+          if (!source) return prev;
+          const isOccupied = (time: number) =>
+            prev.some(
+              (kf) => kf.objectId === selectedObjectId && kf.time === time,
+            );
+          const resolvedTime = resolveKeyframeCollision(nextTime, isOccupied);
+          const duplicated: ObjectKeyframe = {
+            ...source,
+            time: resolvedTime,
+            transform: {
+              position: { ...source.transform.position },
+              rotation: { ...source.transform.rotation },
+              scale: { ...source.transform.scale },
+            },
+          };
+          setSelectedKeyframeTime(resolvedTime);
+          return [...prev, duplicated].sort((a, b) => a.time - b.time);
+        });
+      } else {
+        setCameraKeyframes((prev) => {
+          const source = prev.find((kf) => kf.time === sourceTime);
+          if (!source) return prev;
+          const isOccupied = (time: number) =>
+            prev.some((kf) => kf.time === time);
+          const resolvedTime = resolveKeyframeCollision(nextTime, isOccupied);
+          const duplicated: CameraKeyframe = {
+            ...source,
+            time: resolvedTime,
+            position: { ...source.position },
+            target: { ...source.target },
+          };
+          setSelectedKeyframeTime(resolvedTime);
+          return [...prev, duplicated].sort((a, b) => a.time - b.time);
+        });
+      }
+    },
+    [
+      pushHistory,
+      resolveKeyframeCollision,
+      selectedObject,
+      setSelectedKeyframeTime,
+    ],
   );
 
   // Handle keyframe selection
   const handleKeyframeSelect = useCallback((time: number) => {
     setSelectedKeyframeTime(time);
   }, []);
+
+  const handleCopyKeyframeValues = useCallback(() => {
+    if (selectedKeyframeTime === null) return;
+
+    if (selectedObject) {
+      const objectId = getObjectId(selectedObject);
+      const source = objectKeyframes.find(
+        (kf) => kf.time === selectedKeyframeTime && kf.objectId === objectId,
+      );
+      if (!source) return;
+      copiedKeyframeRef.current = {
+        type: "object",
+        data: {
+          transform: {
+            position: { ...source.transform.position },
+            rotation: { ...source.transform.rotation },
+            scale: { ...source.transform.scale },
+          },
+          visible: source.visible,
+          easing: source.easing,
+        },
+      };
+      setCopiedKeyframeType("object");
+      return;
+    }
+
+    const cameraSource = cameraKeyframes.find(
+      (kf) => kf.time === selectedKeyframeTime,
+    );
+    if (!cameraSource) return;
+    copiedKeyframeRef.current = {
+      type: "camera",
+      data: {
+        position: { ...cameraSource.position },
+        target: { ...cameraSource.target },
+        easing: cameraSource.easing,
+      },
+    };
+    setCopiedKeyframeType("camera");
+  }, [selectedKeyframeTime, selectedObject, objectKeyframes, cameraKeyframes]);
+
+  const handlePasteKeyframeValues = useCallback(() => {
+    if (selectedKeyframeTime === null || !copiedKeyframeRef.current) return;
+
+    if (selectedObject) {
+      if (copiedKeyframeRef.current.type !== "object") return;
+      const objectId = getObjectId(selectedObject);
+      pushHistory();
+      const { data } = copiedKeyframeRef.current;
+      setObjectKeyframes((prev) =>
+        prev.map((kf) =>
+          kf.time === selectedKeyframeTime && kf.objectId === objectId
+            ? {
+                ...kf,
+                transform: {
+                  position: { ...data.transform.position },
+                  rotation: { ...data.transform.rotation },
+                  scale: { ...data.transform.scale },
+                },
+                visible: data.visible,
+                easing: data.easing,
+              }
+            : kf,
+        ),
+      );
+      return;
+    }
+
+    if (copiedKeyframeRef.current.type !== "camera") return;
+    pushHistory();
+    const { data } = copiedKeyframeRef.current;
+    setCameraKeyframes((prev) =>
+      prev.map((kf) =>
+        kf.time === selectedKeyframeTime
+          ? {
+              ...kf,
+              position: { ...data.position },
+              target: { ...data.target },
+              easing: data.easing,
+            }
+          : kf,
+      ),
+    );
+  }, [selectedKeyframeTime, selectedObject, pushHistory]);
 
   const handleDeleteAllKeyframesAtTime = useCallback(() => {
     if (selectedKeyframeTime === null) return;
@@ -883,60 +1135,27 @@ export default function StepAuthoringPage() {
 
   // Get filtered keyframes based on selection
   const timelineKeyframes = selectedObject
-    ? // If object is selected, show keyframes for it and all its children
-      (() => {
-        const objectIds = new Set<string>();
-        objectIds.add(getObjectId(selectedObject));
-
-        // Traverse and collect all children IDs
-        selectedObject.traverse((child: any) => {
-          objectIds.add(getObjectId(child));
-        });
-
-        // Filter keyframes that belong to this object or its children
-        return objectKeyframes
-          .filter((kf) => objectIds.has(kf.objectId))
-          .map((kf) => kf.time);
-      })()
-    : // If no object selected, show camera keyframes
-      cameraKeyframes.map((kf) => kf.time);
+    ? objectKeyframes
+        .filter((kf) => kf.objectId === getObjectId(selectedObject))
+        .map((kf) => kf.time)
+    : cameraKeyframes.map((kf) => kf.time);
 
   // Apply animation at current time
   useEffect(() => {
     if (!loadedModelRef.current) return;
 
-    // Helper function to find object by ID
-    const findObjectById = (
-      obj: THREE.Object3D,
-      id: string,
-    ): THREE.Object3D | null => {
-      const objId = getObjectId(obj);
-      if (objId === id) return obj;
-      for (const child of obj.children) {
-        const found = findObjectById(child, id);
-        if (found) return found;
-      }
-      return null;
-    };
-
-    // Get unique object IDs
-    const uniqueObjectIds = [
-      ...new Set(objectKeyframes.map((kf) => kf.objectId)),
-    ];
-
     // Apply object transforms for each unique object
     uniqueObjectIds.forEach((objectId) => {
-      const targetObj = findObjectById(loadedModelRef.current!, objectId);
+      const targetObj =
+        objectLookupRef.current.get(objectId) ||
+        loadedModelRef.current?.getObjectByName?.(objectId);
       if (!targetObj) return;
 
       const original = originalTransformsRef.current.get(objectId);
       const basePosition = original?.position ?? new THREE.Vector3();
       const baseRotation = original?.rotation ?? new THREE.Euler();
 
-      // Get keyframes for this object sorted by time
-      const objKeyframes = objectKeyframes
-        .filter((k) => k.objectId === objectId)
-        .sort((a, b) => a.time - b.time);
+      const objKeyframes = objectKeyframesById.get(objectId) || [];
 
       // Find the keyframes to interpolate between
       let prevKf: ObjectKeyframe | null = null;
@@ -988,15 +1207,15 @@ export default function StepAuthoringPage() {
         );
 
         // Slerp rotation (using quaternions)
-        const prevQuat = new THREE.Quaternion();
+        const prevQuat = tempPrevQuatRef.current;
+        const nextQuat = tempNextQuatRef.current;
+        const interpolatedQuat = tempInterpolatedQuatRef.current;
         prevQuat.setFromEuler(
           new THREE.Euler(prevRotation.x, prevRotation.y, prevRotation.z),
         );
-        const nextQuat = new THREE.Quaternion();
         nextQuat.setFromEuler(
           new THREE.Euler(nextRotation.x, nextRotation.y, nextRotation.z),
         );
-        const interpolatedQuat = new THREE.Quaternion();
         interpolatedQuat.slerpQuaternions(prevQuat, nextQuat, t);
         targetObj.quaternion.copy(interpolatedQuat);
 
@@ -1096,22 +1315,17 @@ export default function StepAuthoringPage() {
 
     // Apply camera transforms
     const getCameraState = (window as any).__getCameraState;
-    if (getCameraState && cameraKeyframes.length > 0) {
-      // Get camera keyframes sorted by time
-      const sortedCameraKfs = [...cameraKeyframes].sort(
-        (a, b) => a.time - b.time,
-      );
-
+    if (getCameraState && sortedCameraKeyframes.length > 0) {
       // Find the keyframes to interpolate between
       let prevKf: CameraKeyframe | null = null;
       let nextKf: CameraKeyframe | null = null;
 
-      for (let i = 0; i < sortedCameraKfs.length; i++) {
-        if (sortedCameraKfs[i].time <= currentTime) {
-          prevKf = sortedCameraKfs[i];
+      for (let i = 0; i < sortedCameraKeyframes.length; i++) {
+        if (sortedCameraKeyframes[i].time <= currentTime) {
+          prevKf = sortedCameraKeyframes[i];
         }
-        if (sortedCameraKfs[i].time > currentTime && !nextKf) {
-          nextKf = sortedCameraKfs[i];
+        if (sortedCameraKeyframes[i].time > currentTime && !nextKf) {
+          nextKf = sortedCameraKeyframes[i];
         }
       }
 
@@ -1145,8 +1359,9 @@ export default function StepAuthoringPage() {
     }
   }, [
     currentTime,
-    objectKeyframes,
-    cameraKeyframes,
+    uniqueObjectIds,
+    objectKeyframesById,
+    sortedCameraKeyframes,
     loadedModelRef,
     applyEasing,
   ]);
@@ -1331,19 +1546,9 @@ export default function StepAuthoringPage() {
               href={`/admin/cabinets/${id}/steps`}
               className="text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm flex items-center gap-1"
             >
-              <svg
-                className="w-3 h-3 sm:w-4 sm:h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
+              <span className="material-symbols-rounded text-sm sm:text-base">
+                arrow_back
+              </span>
               <span className="hidden sm:inline">Back to Steps</span>
               <span className="sm:hidden">Back</span>
             </Link>
@@ -1376,19 +1581,9 @@ export default function StepAuthoringPage() {
                       : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                    />
-                  </svg>
+                  <span className="material-symbols-rounded text-sm sm:text-base">
+                    open_with
+                  </span>
                 </button>
                 <button
                   onClick={() => setTransformMode("rotate")}
@@ -1400,19 +1595,9 @@ export default function StepAuthoringPage() {
                       : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                    />
-                  </svg>
+                  <span className="material-symbols-rounded text-sm sm:text-base">
+                    rotate_right
+                  </span>
                 </button>
                 <button
                   onClick={() => setTransformMode("scale")}
@@ -1424,19 +1609,9 @@ export default function StepAuthoringPage() {
                       : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  <svg
-                    className="w-3 h-3 sm:w-4 sm:h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                    />
-                  </svg>
+                  <span className="material-symbols-rounded text-sm sm:text-base">
+                    open_in_full
+                  </span>
                 </button>
               </div>
 
@@ -1447,19 +1622,9 @@ export default function StepAuthoringPage() {
                   className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                   title="Snap Settings"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-                    />
-                  </svg>
+                  <span className="material-symbols-rounded text-base">
+                    tune
+                  </span>
                 </button>
 
                 {/* Dropdown panel */}
@@ -1581,19 +1746,9 @@ export default function StepAuthoringPage() {
                   className="px-2 py-2 text-xs sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Undo (Ctrl+Z / ⌘Z)"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 7v6h6M21 17a8 8 0 00-8-8H9"
-                    />
-                  </svg>
+                  <span className="material-symbols-rounded text-base">
+                    undo
+                  </span>
                 </button>
                 <button
                   onClick={handleRedo}
@@ -1601,19 +1756,9 @@ export default function StepAuthoringPage() {
                   className="px-2 py-2 text-xs sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Redo (Ctrl+Y / ⌘Shift+Z)"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 7v6h-6M3 17a8 8 0 018-8h4"
-                    />
-                  </svg>
+                  <span className="material-symbols-rounded text-base">
+                    redo
+                  </span>
                 </button>
               </div>
 
@@ -1627,19 +1772,9 @@ export default function StepAuthoringPage() {
                 className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-2 font-medium"
                 title="Save animation to step"
               >
-                <svg
-                  className="w-3 h-3 sm:w-4 sm:h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                  />
-                </svg>
+                <span className="material-symbols-rounded text-sm sm:text-base">
+                  save
+                </span>
                 <span className="hidden sm:inline">Save Animation</span>
                 <span className="sm:hidden">Save</span>
               </button>
@@ -1647,33 +1782,9 @@ export default function StepAuthoringPage() {
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 flex flex-col md:flex-row">
-            {/* 3D Viewport */}
-            <div className="flex-1 bg-gray-100 dark:bg-gray-900 min-h-[50vh] md:min-h-0">
-              <AuthoringSceneViewer
-                modelPath={modelPath}
-                selectedObject={selectedObject}
-                transformMode={transformMode}
-                translationSnap={
-                  translationSnapEnabled ? translationSnapValue : null
-                }
-                rotationSnap={
-                  rotationSnapEnabled
-                    ? (rotationSnapValue * Math.PI) / 180
-                    : null
-                }
-                scaleSnap={null}
-                onSceneReady={handleSceneReady}
-                onModelLoaded={handleModelLoaded}
-                onLoadError={handleLoadError}
-                onObjectSelected={handleSelectObject}
-                onGetCameraState={() => null}
-              />
-            </div>
-
-            {/* Right sidebar - Controls (collapsible on mobile) */}
-            <div className="w-full md:w-80 bg-white dark:bg-gray-800 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 flex flex-col max-h-[40vh] md:max-h-none overflow-y-auto">
-              {/* Scene Status Section */}
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)_360px]">
+            {/* Left column: Scene status + hierarchy */}
+            <div className="bg-white dark:bg-gray-800 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 flex flex-col min-h-[30vh] md:min-h-0">
               <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3">
                   Scene Status
@@ -1696,9 +1807,8 @@ export default function StepAuthoringPage() {
                 </div>
               </div>
 
-              {/* Object Hierarchy Tree */}
               {modelLoaded && loadedModelRef.current ? (
-                <div className="flex-1 overflow-hidden border-b border-gray-200 dark:border-gray-700">
+                <div className="flex-1 overflow-hidden">
                   <ObjectHierarchyTree
                     model={loadedModelRef.current}
                     selectedObject={selectedObject}
@@ -1707,7 +1817,6 @@ export default function StepAuthoringPage() {
                 </div>
               ) : (
                 <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
-                  {/* Model Upload */}
                   <div>
                     <h4 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3">
                       Load 3D Model
@@ -1737,17 +1846,9 @@ export default function StepAuthoringPage() {
 
                       {loadError && (
                         <div className="flex items-start gap-2 text-red-600 dark:text-red-400 text-sm">
-                          <svg
-                            className="w-4 h-4 mt-0.5 flex-shrink-0"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
+                          <span className="material-symbols-rounded text-base mt-0.5 flex-shrink-0">
+                            error
+                          </span>
                           <span>{loadError}</span>
                         </div>
                       )}
@@ -1762,196 +1863,283 @@ export default function StepAuthoringPage() {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Timeline */}
-          <Timeline
-            duration={duration}
-            currentTime={currentTime}
-            onTimeChange={handleTimeChange}
-            keyframes={timelineKeyframes}
-            isPlaying={isPlaying}
-            onPlayPause={handlePlayPause}
-            onRecordCameraKeyframe={handleRecordCameraKeyframe}
-            onDeleteCameraKeyframe={handleDeleteCameraKeyframe}
-            onRecordObjectKeyframe={handleRecordKeyframe}
-            onDeleteObjectKeyframe={handleDeleteKeyframe}
-            hasCameraKeyframeAtCurrentTime={cameraKeyframes.some(
-              (kf) => kf.time === currentTime,
-            )}
-            hasObjectKeyframeAtCurrentTime={
-              selectedObject
-                ? objectKeyframes.some(
-                    (kf) =>
-                      kf.time === currentTime &&
-                      kf.objectId === getObjectId(selectedObject),
-                  )
-                : false
-            }
-            canRecordObjectKeyframe={!!selectedObject}
-            onKeyframeMoved={handleKeyframeMoved}
-            onKeyframeSelect={handleKeyframeSelect}
-          />
+            {/* Middle column: 3D Viewport + Timeline */}
+            <div className="flex flex-col bg-gray-100 dark:bg-gray-900 min-h-[50vh] md:min-h-0">
+              <div className="flex-1 min-h-[50vh]">
+                <AuthoringSceneViewer
+                  modelPath={modelPath}
+                  selectedObject={selectedObject}
+                  transformMode={transformMode}
+                  translationSnap={
+                    translationSnapEnabled ? translationSnapValue : null
+                  }
+                  rotationSnap={
+                    rotationSnapEnabled
+                      ? (rotationSnapValue * Math.PI) / 180
+                      : null
+                  }
+                  scaleSnap={null}
+                  onSceneReady={handleSceneReady}
+                  onModelLoaded={handleModelLoaded}
+                  onLoadError={handleLoadError}
+                  onObjectSelected={handleSelectObject}
+                  onGetCameraState={() => null}
+                />
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700">
+                <Timeline
+                  duration={duration}
+                  currentTime={currentTime}
+                  onTimeChange={handleTimeChange}
+                  keyframes={timelineKeyframes}
+                  isPlaying={isPlaying}
+                  onPlayPause={handlePlayPause}
+                  onRecordCameraKeyframe={handleRecordCameraKeyframe}
+                  onDeleteCameraKeyframe={handleDeleteCameraKeyframe}
+                  onRecordObjectKeyframe={handleRecordKeyframe}
+                  onDeleteObjectKeyframe={handleDeleteKeyframe}
+                  hasCameraKeyframeAtCurrentTime={cameraKeyframes.some(
+                    (kf) => kf.time === currentTime,
+                  )}
+                  hasObjectKeyframeAtCurrentTime={
+                    selectedObject
+                      ? objectKeyframes.some(
+                          (kf) =>
+                            kf.time === currentTime &&
+                            kf.objectId === getObjectId(selectedObject),
+                        )
+                      : false
+                  }
+                  canRecordObjectKeyframe={!!selectedObject}
+                  onKeyframeMoved={handleKeyframeMoved}
+                  onKeyframeSelect={handleKeyframeSelect}
+                  onKeyframeDuplicate={handleKeyframeDuplicated}
+                  onKeyframeDeselect={() => setSelectedKeyframeTime(null)}
+                  selectedKeyframeTime={selectedKeyframeTime}
+                />
+              </div>
+            </div>
 
-          {/* Keyframe Properties Editor */}
-          {selectedKeyframeTime !== null && (
-            <div className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-4 py-2">
+            {/* Right column: Keyframe Properties Editor */}
+            <div className="bg-white dark:bg-gray-800 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 px-4 py-2 overflow-y-auto">
               {(() => {
+                const hasSelection = selectedKeyframeTime !== null;
                 // Find the selected keyframe(s)
-                const objectKf = selectedObject
-                  ? objectKeyframes.find(
-                      (kf) =>
-                        kf.time === selectedKeyframeTime &&
-                        kf.objectId === getObjectId(selectedObject),
-                    )
-                  : undefined;
+                const objectKf =
+                  hasSelection && selectedObject
+                    ? objectKeyframes.find(
+                        (kf) =>
+                          kf.time === selectedKeyframeTime &&
+                          kf.objectId === getObjectId(selectedObject),
+                      )
+                    : undefined;
 
-                const cameraKf = !selectedObject
-                  ? cameraKeyframes.find(
-                      (kf) => kf.time === selectedKeyframeTime,
-                    )
-                  : undefined;
-
-                if (!objectKf && !cameraKf) {
-                  return (
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      No keyframe data available
-                    </p>
-                  );
-                }
+                const cameraKf =
+                  hasSelection && !selectedObject
+                    ? cameraKeyframes.find(
+                        (kf) => kf.time === selectedKeyframeTime,
+                      )
+                    : undefined;
 
                 return (
-                  <div className="flex items-center gap-4 flex-wrap">
-                    {/* Time */}
-                    <div className="flex items-center gap-2">
-                      <label className="text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                        Time (seconds)
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        max={duration}
-                        value={selectedKeyframeTime}
-                        onChange={(e) => {
-                          const newTime = Math.max(
-                            0,
-                            Math.min(duration, Number(e.target.value)),
-                          );
-                          handleKeyframeMoved(selectedKeyframeTime, newTime);
-                        }}
-                        title="Keyframe time in seconds"
-                        className="w-24 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                      />
+                  <div className="flex flex-col gap-3">
+                    {!hasSelection && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        No keyframe selected. Select a keyframe to edit values.
+                      </p>
+                    )}
+                    <div className="flex flex-wrap items-center gap-3 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 px-3 py-2">
+                      <div className="inline-flex items-center rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        <button
+                          onClick={handleCopyKeyframeValues}
+                          disabled={!hasSelection}
+                          className="px-2 py-1 text-xs bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          title="Copy keyframe values"
+                        >
+                          Copy
+                        </button>
+                        <button
+                          onClick={handlePasteKeyframeValues}
+                          disabled={
+                            !hasSelection ||
+                            !copiedKeyframeType ||
+                            copiedKeyframeType !==
+                              (objectKf ? "object" : "camera")
+                          }
+                          className="px-2 py-1 text-xs bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors"
+                          title="Paste keyframe values"
+                        >
+                          Paste
+                        </button>
+                      </div>
+
+                      {/* Time */}
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                          Time (seconds)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.001"
+                          min="0"
+                          max={duration}
+                          disabled={!hasSelection}
+                          key={`kf-time-${selectedKeyframeTime ?? "none"}-${objectKf?.objectId || "camera"}`}
+                          defaultValue={roundTo3(
+                            hasSelection
+                              ? (selectedKeyframeTime as number)
+                              : currentTime,
+                          )}
+                          onFocus={handleBeginEdit}
+                          onBlur={(e) => {
+                            if (
+                              !hasSelection ||
+                              selectedKeyframeTime === null
+                            ) {
+                              return;
+                            }
+                            const value = roundTo3(Number(e.target.value));
+                            const clamped = Math.max(
+                              0,
+                              Math.min(duration, value),
+                            );
+                            handleKeyframeMoved(selectedKeyframeTime, clamped);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
+                          title="Keyframe time in seconds"
+                          className="w-24 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        />
+                      </div>
+
+                      {(objectKf || cameraKf) && (
+                        <div className="flex flex-wrap items-center gap-3">
+                          {objectKf && (
+                            <div className="flex items-center gap-2">
+                              <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Easing:
+                              </label>
+                              <select
+                                value={objectKf.easing || "linear"}
+                                aria-label="Object easing"
+                                disabled={!hasSelection}
+                                onFocus={handleBeginEdit}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            easing:
+                                              value === "linear"
+                                                ? undefined
+                                                : value,
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              >
+                                {easingOptions.map((option) => (
+                                  <option
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
+                          {cameraKf && (
+                            <div className="flex items-center gap-2">
+                              <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Easing:
+                              </label>
+                              <select
+                                value={cameraKf.easing || "linear"}
+                                aria-label="Camera easing"
+                                disabled={!hasSelection}
+                                onFocus={handleBeginEdit}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setCameraKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime
+                                        ? {
+                                            ...kf,
+                                            easing:
+                                              value === "linear"
+                                                ? undefined
+                                                : value,
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              >
+                                {easingOptions.map((option) => (
+                                  <option
+                                    key={option.value}
+                                    value={option.value}
+                                  >
+                                    {option.label}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Curve:
+                            </span>
+                            <svg
+                              width="120"
+                              height="60"
+                              viewBox="0 0 120 60"
+                              className="border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900"
+                            >
+                              <line
+                                x1="0"
+                                y1="60"
+                                x2="120"
+                                y2="0"
+                                stroke="rgba(148,163,184,0.5)"
+                                strokeWidth="1"
+                                strokeDasharray="3 3"
+                              />
+                              <path
+                                d={getEasingPath(
+                                  (objectKf?.easing || cameraKf?.easing) ??
+                                    "linear",
+                                )}
+                                fill="none"
+                                stroke="#3b82f6"
+                                strokeWidth="2"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
-                    {/* Easing */}
-                    {objectKf && (
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Easing:
-                        </label>
-                        <select
-                          value={objectKf.easing || "linear"}
-                          onFocus={handleBeginEdit}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            setObjectKeyframes((prev) =>
-                              prev.map((kf) =>
-                                kf.time === selectedKeyframeTime &&
-                                kf.objectId === objectKf.objectId
-                                  ? {
-                                      ...kf,
-                                      easing:
-                                        value === "linear" ? undefined : value,
-                                    }
-                                  : kf,
-                              ),
-                            );
-                          }}
-                          className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        >
-                          {easingOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-
-                    {cameraKf && (
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Easing:
-                        </label>
-                        <select
-                          value={cameraKf.easing || "linear"}
-                          onFocus={handleBeginEdit}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            setCameraKeyframes((prev) =>
-                              prev.map((kf) =>
-                                kf.time === selectedKeyframeTime
-                                  ? {
-                                      ...kf,
-                                      easing:
-                                        value === "linear" ? undefined : value,
-                                    }
-                                  : kf,
-                              ),
-                            );
-                          }}
-                          className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        >
-                          {easingOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
-
-                    {(objectKf || cameraKf) && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Curve:
-                        </span>
-                        <svg
-                          width="120"
-                          height="60"
-                          viewBox="0 0 120 60"
-                          className="border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900"
-                        >
-                          <line
-                            x1="0"
-                            y1="60"
-                            x2="120"
-                            y2="0"
-                            stroke="rgba(148,163,184,0.5)"
-                            strokeWidth="1"
-                            strokeDasharray="3 3"
-                          />
-                          <path
-                            d={getEasingPath(
-                              (objectKf?.easing || cameraKf?.easing) ??
-                                "linear",
-                            )}
-                            fill="none"
-                            stroke="#3b82f6"
-                            strokeWidth="2"
-                          />
-                        </svg>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 px-3 py-2">
                       <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                         Bulk:
                       </span>
                       <button
                         onClick={handleDeleteAllKeyframesAtTime}
+                        disabled={!hasSelection}
                         className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                         title="Delete all keyframes at selected time"
                       >
@@ -1965,6 +2153,7 @@ export default function StepAuthoringPage() {
                           onChange={(e) =>
                             setBulkShiftSeconds(Number(e.target.value))
                           }
+                          disabled={!hasSelection}
                           className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                           title="Shift all keyframes by seconds"
                         />
@@ -1974,6 +2163,7 @@ export default function StepAuthoringPage() {
                       </div>
                       <button
                         onClick={handleShiftAllKeyframes}
+                        disabled={!hasSelection}
                         className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         title="Shift all keyframes by delta"
                       >
@@ -1981,435 +2171,687 @@ export default function StepAuthoringPage() {
                       </button>
                     </div>
 
-                    {/* Position */}
-                    {objectKf?.transform?.position && (
-                      <>
+                    <div className="flex flex-col gap-3">
+                      {objectKf?.transform && (
+                        <div className="flex flex-wrap items-center gap-4">
+                          {/* Position */}
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Position:
+                            </label>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                x
+                              </label>
+                              <input
+                                key={`pos-x-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  objectKf.transform.position.x,
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              position: {
+                                                ...kf.transform.position,
+                                                x: value,
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                y
+                              </label>
+                              <input
+                                key={`pos-y-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  objectKf.transform.position.y,
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              position: {
+                                                ...kf.transform.position,
+                                                y: value,
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                z
+                              </label>
+                              <input
+                                key={`pos-z-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  objectKf.transform.position.z,
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              position: {
+                                                ...kf.transform.position,
+                                                z: value,
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Rotation */}
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Rotation:
+                            </label>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                x
+                              </label>
+                              <input
+                                key={`rot-x-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  THREE.MathUtils.radToDeg(
+                                    objectKf.transform.rotation.x,
+                                  ),
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              rotation: {
+                                                ...kf.transform.rotation,
+                                                x: THREE.MathUtils.degToRad(
+                                                  value,
+                                                ),
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                y
+                              </label>
+                              <input
+                                key={`rot-y-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  THREE.MathUtils.radToDeg(
+                                    objectKf.transform.rotation.y,
+                                  ),
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              rotation: {
+                                                ...kf.transform.rotation,
+                                                y: THREE.MathUtils.degToRad(
+                                                  value,
+                                                ),
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                z
+                              </label>
+                              <input
+                                key={`rot-z-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  THREE.MathUtils.radToDeg(
+                                    objectKf.transform.rotation.z,
+                                  ),
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              rotation: {
+                                                ...kf.transform.rotation,
+                                                z: THREE.MathUtils.degToRad(
+                                                  value,
+                                                ),
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Scale */}
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Scale:
+                            </label>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                x
+                              </label>
+                              <input
+                                key={`scale-x-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  objectKf.transform.scale.x,
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              scale: {
+                                                ...kf.transform.scale,
+                                                x: value,
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                y
+                              </label>
+                              <input
+                                key={`scale-y-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  objectKf.transform.scale.y,
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              scale: {
+                                                ...kf.transform.scale,
+                                                y: value,
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                z
+                              </label>
+                              <input
+                                key={`scale-z-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(
+                                  objectKf.transform.scale.z,
+                                )}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setObjectKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime &&
+                                      kf.objectId === objectKf.objectId
+                                        ? {
+                                            ...kf,
+                                            transform: {
+                                              ...kf.transform,
+                                              scale: {
+                                                ...kf.transform.scale,
+                                                z: value,
+                                              },
+                                            },
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Visibility */}
+                      {objectKf && (
                         <div className="flex items-center gap-2">
                           <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Position:
+                            Visibility:
                           </label>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              x
+                          <input
+                            type="checkbox"
+                            checked={objectKf.visible ?? true}
+                            onChange={(e) => {
+                              handleBeginEdit();
+                              setObjectKeyframes((prev) =>
+                                prev.map((kf) =>
+                                  kf.time === selectedKeyframeTime &&
+                                  kf.objectId === objectKf.objectId
+                                    ? { ...kf, visible: e.target.checked }
+                                    : kf,
+                                ),
+                              );
+                            }}
+                            disabled={!hasSelection}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                          />
+                        </div>
+                      )}
+
+                      {/* Camera Position */}
+                      {cameraKf?.position && (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Camera Position:
                             </label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={objectKf.transform.position.x}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setObjectKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime &&
-                                    kf.objectId === objectKf.objectId
-                                      ? {
-                                          ...kf,
-                                          transform: {
-                                            ...kf.transform,
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                x
+                              </label>
+                              <input
+                                key={`cam-pos-x-${selectedKeyframeTime}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(cameraKf.position.x)}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setCameraKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime
+                                        ? {
+                                            ...kf,
                                             position: {
-                                              ...kf.transform.position,
-                                              x: Number(e.target.value),
+                                              ...kf.position,
+                                              x: value,
                                             },
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              y
-                            </label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={objectKf.transform.position.y}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setObjectKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime &&
-                                    kf.objectId === objectKf.objectId
-                                      ? {
-                                          ...kf,
-                                          transform: {
-                                            ...kf.transform,
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                y
+                              </label>
+                              <input
+                                key={`cam-pos-y-${selectedKeyframeTime}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(cameraKf.position.y)}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setCameraKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime
+                                        ? {
+                                            ...kf,
                                             position: {
-                                              ...kf.transform.position,
-                                              y: Number(e.target.value),
+                                              ...kf.position,
+                                              y: value,
                                             },
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              z
-                            </label>
-                            <input
-                              type="number"
-                              step="0.01"
-                              value={objectKf.transform.position.z}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setObjectKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime &&
-                                    kf.objectId === objectKf.objectId
-                                      ? {
-                                          ...kf,
-                                          transform: {
-                                            ...kf.transform,
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                z
+                              </label>
+                              <input
+                                key={`cam-pos-z-${selectedKeyframeTime}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(cameraKf.position.z)}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setCameraKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime
+                                        ? {
+                                            ...kf,
                                             position: {
-                                              ...kf.transform.position,
-                                              z: Number(e.target.value),
+                                              ...kf.position,
+                                              z: value,
                                             },
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </>
-                    )}
 
-                    {/* Rotation */}
-                    {objectKf?.transform?.rotation && (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Rotation:
-                          </label>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              x
+                          {/* Camera Target */}
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Camera Target:
                             </label>
-                            <input
-                              type="number"
-                              step="1"
-                              value={THREE.MathUtils.radToDeg(
-                                objectKf.transform.rotation.x,
-                              )}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setObjectKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime &&
-                                    kf.objectId === objectKf.objectId
-                                      ? {
-                                          ...kf,
-                                          transform: {
-                                            ...kf.transform,
-                                            rotation: {
-                                              ...kf.transform.rotation,
-                                              x: THREE.MathUtils.degToRad(
-                                                Number(e.target.value),
-                                              ),
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                x
+                              </label>
+                              <input
+                                key={`cam-target-x-${selectedKeyframeTime}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(cameraKf.target.x)}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setCameraKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime
+                                        ? {
+                                            ...kf,
+                                            target: {
+                                              ...kf.target,
+                                              x: value,
                                             },
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              y
-                            </label>
-                            <input
-                              type="number"
-                              step="1"
-                              value={THREE.MathUtils.radToDeg(
-                                objectKf.transform.rotation.y,
-                              )}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setObjectKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime &&
-                                    kf.objectId === objectKf.objectId
-                                      ? {
-                                          ...kf,
-                                          transform: {
-                                            ...kf.transform,
-                                            rotation: {
-                                              ...kf.transform.rotation,
-                                              y: THREE.MathUtils.degToRad(
-                                                Number(e.target.value),
-                                              ),
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                y
+                              </label>
+                              <input
+                                key={`cam-target-y-${selectedKeyframeTime}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(cameraKf.target.y)}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setCameraKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime
+                                        ? {
+                                            ...kf,
+                                            target: {
+                                              ...kf.target,
+                                              y: value,
                                             },
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              z
-                            </label>
-                            <input
-                              type="number"
-                              step="1"
-                              value={THREE.MathUtils.radToDeg(
-                                objectKf.transform.rotation.z,
-                              )}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setObjectKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime &&
-                                    kf.objectId === objectKf.objectId
-                                      ? {
-                                          ...kf,
-                                          transform: {
-                                            ...kf.transform,
-                                            rotation: {
-                                              ...kf.transform.rotation,
-                                              z: THREE.MathUtils.degToRad(
-                                                Number(e.target.value),
-                                              ),
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <label className="text-xs text-gray-500 dark:text-gray-500">
+                                z
+                              </label>
+                              <input
+                                key={`cam-target-z-${selectedKeyframeTime}`}
+                                type="number"
+                                step="0.001"
+                                defaultValue={roundTo3(cameraKf.target.z)}
+                                onFocus={handleBeginEdit}
+                                onBlur={(e) => {
+                                  const value = roundTo3(
+                                    Number(e.target.value),
+                                  );
+                                  setCameraKeyframes((prev) =>
+                                    prev.map((kf) =>
+                                      kf.time === selectedKeyframeTime
+                                        ? {
+                                            ...kf,
+                                            target: {
+                                              ...kf.target,
+                                              z: value,
                                             },
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
+                                          }
+                                        : kf,
+                                    ),
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    (e.target as HTMLInputElement).blur();
+                                  }
+                                }}
+                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                              />
+                            </div>
                           </div>
-                        </div>
-                      </>
-                    )}
-
-                    {/* Visibility */}
-                    {objectKf && (
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                          Visibility:
-                        </label>
-                        <input
-                          type="checkbox"
-                          checked={objectKf.visible ?? true}
-                          onChange={(e) => {
-                            handleBeginEdit();
-                            setObjectKeyframes((prev) =>
-                              prev.map((kf) =>
-                                kf.time === selectedKeyframeTime &&
-                                kf.objectId === objectKf.objectId
-                                  ? { ...kf, visible: e.target.checked }
-                                  : kf,
-                              ),
-                            );
-                          }}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                        />
-                      </div>
-                    )}
-
-                    {/* Camera Position */}
-                    {cameraKf?.position && (
-                      <>
-                        <div className="flex items-center gap-2">
-                          <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Camera Position:
-                          </label>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              x
-                            </label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={cameraKf.position.x}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setCameraKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime
-                                      ? {
-                                          ...kf,
-                                          position: {
-                                            ...kf.position,
-                                            x: Number(e.target.value),
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              y
-                            </label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={cameraKf.position.y}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setCameraKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime
-                                      ? {
-                                          ...kf,
-                                          position: {
-                                            ...kf.position,
-                                            y: Number(e.target.value),
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              z
-                            </label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={cameraKf.position.z}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setCameraKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime
-                                      ? {
-                                          ...kf,
-                                          position: {
-                                            ...kf.position,
-                                            z: Number(e.target.value),
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Camera Target */}
-                        <div className="flex items-center gap-2">
-                          <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                            Camera Target:
-                          </label>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              x
-                            </label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={cameraKf.target.x}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setCameraKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime
-                                      ? {
-                                          ...kf,
-                                          target: {
-                                            ...kf.target,
-                                            x: Number(e.target.value),
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              y
-                            </label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={cameraKf.target.y}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setCameraKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime
-                                      ? {
-                                          ...kf,
-                                          target: {
-                                            ...kf.target,
-                                            y: Number(e.target.value),
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <label className="text-xs text-gray-500 dark:text-gray-500">
-                              z
-                            </label>
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={cameraKf.target.z}
-                              onFocus={handleBeginEdit}
-                              onChange={(e) => {
-                                setCameraKeyframes((prev) =>
-                                  prev.map((kf) =>
-                                    kf.time === selectedKeyframeTime
-                                      ? {
-                                          ...kf,
-                                          target: {
-                                            ...kf.target,
-                                            z: Number(e.target.value),
-                                          },
-                                        }
-                                      : kf,
-                                  ),
-                                );
-                              }}
-                              className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            />
-                          </div>
-                        </div>
-                      </>
-                    )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 );
               })()}
             </div>
-          )}
+          </div>
         </div>
       </AdminLayout>
     </AuthGuard>

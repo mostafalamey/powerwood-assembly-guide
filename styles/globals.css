@@ -31,6 +31,18 @@ body {
   font-family: "Inter", sans-serif;
 }
 
+.material-symbols-rounded {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 24;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Arabic font support */
 body[dir="rtl"] {
   font-family: "Cairo", "Arial", sans-serif;

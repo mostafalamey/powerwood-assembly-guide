@@ -20,19 +20,9 @@ export default function Header({ showBackButton = false }: HeaderProps) {
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 aria-label="Go back"
               >
-                <svg
-                  className="w-6 h-6 text-gray-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
+                <span className="material-symbols-rounded text-2xl text-gray-600">
+                  arrow_back
+                </span>
               </Link>
             )}
             <Link href="/">

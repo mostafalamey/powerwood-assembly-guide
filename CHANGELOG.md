@@ -11,7 +11,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### In Progress
 
+- Device testing (Phase 9)
 - Export/import animation templates (Phase 6.6)
+
+---
+
+## [0.11.0] - 2026-01-27
+
+### ✨ Added - Phase 8: Polish & Refinement
+
+- **Toast Notification System:**
+  - Context-based toast provider with React hooks
+  - Four types: success, error, info, warning
+  - Auto-dismissal with configurable duration (default 3.5s)
+  - Manual dismiss button, dark mode support
+  - Replaces intrusive alert() dialogs across admin panel
+
+- **Collapsible Admin Sidebar:**
+  - Toggle button to collapse/expand sidebar on desktop
+  - Icon-only mode (96px) vs full mode (256px)
+  - LocalStorage state persistence across sessions
+  - Smooth CSS transitions with proper z-index layering
+  - Material Symbols icons (dashboard, inventory_2, qr_code_2)
+
+- **Authoring Tool Layout:**
+  - 3-column responsive grid: 260px | flexible | 360px
+  - Always-visible keyframe properties editor
+  - Compact toolbar with grouped transform controls
+  - Desktop-only snap settings dropdown
+  - Improved visual hierarchy and space efficiency
+
+- **Performance Optimizations:**
+  - Timeline rendering memoization (useMemo for keyframe maps)
+  - Object lookup caching with Map data structure
+  - Quaternion reuse for rotation interpolation (reduced GC)
+  - Keyframe time rounding (2 decimals) for precision control
+
+- **Material Symbols Icon Migration:**
+  - Replaced 50+ inline SVG icons with Google Material Symbols
+  - Font-based icons across all 15+ files (components + pages)
+  - Consistent sizing system: text-base to text-5xl
+  - Dark mode compatible, browser cacheable
+  - Single remaining SVG: easing curve visualization (intentional)
+
+- **3D Viewport Resize:**
+  - Window resize event dispatch on sidebar collapse/expand
+  - Three.js canvas adapts to newly available space
+  - 300ms delay matches CSS transition duration
+
+### 🔧 Technical Improvements
+
+- Toast API: `toast.success()`, `toast.error()`, `toast.info()`, `toast.warning()`
+- Sidebar state: `admin_sidebar_collapsed` in localStorage
+- Authoring layout: `grid-cols-[260px_minmax(0,1fr)_360px]`
+- Icon system: material-symbols-rounded font variant
+
+### 📝 Documentation
+
+- Updated PROGRESS.md with comprehensive Phase 8 details
+- Updated IMPLEMENTATION_STATUS.md with Phase 8 summary
+- Updated README.md progress badges (75% overall)
 
 ---
 

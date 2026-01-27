@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import AdminLayout from "../../../components/admin/AdminLayout";
 import AuthGuard from "../../../components/admin/AuthGuard";
 import Image from "next/image";
+import { useToast } from "../../../components/admin/ToastProvider";
 
 interface Cabinet {
   id: string;
@@ -25,6 +26,7 @@ interface Cabinet {
 }
 
 export default function CabinetsListPage() {
+  const toast = useToast();
   const [cabinets, setCabinets] = useState<Cabinet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -61,9 +63,11 @@ export default function CabinetsListPage() {
         setCabinets(data);
       } else {
         setError("Failed to fetch cabinets");
+        toast.error("Failed to fetch cabinets.");
       }
     } catch (err) {
       setError("Error loading cabinets");
+      toast.error("Error loading cabinets.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -86,11 +90,12 @@ export default function CabinetsListPage() {
 
       if (response.ok) {
         setCabinets(cabinets.filter((c) => c.id !== id));
+        toast.success(`Cabinet ${id} deleted.`);
       } else {
-        alert("Failed to delete cabinet");
+        toast.error("Failed to delete cabinet.");
       }
     } catch (err) {
-      alert("Error deleting cabinet");
+      toast.error("Error deleting cabinet.");
       console.error(err);
     }
   };
@@ -155,19 +160,9 @@ export default function CabinetsListPage() {
                 href="/admin/qr-codes"
                 className="px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 inline-flex items-center gap-2 text-sm"
               >
-                <svg
-                  className="w-4 h-4 sm:w-5 sm:h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-                  />
-                </svg>
+                <span className="material-symbols-rounded text-lg sm:text-xl">
+                  qr_code_scanner
+                </span>
                 <span className="hidden sm:inline">QR Codes</span>
               </Link>
               <button
@@ -266,19 +261,9 @@ export default function CabinetsListPage() {
                                   }}
                                 />
                               ) : (
-                                <svg
-                                  className="w-8 h-8 text-gray-400"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                  />
-                                </svg>
+                                <span className="material-symbols-rounded text-2xl text-gray-400">
+                                  image
+                                </span>
                               )}
                             </div>
                           </td>
@@ -307,13 +292,9 @@ export default function CabinetsListPage() {
                               className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 focus:outline-none"
                               aria-label="Open actions menu"
                             >
-                              <svg
-                                className="w-5 h-5"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                              </svg>
+                              <span className="material-symbols-rounded text-lg">
+                                more_vert
+                              </span>
                             </button>
 
                             {/* Dropdown Menu */}
@@ -333,25 +314,9 @@ export default function CabinetsListPage() {
                                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                                     >
                                       <span className="flex items-center">
-                                        <svg
-                                          className="w-4 h-4 mr-2"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                          stroke="currentColor"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                          />
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                          />
-                                        </svg>
+                                        <span className="material-symbols-rounded text-base mr-2">
+                                          visibility
+                                        </span>
                                         View
                                       </span>
                                     </Link>
@@ -360,19 +325,9 @@ export default function CabinetsListPage() {
                                       className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                                     >
                                       <span className="flex items-center">
-                                        <svg
-                                          className="w-4 h-4 mr-2"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                          stroke="currentColor"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                          />
-                                        </svg>
+                                        <span className="material-symbols-rounded text-base mr-2">
+                                          edit
+                                        </span>
                                         Edit
                                       </span>
                                     </button>
@@ -381,19 +336,9 @@ export default function CabinetsListPage() {
                                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                                     >
                                       <span className="flex items-center">
-                                        <svg
-                                          className="w-4 h-4 mr-2"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                          stroke="currentColor"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                                          />
-                                        </svg>
+                                        <span className="material-symbols-rounded text-base mr-2">
+                                          list_alt
+                                        </span>
                                         Manage Steps
                                       </span>
                                     </Link>
@@ -402,19 +347,9 @@ export default function CabinetsListPage() {
                                       className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600"
                                     >
                                       <span className="flex items-center">
-                                        <svg
-                                          className="w-4 h-4 mr-2"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                          stroke="currentColor"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                          />
-                                        </svg>
+                                        <span className="material-symbols-rounded text-base mr-2">
+                                          delete
+                                        </span>
                                         Delete
                                       </span>
                                     </button>
@@ -459,19 +394,9 @@ export default function CabinetsListPage() {
                               }}
                             />
                           ) : (
-                            <svg
-                              className="w-8 h-8 text-gray-400"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <span className="material-symbols-rounded text-2xl text-gray-400">
+                              image
+                            </span>
                           )}
                         </div>
 
@@ -491,13 +416,9 @@ export default function CabinetsListPage() {
                               className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 focus:outline-none flex-shrink-0"
                               aria-label="Open actions menu"
                             >
-                              <svg
-                                className="w-5 h-5"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                              </svg>
+                              <span className="material-symbols-rounded text-lg">
+                                more_vert
+                              </span>
                             </button>
                           </div>
 
@@ -534,25 +455,9 @@ export default function CabinetsListPage() {
                               className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                             >
                               <span className="flex items-center">
-                                <svg
-                                  className="w-4 h-4 mr-2"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                  />
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                  />
-                                </svg>
+                                <span className="material-symbols-rounded text-base mr-2">
+                                  visibility
+                                </span>
                                 View
                               </span>
                             </Link>
@@ -561,19 +466,9 @@ export default function CabinetsListPage() {
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                             >
                               <span className="flex items-center">
-                                <svg
-                                  className="w-4 h-4 mr-2"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                  />
-                                </svg>
+                                <span className="material-symbols-rounded text-base mr-2">
+                                  edit
+                                </span>
                                 Edit
                               </span>
                             </button>
@@ -582,19 +477,9 @@ export default function CabinetsListPage() {
                               className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                             >
                               <span className="flex items-center">
-                                <svg
-                                  className="w-4 h-4 mr-2"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                                  />
-                                </svg>
+                                <span className="material-symbols-rounded text-base mr-2">
+                                  list_alt
+                                </span>
                                 Manage Steps
                               </span>
                             </button>
@@ -603,19 +488,9 @@ export default function CabinetsListPage() {
                               className="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                             >
                               <span className="flex items-center">
-                                <svg
-                                  className="w-4 h-4 mr-2"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                  />
-                                </svg>
+                                <span className="material-symbols-rounded text-base mr-2">
+                                  delete
+                                </span>
                                 Delete
                               </span>
                             </button>

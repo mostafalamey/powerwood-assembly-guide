@@ -213,6 +213,17 @@ export default function SceneViewer({
   const controlsRef = useRef<OrbitControls | null>(null);
   const modelRef = useRef<THREE.Group | null>(null);
   const currentAnimationRef = useRef<StepAnimation | null>(null);
+  const objectLookupRef = useRef<Map<string, THREE.Object3D>>(new Map());
+  const animationObjectKeyframesRef = useRef<Map<string, ObjectKeyframe[]>>(
+    new Map(),
+  );
+  const animationObjectIdsRef = useRef<string[]>([]);
+  const sortedCameraKeyframesRef = useRef<CameraKeyframe[]>([]);
+  const tempPrevQuatRef = useRef(new THREE.Quaternion());
+  const tempNextQuatRef = useRef(new THREE.Quaternion());
+  const tempInterpolatedQuatRef = useRef(new THREE.Quaternion());
+  const zeroVectorRef = useRef(new THREE.Vector3());
+  const zeroEulerRef = useRef(new THREE.Euler());
   const [animationTrigger, setAnimationTrigger] = useState(0);
   const hasAutoStartedRef = useRef(false);
   const [animationTime, setAnimationTime] = useState(0);
@@ -305,6 +316,21 @@ export default function SceneViewer({
 
       // Store animation data for playback
       currentAnimationRef.current = normalized;
+      const keyframesByObject = new Map<string, ObjectKeyframe[]>();
+      (normalized.objectKeyframes || []).forEach((kf) => {
+        const list = keyframesByObject.get(kf.objectId);
+        if (list) {
+          list.push(kf);
+        } else {
+          keyframesByObject.set(kf.objectId, [kf]);
+        }
+      });
+      keyframesByObject.forEach((list) => list.sort((a, b) => a.time - b.time));
+      animationObjectKeyframesRef.current = keyframesByObject;
+      animationObjectIdsRef.current = Array.from(keyframesByObject.keys());
+      sortedCameraKeyframesRef.current = [
+        ...(normalized.cameraKeyframes || []),
+      ].sort((a, b) => a.time - b.time);
 
       // Start animation playback at time 0
       setAnimationTime(0);
@@ -335,39 +361,19 @@ export default function SceneViewer({
     if (!modelRef.current || !currentAnimationRef.current) return;
 
     const animation = currentAnimationRef.current;
-
-    // Helper function to find object by ID
-    const findObjectById = (
-      obj: THREE.Object3D,
-      id: string,
-    ): THREE.Object3D | null => {
-      const objId = getObjectId(obj);
-      if (objId === id) return obj;
-      for (const child of obj.children) {
-        const found = findObjectById(child, id);
-        if (found) return found;
-      }
-      return null;
-    };
-
-    // Get unique object IDs
-    const uniqueObjectIds = [
-      ...new Set((animation.objectKeyframes || []).map((kf) => kf.objectId)),
-    ];
+    const uniqueObjectIds = animationObjectIdsRef.current;
 
     // Apply object transforms for each unique object
     uniqueObjectIds.forEach((objectId) => {
-      const targetObj = findObjectById(modelRef.current!, objectId);
+      const targetObj = objectLookupRef.current.get(objectId);
       if (!targetObj) return;
 
       const original = originalTransformsRef.current.get(objectId);
-      const basePosition = original?.position ?? new THREE.Vector3();
-      const baseRotation = original?.rotation ?? new THREE.Euler();
+      const basePosition = original?.position ?? zeroVectorRef.current;
+      const baseRotation = original?.rotation ?? zeroEulerRef.current;
 
-      // Get keyframes for this object sorted by time
-      const objKeyframes = (animation.objectKeyframes || [])
-        .filter((k) => k.objectId === objectId)
-        .sort((a, b) => a.time - b.time);
+      const objKeyframes =
+        animationObjectKeyframesRef.current.get(objectId) || [];
 
       // Find the keyframes to interpolate between
       let prevKf: ObjectKeyframe | null = null;
@@ -419,15 +425,15 @@ export default function SceneViewer({
         );
 
         // Slerp rotation (using quaternions)
-        const prevQuat = new THREE.Quaternion();
+        const prevQuat = tempPrevQuatRef.current;
+        const nextQuat = tempNextQuatRef.current;
+        const interpolatedQuat = tempInterpolatedQuatRef.current;
         prevQuat.setFromEuler(
           new THREE.Euler(prevRotation.x, prevRotation.y, prevRotation.z),
         );
-        const nextQuat = new THREE.Quaternion();
         nextQuat.setFromEuler(
           new THREE.Euler(nextRotation.x, nextRotation.y, nextRotation.z),
         );
-        const interpolatedQuat = new THREE.Quaternion();
         interpolatedQuat.slerpQuaternions(prevQuat, nextQuat, t);
         targetObj.quaternion.copy(interpolatedQuat);
 
@@ -515,15 +521,11 @@ export default function SceneViewer({
 
     // Apply camera transforms
     if (
-      animation.cameraKeyframes &&
-      animation.cameraKeyframes.length > 0 &&
+      sortedCameraKeyframesRef.current.length > 0 &&
       cameraRef.current &&
       controlsRef.current
     ) {
-      // Get camera keyframes sorted by time
-      const sortedCameraKfs = [...animation.cameraKeyframes].sort(
-        (a, b) => a.time - b.time,
-      );
+      const sortedCameraKfs = sortedCameraKeyframesRef.current;
 
       // Find the keyframes to interpolate between
       let prevKf: CameraKeyframe | null = null;
@@ -763,6 +765,7 @@ export default function SceneViewer({
 
         // Store original transforms for all objects (for offset animations)
         originalTransformsRef.current.clear();
+        objectLookupRef.current.clear();
         model.traverse((child: any) => {
           const objectId = getObjectId(child);
           originalTransformsRef.current.set(objectId, {
@@ -770,6 +773,7 @@ export default function SceneViewer({
             rotation: child.rotation.clone(),
             scale: child.scale.clone(),
           });
+          objectLookupRef.current.set(objectId, child);
         });
 
         // Apply initial step animation - handles all visibility
@@ -904,19 +908,9 @@ export default function SceneViewer({
       {error && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
           <div className="text-center">
-            <svg
-              className="w-16 h-16 text-red-500 mx-auto mb-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
+            <span className="material-symbols-rounded text-5xl text-red-500 mx-auto mb-4 block">
+              error
+            </span>
             <p className="text-red-600 font-medium">{error}</p>
           </div>
         </div>

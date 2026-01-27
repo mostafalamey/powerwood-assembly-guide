@@ -113,19 +113,9 @@ export default function CategoryPage() {
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       ) : (
-                        <svg
-                          className="w-20 h-20 text-primary-300"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                          />
-                        </svg>
+                        <span className="material-symbols-rounded text-5xl text-primary-300">
+                          inventory_2
+                        </span>
                       )}
                     </div>
 
@@ -141,37 +131,17 @@ export default function CategoryPage() {
                       {/* Stats */}
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
+                          <span className="material-symbols-rounded text-base">
+                            schedule
+                          </span>
                           <span>
                             {cabinet.estimatedTime} {t("cabinet.minutes")}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                            />
-                          </svg>
+                          <span className="material-symbols-rounded text-base">
+                            format_list_numbered
+                          </span>
                           <span>
                             {(cabinet as any).stepCount || 0}{" "}
                             {t("cabinet.steps")}
@@ -185,19 +155,9 @@ export default function CategoryPage() {
             </div>
           ) : (
             <div className="text-center py-16">
-              <svg
-                className="w-20 h-20 text-gray-300 mx-auto mb-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                />
-              </svg>
+              <span className="material-symbols-rounded text-5xl text-gray-300 mx-auto mb-4 block">
+                inventory_2
+              </span>
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 No cabinets in this category yet
               </h3>

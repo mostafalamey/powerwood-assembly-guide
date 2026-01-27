@@ -14,7 +14,7 @@
         "en": "Standard 1-door base cabinet with adjustable shelf",
         "ar": "خزانة أرضية قياسية باب واحد مع رف قابل للتعديل"
       },
-      "stepCount": 6
+      "stepCount": 7
     },
     {
       "id": "BC-003",
@@ -25,7 +25,7 @@
       "category": "base",
       "estimatedTime": 22,
       "description": {
-        "en": "Some desctiption",
+        "en": "Some desctiption 123",
         "ar": "خزانة ارضية بابين"
       },
       "stepCount": 4,
