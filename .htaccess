@@ -13,6 +13,9 @@ RewriteRule ^api/categories$ php-api/categories.php [L]
 RewriteRule ^api/upload$ php-api/upload.php [L]
 RewriteRule ^api/admin/cabinets/([^/]+)/steps/([^/]+)/animation/?$ php-api/admin/animation.php?cabinetId=$1&stepId=$2 [L,QSA]
 
+# Map public asset directories to the public folder
+RewriteRule ^(images|models|audio|cabinets)/(.+)$ public/$1/$2 [L]
+
 # Serve static files directly (images, JS, CSS, etc.)
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
