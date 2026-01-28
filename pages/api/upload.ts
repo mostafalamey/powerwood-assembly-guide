@@ -21,6 +21,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  // Check if we're in a serverless environment (Vercel)
+  if (process.env.VERCEL) {
+    return res.status(503).json({
+      message:
+        "File uploads are not available in production. Please run locally for content management.",
+      error: "READ_ONLY_FILESYSTEM",
+    });
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
