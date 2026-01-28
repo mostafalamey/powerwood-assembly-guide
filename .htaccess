@@ -42,6 +42,16 @@ RewriteRule ^admin/cabinets/[^/]+/edit/?$ admin/cabinets/[id]/edit/index.html [L
 # /admin/cabinets/new -> /admin/cabinets/new/index.html
 RewriteRule ^admin/cabinets/new/?$ admin/cabinets/new/index.html [L]
 
+# Public dynamic routes - map to template folders
+# /categories/base -> /categories/[category]/index.html
+RewriteRule ^categories/[^/]+/?$ categories/[category]/index.html [L]
+
+# /cabinet/BC-003 -> /cabinet/[id]/index.html
+RewriteRule ^cabinet/[^/]+/?$ cabinet/[id]/index.html [L]
+
+# /cabinet/BC-003/step/1 -> /cabinet/[id]/step/[stepId]/index.html
+RewriteRule ^cabinet/[^/]+/step/[^/]+/?$ cabinet/[id]/step/[stepId]/index.html [L]
+
 # Check if directory with index.html exists
 RewriteCond %{REQUEST_FILENAME}/index.html -f
 RewriteRule ^(.*)$ $1/index.html [L]
