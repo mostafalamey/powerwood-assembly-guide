@@ -131,10 +131,11 @@ export default function StepAuthoringPage() {
     const fetchCabinet = async () => {
       try {
         const token = localStorage.getItem("admin_token");
-        const response = await fetch(`/api/cabinets?id=${id}`, {
+        const response = await fetch(`/api/cabinets?id=${id}&_=${Date.now()}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          cache: "no-store",
         });
 
         if (response.ok) {
@@ -166,6 +167,16 @@ export default function StepAuthoringPage() {
     const nextAudioUrl =
       stepData?.audioUrl?.en || stepData?.audioUrl?.ar || null;
     setAudioUrl(nextAudioUrl);
+
+    // Load existing animation if present
+    if (stepData?.animation) {
+      const anim = stepData.animation;
+      if (anim.duration) setDuration(anim.duration);
+      if (anim.objectKeyframes) setObjectKeyframes(anim.objectKeyframes);
+      if (anim.cameraKeyframes) setCameraKeyframes(anim.cameraKeyframes);
+      if (typeof anim.isOffset === "boolean")
+        setIsOffsetAnimation(anim.isOffset);
+    }
   }, [step, cabinet]);
 
   const handleSceneReady = useCallback((scene: any, camera: any) => {

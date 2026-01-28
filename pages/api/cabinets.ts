@@ -13,6 +13,15 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  // Check if we're in a serverless environment (Vercel) for write operations
+  if (process.env.VERCEL && req.method !== "GET") {
+    return res.status(503).json({
+      message:
+        "Admin panel is not available in production. Please run locally for content management.",
+      error: "READ_ONLY_FILESYSTEM",
+    });
+  }
+
   // Simple auth check - verify token in header
   const token = req.headers.authorization?.replace("Bearer ", "");
   if (!token) {

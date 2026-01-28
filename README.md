@@ -58,7 +58,8 @@ Auth:        bcryptjs 2.4.3 (token-based)
 QR Codes:    qrcode.react 3.1.0
 i18n:        Custom (localStorage + React Context)
 Build:       Static Export
-Hosting:     TBD (Hostinger planned)
+Backend:     PHP 8.3 API Layer
+Hosting:     Hostinger Premium (https://mlextensions.com)
 ```
 
 ---
@@ -89,12 +90,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### Build for Production
 
 ```bash
+# Clean previous builds (avoids file locking issues)
+Remove-Item -Recurse -Force .next,out  # PowerShell
+# rm -rf .next out  # Bash
+
 # Create static export
 npm run build
 
-# Preview build
-npm run start
+# Output: out/ folder with static HTML/CSS/JS
 ```
+
+**Deployment:** Upload `out/` folder contents to Hostinger. See [HOSTINGER_DEPLOYMENT.md](docs/HOSTINGER_DEPLOYMENT.md) for complete deployment guide.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## **PWAssemblyGuide - Complete Documentation Directory**
 
-Last Updated: January 20, 2026
+Last Updated: January 28, 2026
 
 ---
 
@@ -21,31 +21,58 @@ Last Updated: January 20, 2026
 - 📖 [**README**](../README.md) - Project overview and quick start
 - 🔧 [**Phase 3 Guide**](./PHASE3_GUIDE.md) - Detailed implementation guide
 - ⚡ [**Phase 3 Quick Reference**](./PHASE3_QUICKREF.md) - Quick reference card
-- 🎬 [**Keyframe Animation System**](./KEYFRAME_ANIMATION_SYSTEM.md) - Animation architecture (NEW)
+- 🎬 [**Keyframe Animation System**](./KEYFRAME_ANIMATION_SYSTEM.md) - Animation architecture
+- 🌐 [**Hostinger Deployment**](./HOSTINGER_DEPLOYMENT.md) - Production deployment guide (NEW)
 - 📜 [**Changelog**](../CHANGELOG.md) - Version history
 
 ---
 
 ## 📊 Documentation Overview
 
-| Document                                                       | Purpose           | Audience     | Length      | Updated |
-| -------------------------------------------------------------- | ----------------- | ------------ | ----------- | ------- |
-| [EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)                 | Status report     | Stakeholders | 700+ lines  | Jan 20  |
-| [MVP.md](./MVP.md)                                             | MVP requirements  | All          | 1,084 lines | Jan 14  |
-| [PRD.md](./PRD.md)                                             | Product specs     | Product/Dev  | 1,226 lines | Jan 13  |
-| [PROGRESS.md](./PROGRESS.md)                                   | Progress tracking | All          | 750+ lines  | Jan 18  |
-| [PHASE3_GUIDE.md](./PHASE3_GUIDE.md)                           | Implementation    | Developers   | 800+ lines  | Jan 14  |
-| [PHASE3_QUICKREF.md](./PHASE3_QUICKREF.md)                     | Quick reference   | Developers   | 200 lines   | Jan 14  |
-| [GETTING_STARTED_PHASE3.md](./GETTING_STARTED_PHASE3.md)       | Setup guide       | Developers   | 500+ lines  | Jan 14  |
-| [KEYFRAME_ANIMATION_SYSTEM.md](./KEYFRAME_ANIMATION_SYSTEM.md) | Animation system  | Developers   | 400+ lines  | Jan 17  |
-| [CHANGELOG.md](../CHANGELOG.md)                                | Version history   | All          | 400 lines   | Jan 14  |
-| [README.md](../README.md)                                      | Project overview  | All          | 200 lines   | Jan 14  |
+| Document                                                       | Purpose              | Audience     | Length      | Updated |
+| -------------------------------------------------------------- | -------------------- | ------------ | ----------- | ------- |
+| [EXECUTIVE_SUMMARY.md](./EXECUTIVE_SUMMARY.md)                 | Status report        | Stakeholders | 700+ lines  | Jan 20  |
+| [MVP.md](./MVP.md)                                             | MVP requirements     | All          | 1,084 lines | Jan 14  |
+| [PRD.md](./PRD.md)                                             | Product specs        | Product/Dev  | 1,226 lines | Jan 13  |
+| [PROGRESS.md](./PROGRESS.md)                                   | Progress tracking    | All          | 750+ lines  | Jan 18  |
+| [PHASE3_GUIDE.md](./PHASE3_GUIDE.md)                           | Implementation       | Developers   | 800+ lines  | Jan 14  |
+| [PHASE3_QUICKREF.md](./PHASE3_QUICKREF.md)                     | Quick reference      | Developers   | 200 lines   | Jan 14  |
+| [GETTING_STARTED_PHASE3.md](./GETTING_STARTED_PHASE3.md)       | Setup guide          | Developers   | 500+ lines  | Jan 14  |
+| [KEYFRAME_ANIMATION_SYSTEM.md](./KEYFRAME_ANIMATION_SYSTEM.md) | Animation system     | Developers   | 400+ lines  | Jan 17  |
+| [HOSTINGER_DEPLOYMENT.md](./HOSTINGER_DEPLOYMENT.md)           | Deployment guide     | DevOps       | 700+ lines  | Jan 28  |
+| [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)         | Implementation state | Developers   | 700+ lines  | Jan 28  |
+| [CHANGELOG.md](../CHANGELOG.md)                                | Version history      | All          | 600+ lines  | Jan 28  |
+| [README.md](../README.md)                                      | Project overview     | All          | 350 lines   | Jan 28  |
 
-**Total Documentation:** 10 files, ~6,500+ lines
+**Total Documentation:** 12 files, ~8,000+ lines
 
 ---
 
 ## 📖 Document Details
+
+### 🌐 HOSTINGER_DEPLOYMENT.md (NEW)
+
+**Purpose:** Complete deployment guide for Hostinger Premium hosting  
+**Audience:** Developers, DevOps  
+**Last Updated:** January 28, 2026
+
+**Key Topics:**
+
+- Deployment architecture (Static export + PHP backend)
+- Why Hostinger instead of Vercel (filesystem write access)
+- PHP API endpoint documentation
+- Apache .htaccess configuration
+- Cache management strategies
+- Build and upload process
+- Debugging checklist
+- Security considerations
+
+**When to Use:**
+
+- Setting up production environment
+- Troubleshooting deployment issues
+- Understanding data flow (client → static → API → JSON files)
+- Configuring .htaccess for dynamic routes
 
 ### 📊 EXECUTIVE_SUMMARY.md
 

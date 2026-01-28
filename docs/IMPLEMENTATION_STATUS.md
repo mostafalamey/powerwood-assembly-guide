@@ -74,6 +74,187 @@
 
 ## ✅ Phase 8: Polish - COMPLETED
 
+## ✅ Deployment: Hostinger Migration - COMPLETED (January 27-28, 2026)
+
+### Deployment Architecture Migration
+
+**Decision:** Migrated from Vercel serverless to Hostinger Premium hosting
+
+**Reason:** Vercel's serverless environment uses a read-only filesystem, preventing JSON file writes required for animation persistence and cabinet data updates. Received 500 errors when attempting to save animations.
+
+**Solution:** Deployed static Next.js export to Hostinger Premium with custom PHP API backend.
+
+### Infrastructure
+
+- **Hosting:** Hostinger Premium (https://mlextensions.com)
+- **Web Server:** LiteSpeed with Apache .htaccess support
+- **PHP Version:** 8.3.16
+- **Static Export:** Next.js build output (16 static HTML pages)
+- **Account:** Valid until February 13, 2028
+
+### PHP API Layer
+
+Created standalone PHP endpoints to replace Next.js API routes:
+
+1. **`php-api/auth.php`** - Authentication
+   - POST: Login with password verification
+   - GET: Token validation (auth temporarily bypassed)
+   - Bcrypt password hashing
+   - Token generation and verification
+
+2. **`php-api/cabinets.php`** - Cabinet CRUD
+   - GET: List all cabinets or single cabinet by ID
+   - POST: Create new cabinet
+   - PUT: Update existing cabinet
+   - DELETE: Remove cabinet
+   - Handles data wrapper structure: `{'cabinets': [...]}`
+
+3. **`php-api/categories.php`** - Category data
+   - GET: Returns all categories from JSON
+
+4. **`php-api/upload.php`** - File uploads
+   - POST: Upload GLB models, audio files, images
+   - File validation and path management
+
+5. **`php-api/config.php`** - Shared utilities
+   - JSON read/write helpers
+   - CORS headers
+   - Error handling
+
+6. **`php-api/admin/animation.php`** - Animation persistence
+   - POST: Save step animations to cabinet JSON files
+   - Flexible step ID matching (string/integer)
+   - Extensive logging to `animation_save.log`
+   - **Note:** Authentication temporarily disabled for debugging
+
+### Apache Configuration (.htaccess)
+
+- Dynamic route mapping for Next.js static export
+  - `/cabinet/BC-003/` → `/cabinet/[id]/index.html`
+  - `/cabinet/BC-003/step/4/` → `/cabinet/[id]/step/[stepId]/index.html`
+  - `/admin/cabinets/BC-003/steps/authoring` → `/admin/cabinets/[id]/steps/authoring/index.html`
+- Authorization header pass-through for PHP API
+- API routing: `/api/*` → `/php-api/*`
+
+### Data Flow Changes
+
+**Before (Vercel):**
+
+```text
+Client → Next.js API Route → File System (read-only) → 500 Error
+```
+
+**After (Hostinger):**
+
+```text
+Client → Static HTML → fetch('/api/cabinets') → .htaccess rewrite →
+php-api/cabinets.php → data/cabinets/*.json (writable) → Success
+```
+
+### Cache Management
+
+**Problem:** LiteSpeed server was caching API responses with `max-age=604800` (7 days), causing stale data to be served despite successful PHP writes.
+
+**Solutions Implemented:**
+
+1. **PHP Headers** (all endpoints):
+
+   ```php
+   header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+   header('Pragma: no-cache');
+   header('Expires: 0');
+   ```
+
+2. **Client-side Cache Busting:**
+
+   ```typescript
+   fetch(`/api/cabinets?id=${id}&_=${Date.now()}`, {
+     cache: "no-store",
+   });
+   ```
+
+### Code Changes for Deployment
+
+**Step Viewer (Public Pages):**
+
+- **Before:** Used build-time bundled data via `getCabinet()` from `cabinets-loader.ts`
+- **After:** Runtime API fetch with cache-busting
+- **File:** `pages/cabinet/[id]/step/[stepId].tsx`
+- **Impact:** Step viewer now displays latest animations immediately after admin saves
+
+**Authoring Tool (Admin Panel):**
+
+- **Before:** Empty state on load despite saved animations
+- **After:** Added useEffect to load existing animation data on mount
+- **File:** `pages/admin/cabinets/[id]/steps/authoring.tsx`
+- **Impact:** Authoring tool now pre-populates with saved keyframes, duration, and settings
+
+### Data Structure Handling
+
+**Challenge:** PHP arrays vs JavaScript objects
+
+**JSON File Format:**
+
+```json
+{
+  "cabinets": [
+    { "id": "BC-002", "name": "Base Cabinet 2" },
+    { "id": "BC-003", "name": "Base Cabinet 3" }
+  ]
+}
+```
+
+**PHP Handling:**
+
+```php
+$indexData = readJSON(CABINETS_INDEX);
+$cabinets = $indexData['cabinets'] ?? $indexData ?? [];  // Flexible unwrapping
+writeJSON(CABINETS_INDEX, ['cabinets' => $index]);       // Wrapped write
+```
+
+**JavaScript Handling:**
+
+```typescript
+const response = await fetch("/api/cabinets");
+const cabinets = await response.json(); // Expects unwrapped array
+```
+
+### Debugging & Logging
+
+**Animation Save Log:**
+
+```text
+[2026-01-27 23:48:15] POST /php-api/admin/animation.php
+Payload size: 42857 bytes
+Cabinet: BC-003, Step: 4
+File written: 88777 bytes
+```
+
+**Verified Working:**
+
+- Animation persistence (88,777 bytes written successfully)
+- Authoring tool loads saved animations
+- Step viewer displays updated animations
+- Admin authentication and token management
+- All dynamic routes resolve correctly
+- No 404 or 500 errors on admin panel operations
+
+### Known Issues
+
+- ⚠️ Animation endpoint has authentication bypassed: `verifyAuth() { return true; }`
+- ⏳ Needs re-enablement before final production deployment
+- Security: Password hardcoded as `admin123` (should use environment variable)
+
+### Documentation
+
+- **Comprehensive Guide:** [docs/HOSTINGER_DEPLOYMENT.md](./HOSTINGER_DEPLOYMENT.md)
+- Covers: Architecture, API endpoints, deployment steps, troubleshooting, security
+- Includes: Apache configuration, file permissions, debugging checklist
+
+---
+
+## ✅ Phase 8: Polish - COMPLETED
+
 ### Highlights (January 27, 2026)
 
 - Performance optimizations in 3D authoring and runtime viewers

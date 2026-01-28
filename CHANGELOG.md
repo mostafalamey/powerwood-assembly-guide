@@ -13,6 +13,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Device testing (Phase 9)
 - Export/import animation templates (Phase 6.6)
+- Re-enable authentication in animation.php endpoint
+
+---
+
+## [0.12.0] - 2026-01-28
+
+### 🚀 Changed - Deployment Architecture Migration
+
+- **Hostinger Deployment:**
+  - Migrated from planned Vercel deployment to Hostinger Premium hosting
+  - Reason: Vercel serverless filesystem is read-only, cannot save animation JSON files
+  - Static Next.js export (`output: 'export'`) deployed to https://mlextensions.com
+  - Account valid until February 13, 2028
+
+- **PHP API Backend:**
+  - Created complete PHP 8.3 API layer replacing Next.js API routes
+  - 6 standalone endpoints: auth, cabinets, categories, upload, config, admin/animation
+  - All endpoints independent (no shared dependencies) for maximum reliability
+  - Data storage via JSON files with write access
+  - Token-based authentication with bcryptjs password hashing
+
+- **Data Flow Improvements:**
+  - Fixed browser caching: Added no-cache headers to all PHP endpoints
+  - Cache-busting: Timestamp query parameters on all fetch calls (`?_=${Date.now()}`)
+  - Fixed data wrapper structure: PHP returns `{'cabinets': [...]}` to match JS expectations
+  - Authorization header pass-through via .htaccess rewrite rules
+
+- **Step Viewer Enhancement:**
+  - Converted from build-time bundled data to runtime API fetches
+  - Removed `getCabinet()` import from `cabinets-loader.ts`
+  - Now fetches fresh data from PHP API on every page load
+  - Ensures animations always display latest saved version
+
+- **Authoring Tool Fix:**
+  - Added useEffect to load existing animations on component mount
+  - Properly initializes duration, keyframes, and offset settings from saved data
+  - Fixed issue where authoring tool showed empty state despite saved animations
+
+### 📝 Added
+
+- **Documentation:**
+  - Created comprehensive [HOSTINGER_DEPLOYMENT.md](docs/HOSTINGER_DEPLOYMENT.md) guide
+  - Covers deployment architecture, PHP API endpoints, Apache configuration
+  - Includes troubleshooting checklist and debugging tips
+  - Documents migration timeline from Vercel to Hostinger
+
+### 🐛 Fixed
+
+- LiteSpeed browser cache serving stale data (7-day max-age)
+- Apache not passing Authorization header to PHP scripts
+- Animation authoring tool not loading existing animations
+- Step viewer using outdated build-time data instead of API
+- Data format mismatch (PHP array vs JavaScript object)
+
+### ⚠️ Known Issues
+
+- Animation endpoint has authentication temporarily disabled for debugging
+- Needs re-enablement before final production deployment
 
 ---
 

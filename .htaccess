@@ -1,0 +1,74 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Pass Authorization header to PHP scripts
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# API Routes - handle these first
+RewriteRule ^api/auth/login$ php-api/auth.php [L]
+RewriteRule ^api/auth/validate$ php-api/auth.php [L]
+RewriteRule ^api/cabinets$ php-api/cabinets.php [L,QSA]
+RewriteRule ^api/categories$ php-api/categories.php [L]
+RewriteRule ^api/upload$ php-api/upload.php [L]
+RewriteRule ^api/admin/cabinets/([^/]+)/steps/([^/]+)/animation/?$ php-api/admin/animation.php?cabinetId=$1&stepId=$2 [L,QSA]
+
+# Serve static files directly (images, JS, CSS, etc.)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Dynamic cabinet routes - map to template folders
+# /admin/cabinets/BC-003/steps/authoring?step=4 -> /admin/cabinets/[id]/steps/authoring/index.html
+RewriteRule ^admin/cabinets/[^/]+/steps/authoring/?$ admin/cabinets/[id]/steps/authoring/index.html [L,QSA]
+
+# /admin/cabinets/BC-003/steps/4/authoring -> /admin/cabinets/[id]/steps/[stepId]/authoring/index.html
+RewriteRule ^admin/cabinets/[^/]+/steps/[^/]+/authoring/?$ admin/cabinets/[id]/steps/[stepId]/authoring/index.html [L]
+
+# /admin/cabinets/BC-003/steps/4/edit -> /admin/cabinets/[id]/steps/[stepId]/edit/index.html
+RewriteRule ^admin/cabinets/[^/]+/steps/[^/]+/edit/?$ admin/cabinets/[id]/steps/[stepId]/edit/index.html [L]
+
+# /admin/cabinets/BC-003/steps/new -> /admin/cabinets/[id]/steps/new/index.html
+RewriteRule ^admin/cabinets/[^/]+/steps/new/?$ admin/cabinets/[id]/steps/new/index.html [L]
+
+# /admin/cabinets/BC-003/steps -> /admin/cabinets/[id]/steps/index.html
+RewriteRule ^admin/cabinets/[^/]+/steps/?$ admin/cabinets/[id]/steps/index.html [L]
+
+# /admin/cabinets/BC-003/edit -> /admin/cabinets/[id]/edit/index.html
+RewriteRule ^admin/cabinets/[^/]+/edit/?$ admin/cabinets/[id]/edit/index.html [L]
+
+# /admin/cabinets/new -> /admin/cabinets/new/index.html
+RewriteRule ^admin/cabinets/new/?$ admin/cabinets/new/index.html [L]
+
+# Check if directory with index.html exists
+RewriteCond %{REQUEST_FILENAME}/index.html -f
+RewriteRule ^(.*)$ $1/index.html [L]
+
+# Try adding .html extension
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# Fallback to 404
+RewriteRule ^(.*)$ 404.html [L]
+
+# Enable CORS
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+# Enable gzip compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Browser caching
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/json "access plus 1 week"
+</IfModule>

@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import SceneViewer from "@/components/3d/SceneViewer";
 import StepNavigation from "@/components/StepNavigation";
 import AudioPlayer from "@/components/AudioPlayer";
-import { getCabinet } from "@/data/cabinets-loader";
 import { Cabinet, Step } from "@/types/cabinet";
 
 export default function StepPage() {
@@ -38,26 +37,43 @@ export default function StepPage() {
   useEffect(() => {
     if (!id) return;
 
-    const foundCabinet = getCabinet(id as string);
-    if (!foundCabinet) {
-      router.push("/");
-      return;
-    }
+    // Fetch cabinet from API instead of bundled data
+    const fetchCabinet = async () => {
+      try {
+        const response = await fetch(`/api/cabinets?id=${id}&_=${Date.now()}`, {
+          cache: "no-store",
+        });
 
-    setCabinet(foundCabinet);
+        if (!response.ok) {
+          router.push("/");
+          return;
+        }
 
-    if (stepId && foundCabinet.steps) {
-      const stepIndex = foundCabinet.steps.findIndex((s) => s.id === stepId);
-      if (stepIndex !== -1) {
-        setCurrentStep(foundCabinet.steps[stepIndex] as Step);
-        setCurrentStepIndex(stepIndex);
-      } else {
-        router.push(`/cabinet/${id}`);
+        const foundCabinet = await response.json();
+
+        setCabinet(foundCabinet);
+
+        if (stepId && foundCabinet.steps) {
+          const stepIndex = foundCabinet.steps.findIndex(
+            (s: any) => s.id === stepId,
+          );
+          if (stepIndex !== -1) {
+            setCurrentStep(foundCabinet.steps[stepIndex] as Step);
+            setCurrentStepIndex(stepIndex);
+          } else {
+            router.push(`/cabinet/${id}`);
+          }
+        } else if (foundCabinet.steps && foundCabinet.steps.length > 0) {
+          const firstStep = foundCabinet.steps[0] as Step;
+          router.push(`/cabinet/${id}/step/${firstStep.id}`);
+        }
+      } catch (error) {
+        console.error("Error fetching cabinet:", error);
+        router.push("/");
       }
-    } else if (foundCabinet.steps && foundCabinet.steps.length > 0) {
-      const firstStep = foundCabinet.steps[0] as Step;
-      router.push(`/cabinet/${id}/step/${firstStep.id}`);
-    }
+    };
+
+    fetchCabinet();
   }, [id, stepId, router]);
 
   // Reset isAnimating when step changes (don't auto-start)

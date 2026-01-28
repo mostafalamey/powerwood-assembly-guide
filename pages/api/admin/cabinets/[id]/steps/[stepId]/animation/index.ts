@@ -11,6 +11,15 @@ export default async function handler(
   console.log(`[Animation API] ${req.method} request received`);
   console.log(`[Animation API] Query params:`, req.query);
 
+  // Check if we're in a serverless environment (Vercel)
+  if (process.env.VERCEL) {
+    return res.status(503).json({
+      message:
+        "Admin panel is not available in production. Please run locally for content management.",
+      error: "READ_ONLY_FILESYSTEM",
+    });
+  }
+
   if (req.method !== "PUT") {
     return res.status(405).json({ message: "Method not allowed" });
   }
