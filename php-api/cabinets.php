@@ -102,26 +102,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyAuth();
     $body = getRequestBody();
     
+    // Validate required fields
+    if (empty($body['id']) || empty($body['name'])) {
+        sendError('Missing required fields: id and name', 400);
+    }
+    
     $indexData = readJSON(CABINETS_INDEX) ?? ['cabinets' => []];
     $index = $indexData['cabinets'] ?? [];
+    
+    // Check for duplicate ID
+    foreach ($index as $existingCabinet) {
+        if ($existingCabinet['id'] === $body['id']) {
+            sendError('Cabinet with ID ' . $body['id'] . ' already exists', 409);
+        }
+    }
     
     // Add to index (metadata only)
     $newCabinet = [
         'id' => $body['id'],
         'name' => $body['name'],
-        'description' => $body['description'],
+        'description' => $body['description'] ?? ['en' => '', 'ar' => ''],
         'category' => $body['category'],
         'image' => $body['image'] ?? '',
         'model' => $body['model'] ?? '',
+        'estimatedTime' => $body['estimatedTime'] ?? 0,
         'stepCount' => 0
     ];
     
     $index[] = $newCabinet;
-    writeJSON(CABINETS_INDEX, ['cabinets' => $index]);
     
-    // Create empty cabinet file
+    // Write to index file
+    if (!writeJSON(CABINETS_INDEX, ['cabinets' => $index])) {
+        sendError('Failed to write cabinets index file', 500);
+    }
+    
+    // Create cabinet file with ID property
     $cabinetFile = CABINETS_DIR . '/' . $body['id'] . '.json';
-    writeJSON($cabinetFile, ['steps' => []]);
+    $cabinetData = [
+        'id' => $body['id'],
+        'steps' => []
+    ];
+    
+    if (!writeJSON($cabinetFile, $cabinetData)) {
+        sendError('Failed to create cabinet file', 500);
+    }
     
     sendJSON($newCabinet, 201);
 }

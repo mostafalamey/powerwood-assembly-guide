@@ -3,30 +3,66 @@ import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
-import { getCabinet } from "@/data/cabinets-loader";
 
 interface Cabinet {
   id: string;
-  name: string;
-  nameAr: string;
+  name: string | { en: string; ar: string };
+  nameAr?: string;
   category: string;
   estimatedTime: number;
   image: string;
   model: string;
-  description: string;
-  descriptionAr: string;
+  description: string | { en: string; ar: string };
+  descriptionAr?: string;
   steps: any[];
-  requiredTools: string[];
-  requiredToolsAr: string[];
+  requiredTools?: string[];
+  requiredToolsAr?: string[];
 }
 
 export default function CabinetPage() {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
+  const [cabinet, setCabinet] = useState<Cabinet | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const cabinet = id ? getCabinet(id as string) : null;
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchCabinet = async () => {
+      try {
+        const response = await fetch(`/api/cabinets?id=${id}&_=${Date.now()}`, {
+          cache: "no-store",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setCabinet(data);
+        }
+      } catch (error) {
+        console.error("Error fetching cabinet:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCabinet();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <>
+        <Head>
+          <title>{`${t("loading")} - ${t("appTitle")}`}</title>
+        </Head>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <p className="text-gray-600">{t("loading")}</p>
+        </div>
+      </>
+    );
+  }
 
   if (!cabinet) {
     return (

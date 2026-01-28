@@ -3,14 +3,45 @@ import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import Header from "@/components/Header";
-import { getCabinetsByCategory } from "@/data/cabinets-loader";
 import categoriesData from "@/data/categories.json";
+import { Cabinet } from "@/types/cabinet";
 
 export default function CategoryPage() {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const { category } = router.query;
+  const [cabinets, setCabinets] = useState<Cabinet[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch cabinets from API
+  useEffect(() => {
+    if (!category) return;
+
+    const fetchCabinets = async () => {
+      try {
+        const response = await fetch(`/api/cabinets?_=${Date.now()}`, {
+          cache: "no-store",
+        });
+
+        if (response.ok) {
+          const allCabinets = await response.json();
+          // Filter by category
+          const filtered = allCabinets.filter(
+            (cab: Cabinet) => cab.category === category,
+          );
+          setCabinets(filtered);
+        }
+      } catch (error) {
+        console.error("Error fetching cabinets:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCabinets();
+  }, [category]);
 
   // Find category info
   const categoryInfo = categoriesData.categories.find(
@@ -44,13 +75,26 @@ export default function CategoryPage() {
     );
   }
 
-  // Filter cabinets by category
-  const cabinets = getCabinetsByCategory(category as string);
-
   const categoryName =
     locale === "ar" ? categoryInfo.nameAr : categoryInfo.name;
   const categoryDescription =
     locale === "ar" ? categoryInfo.descriptionAr : categoryInfo.description;
+
+  if (loading) {
+    return (
+      <>
+        <Head>
+          <title>{`${categoryName} - ${t("appTitle")}`}</title>
+        </Head>
+        <div className="min-h-screen bg-gray-50">
+          <Header showBackButton />
+          <div className="container mx-auto px-4 py-16 text-center">
+            <p className="text-gray-600">{t("loading")}</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
