@@ -1,5 +1,41 @@
 <?php
-require_once __DIR__ . '/config.php';
+// Standalone upload endpoint
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+// Handle preflight OPTIONS requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+// Define paths
+define('UPLOAD_DIR', __DIR__ . '/../public');
+
+// Helper functions
+function sendJSON($data, $statusCode = 200) {
+    http_response_code($statusCode);
+    echo json_encode($data);
+    exit;
+}
+
+function sendError($message, $statusCode = 400) {
+    sendJSON(['error' => $message], $statusCode);
+}
+
+function verifyAuth() {
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    if (!$authHeader || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+        sendError('Unauthorized', 401);
+    }
+    $token = $matches[1];
+    if (empty($token) || strlen($token) < 10) {
+        sendError('Unauthorized', 401);
+    }
+    return $token;
+}
 
 verifyAuth();
 
