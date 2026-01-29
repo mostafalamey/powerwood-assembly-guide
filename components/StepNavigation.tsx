@@ -23,21 +23,20 @@ export default function StepNavigation({
   const hasNext = currentStepIndex < steps.length - 1;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 lg:space-y-3">
       {/* Progress Bar */}
-      <div className="bg-white rounded-lg p-4 shadow-md">
+      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-3 shadow-lg border border-white/50 dark:border-gray-700/50">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
             {t("navigation.progress")}
           </span>
-          <span className="text-sm text-gray-500">
-            {t("navigation.step")} {currentStepIndex + 1} {t("navigation.of")}{" "}
-            {steps.length}
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {currentStepIndex + 1} / {steps.length}
           </span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
           <div
-            className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+            className="bg-gradient-to-r from-primary-500 to-primary-600 h-1.5 rounded-full transition-all duration-300"
             style={{
               width: `${((currentStepIndex + 1) / steps.length) * 100}%`,
             }}
@@ -46,41 +45,49 @@ export default function StepNavigation({
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         {hasPrevious ? (
           <Link
-            href={`/cabinet/${cabinetId}/step/${
-              steps[currentStepIndex - 1].id
-            }`}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg transition-colors"
+            href={`/cabinet/${cabinetId}/step/${steps[currentStepIndex - 1].id}`}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl hover:bg-white dark:hover:bg-gray-700 border border-white/50 dark:border-gray-700/50 rounded-xl transition-all shadow-sm hover:shadow min-h-[44px]"
           >
-            <span className="material-symbols-rounded text-lg">arrow_back</span>
-            <span className="font-medium">{t("navigation.previous")}</span>
+            <span className="material-symbols-rounded text-base rtl:rotate-180 text-gray-700 dark:text-gray-300">
+              arrow_back
+            </span>
+            <span className="font-medium text-sm text-gray-700 dark:text-gray-300">
+              {t("navigation.previous")}
+            </span>
           </Link>
         ) : (
-          <div className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 border border-gray-200 rounded-lg text-gray-400 cursor-not-allowed">
-            <span className="material-symbols-rounded text-lg">arrow_back</span>
-            <span className="font-medium">{t("navigation.previous")}</span>
+          <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gray-100/50 dark:bg-gray-800/30 border border-gray-200/50 dark:border-gray-700/30 rounded-xl text-gray-400 dark:text-gray-600 cursor-not-allowed min-h-[44px]">
+            <span className="material-symbols-rounded text-base rtl:rotate-180">
+              arrow_back
+            </span>
+            <span className="font-medium text-sm">
+              {t("navigation.previous")}
+            </span>
           </div>
         )}
 
         {hasNext ? (
           isAnimating ? (
-            <div className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary-400 text-white rounded-lg cursor-not-allowed opacity-70">
-              <span className="font-medium">{t("navigation.next")}</span>
-              <span className="material-symbols-rounded text-lg animate-pulse">
+            <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-primary-400 dark:bg-primary-600/50 text-white rounded-xl cursor-not-allowed opacity-70 min-h-[44px]">
+              <span className="font-medium text-sm">
+                {t("navigation.next")}
+              </span>
+              <span className="material-symbols-rounded text-base animate-pulse rtl:rotate-180">
                 arrow_forward
               </span>
             </div>
           ) : (
             <Link
-              href={`/cabinet/${cabinetId}/step/${
-                steps[currentStepIndex + 1].id
-              }`}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+              href={`/cabinet/${cabinetId}/step/${steps[currentStepIndex + 1].id}`}
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl min-h-[44px]"
             >
-              <span className="font-medium">{t("navigation.next")}</span>
-              <span className="material-symbols-rounded text-lg">
+              <span className="font-medium text-sm">
+                {t("navigation.next")}
+              </span>
+              <span className="material-symbols-rounded text-base rtl:rotate-180">
                 arrow_forward
               </span>
             </Link>
@@ -88,18 +95,20 @@ export default function StepNavigation({
         ) : (
           <Link
             href={`/cabinet/${cabinetId}`}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all shadow-lg shadow-green-500/25 hover:shadow-xl min-h-[44px]"
           >
-            <span className="material-symbols-rounded text-lg">
+            <span className="material-symbols-rounded text-base">
               check_circle
             </span>
-            <span className="font-medium">Complete</span>
+            <span className="font-medium text-sm">
+              {t("navigation.complete") || "Complete"}
+            </span>
           </Link>
         )}
       </div>
 
       {/* Step List */}
-      <div className="bg-white rounded-lg shadow-md max-h-64 overflow-y-auto step-list-scrollbar">
+      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 max-h-48 lg:max-h-none lg:flex-1 overflow-y-auto">
         <div className="p-2">
           {steps.map((step, index) => {
             const stepTitle =
@@ -116,7 +125,6 @@ export default function StepNavigation({
             const isDisabled = isFutureStep && isAnimating;
 
             const handleClick = (e: React.MouseEvent) => {
-              // Prevent navigation to future steps while animating
               if (isDisabled) {
                 e.preventDefault();
                 return;
@@ -130,14 +138,14 @@ export default function StepNavigation({
             return isDisabled ? (
               <div
                 key={step.id}
-                className="block p-3 mb-2 rounded-lg bg-gray-50 opacity-50 cursor-not-allowed"
+                className="block p-2.5 mb-1.5 rounded-lg bg-gray-50/50 dark:bg-gray-700/30 opacity-50 cursor-not-allowed"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-gray-300 text-gray-600">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate text-gray-500">
+                    <p className="text-xs font-medium truncate text-gray-500 dark:text-gray-500">
                       {stepTitle}
                     </p>
                   </div>
@@ -148,26 +156,26 @@ export default function StepNavigation({
                 key={step.id}
                 href={`/cabinet/${cabinetId}/step/${step.id}`}
                 onClick={handleClick}
-                className={`block p-3 mb-2 rounded-lg transition-colors ${
+                className={`block p-2.5 mb-1.5 rounded-lg transition-all ${
                   isActive
-                    ? "bg-primary-100 border-2 border-primary-500"
+                    ? "bg-primary-100 dark:bg-primary-900/40 border-2 border-primary-500 dark:border-primary-400"
                     : isCompleted
-                      ? "bg-green-50 hover:bg-green-100"
-                      : "bg-gray-50 hover:bg-gray-100"
+                      ? "bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 border border-green-200/50 dark:border-green-800/50"
+                      : "bg-gray-50/50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 border border-transparent"
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                    className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
                       isActive
-                        ? "bg-primary-600 text-white"
+                        ? "bg-primary-600 dark:bg-primary-500 text-white"
                         : isCompleted
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-300 text-gray-600"
+                          ? "bg-green-600 dark:bg-green-500 text-white"
+                          : "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400"
                     }`}
                   >
                     {isCompleted ? (
-                      <span className="material-symbols-rounded text-lg">
+                      <span className="material-symbols-rounded text-sm">
                         check
                       </span>
                     ) : (
@@ -176,8 +184,12 @@ export default function StepNavigation({
                   </div>
                   <div className="flex-1 min-w-0">
                     <p
-                      className={`text-sm font-medium truncate ${
-                        isActive ? "text-primary-900" : "text-gray-900"
+                      className={`text-xs font-medium truncate ${
+                        isActive
+                          ? "text-primary-900 dark:text-primary-100"
+                          : isCompleted
+                            ? "text-green-800 dark:text-green-300"
+                            : "text-gray-900 dark:text-gray-200"
                       }`}
                     >
                       {stepTitle}

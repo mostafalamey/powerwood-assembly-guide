@@ -173,11 +173,11 @@ export default function AudioPlayer({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-3 shadow-lg border border-white/50 dark:border-gray-700/50">
       <audio ref={audioRef} preload="auto" />
 
       {hasError && (
-        <div className="mb-2 rounded-md bg-gray-100 dark:bg-gray-800 p-2 text-center text-xs text-gray-500">
+        <div className="mb-2 rounded-lg bg-gray-100/80 dark:bg-gray-700/50 p-2 text-center text-xs text-gray-500 dark:text-gray-400">
           {t("audioNotAvailable") ||
             "Audio narration not available for this step"}
         </div>
@@ -188,10 +188,10 @@ export default function AudioPlayer({
         <button
           onClick={togglePlay}
           disabled={isLoading}
-          className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+          className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all min-h-[44px] min-w-[44px] ${
             isLoading
               ? "bg-gray-200 dark:bg-gray-700 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 active:bg-blue-800"
+              : "bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
           }`}
           aria-label={isPlaying ? t("pause") || "Pause" : t("play") || "Play"}
         >
@@ -218,18 +218,18 @@ export default function AudioPlayer({
             onChange={handleSeek}
             disabled={isLoading}
             aria-label={t("audioProgress") || "Audio progress"}
-            className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer disabled:cursor-not-allowed"
+            className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed"
             style={{
               background: isLoading
                 ? undefined
-                : `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${
+                : `linear-gradient(to right, #6366f1 0%, #6366f1 ${
                     (currentTime / duration) * 100
-                  }%, #e5e7eb ${
+                  }%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} ${
                     (currentTime / duration) * 100
-                  }%, #e5e7eb 100%)`,
+                  }%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} 100%)`,
             }}
           />
-          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <div className="flex justify-between text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
@@ -239,26 +239,26 @@ export default function AudioPlayer({
         <div className="relative flex-shrink-0">
           <button
             onClick={() => setShowVolumeSlider(!showVolumeSlider)}
-            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors min-h-[44px] min-w-[44px]"
             aria-label={t("volume") || "Volume"}
           >
             {volume === 0 ? (
-              <span className="material-symbols-rounded text-xl text-gray-600 dark:text-gray-400">
+              <span className="material-symbols-rounded text-lg text-gray-600 dark:text-gray-400">
                 volume_off
               </span>
             ) : volume < 0.5 ? (
-              <span className="material-symbols-rounded text-xl text-gray-600 dark:text-gray-400">
+              <span className="material-symbols-rounded text-lg text-gray-600 dark:text-gray-400">
                 volume_down
               </span>
             ) : (
-              <span className="material-symbols-rounded text-xl text-gray-600 dark:text-gray-400">
+              <span className="material-symbols-rounded text-lg text-gray-600 dark:text-gray-400">
                 volume_up
               </span>
             )}
           </button>
 
           {showVolumeSlider && (
-            <div className="absolute bottom-full right-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 border border-gray-200 dark:border-gray-700">
+            <div className="absolute bottom-full end-0 mb-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-lg shadow-lg p-2.5 border border-white/50 dark:border-gray-700/50">
               <input
                 type="range"
                 min="0"
@@ -267,11 +267,11 @@ export default function AudioPlayer({
                 value={volume}
                 onChange={handleVolumeChange}
                 aria-label={t("volumeSlider") || "Volume slider"}
-                className="w-24 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                className="w-24 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
                 style={{
-                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${
+                  background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${
                     volume * 100
-                  }%, #e5e7eb ${volume * 100}%, #e5e7eb 100%)`,
+                  }%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} ${volume * 100}%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} 100%)`,
                 }}
               />
             </div>

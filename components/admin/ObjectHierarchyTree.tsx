@@ -70,8 +70,10 @@ export default function ObjectHierarchyTree({
     return (
       <div key={node.id}>
         <div
-          className={`flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
-            isSelected ? "bg-blue-100 dark:bg-blue-900/30" : ""
+          className={`flex items-center gap-2 px-2 py-1.5 cursor-pointer transition-all duration-150 ${
+            isSelected
+              ? "bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/40 dark:to-indigo-900/40 border-l-2 border-blue-500"
+              : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-l-2 border-transparent"
           }`}
           style={{ paddingLeft: `${indent + 8}px` }}
           onClick={() => onSelectObject(node.object)}
@@ -83,11 +85,11 @@ export default function ObjectHierarchyTree({
                 e.stopPropagation();
                 toggleExpand(node.id);
               }}
-              className="w-4 h-4 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              className="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               title={isExpanded ? "Collapse" : "Expand"}
             >
               <span
-                className={`material-symbols-rounded text-sm transition-transform ${
+                className={`material-symbols-rounded text-sm transition-transform duration-200 ${
                   isExpanded ? "rotate-90" : ""
                 }`}
               >
@@ -95,47 +97,51 @@ export default function ObjectHierarchyTree({
               </span>
             </button>
           )}
-          {!hasChildren && <div className="w-4" />}
+          {!hasChildren && <div className="w-5" />}
 
           {/* Object Type Icon */}
-          <div className="w-4 h-4 flex items-center justify-center">
+          <div className="w-5 h-5 flex items-center justify-center rounded-md bg-gray-100 dark:bg-gray-700">
             {node.type === "Mesh" ? (
-              <span className="material-symbols-rounded text-sm text-purple-500">
+              <span className="material-symbols-rounded text-xs text-purple-500">
                 category
               </span>
             ) : node.type === "Group" ? (
-              <span className="material-symbols-rounded text-sm text-blue-500">
+              <span className="material-symbols-rounded text-xs text-blue-500">
                 folder
               </span>
             ) : (
-              <span className="material-symbols-rounded text-sm text-gray-500">
+              <span className="material-symbols-rounded text-xs text-gray-400">
                 add_circle
               </span>
             )}
           </div>
 
           {/* Object Name */}
-          <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 truncate">
+          <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 truncate font-medium">
             {node.name}
           </span>
 
           {/* Type Badge */}
-          <span className="text-xs text-gray-500 dark:text-gray-400 px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">
+          <span className="text-[10px] text-gray-500 dark:text-gray-400 px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700/50 rounded-md font-medium">
             {node.type}
           </span>
 
           {/* Visibility Toggle */}
           <button
             onClick={(e) => toggleVisibility(node.object, e)}
-            className="w-5 h-5 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            className={`w-6 h-6 flex items-center justify-center rounded-md transition-all duration-150 ${
+              node.visible
+                ? "text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+                : "text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400"
+            }`}
             title={node.visible ? "Hide" : "Show"}
           >
             {node.visible ? (
-              <span className="material-symbols-rounded text-base">
+              <span className="material-symbols-rounded text-sm">
                 visibility
               </span>
             ) : (
-              <span className="material-symbols-rounded text-base">
+              <span className="material-symbols-rounded text-sm">
                 visibility_off
               </span>
             )}
@@ -154,8 +160,13 @@ export default function ObjectHierarchyTree({
 
   if (!model) {
     return (
-      <div className="flex items-center justify-center h-full text-sm text-gray-500 dark:text-gray-400">
-        No model loaded
+      <div className="flex flex-col items-center justify-center h-full text-center p-4">
+        <span className="material-symbols-rounded text-4xl text-gray-300 dark:text-gray-600 mb-2">
+          account_tree
+        </span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          No model loaded
+        </span>
       </div>
     );
   }
@@ -164,8 +175,11 @@ export default function ObjectHierarchyTree({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+      <div className="p-3 border-b border-gray-200/50 dark:border-gray-700/50">
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+          <span className="material-symbols-rounded text-indigo-500">
+            account_tree
+          </span>
           Object Hierarchy
         </h4>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -173,7 +187,8 @@ export default function ObjectHierarchyTree({
         </p>
       </div>
       <div className="flex-1 overflow-y-auto">{renderTree(tree)}</div>
-      <div className="p-2 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+      <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+        <span className="material-symbols-rounded text-xs">inventory_2</span>
         {tree.children.length} object(s)
       </div>
     </div>

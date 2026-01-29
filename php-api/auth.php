@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // Check if this is validate request (by checking URL)
-$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
 if (strpos($requestUri, 'validate') !== false) {
     // Always return valid for validate endpoint
     http_response_code(200);
@@ -23,11 +23,24 @@ if (strpos($requestUri, 'validate') !== false) {
 // POST /api/auth/login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $body = json_decode(file_get_contents('php://input'), true);
-    $password = $body['password'] ?? '';
+    $password = '';
+    if (is_array($body) && isset($body['password'])) {
+        $password = $body['password'];
+    }
+
+    $generateToken = function () {
+        if (function_exists('random_bytes')) {
+            return bin2hex(random_bytes(32));
+        }
+        if (function_exists('openssl_random_pseudo_bytes')) {
+            return bin2hex(openssl_random_pseudo_bytes(32));
+        }
+        return bin2hex(uniqid('', true));
+    };
     
     // Verify password
     if ($password === 'admin123') {
-        $token = bin2hex(random_bytes(32));
+        $token = $generateToken();
         http_response_code(200);
         echo json_encode([
             'token' => $token,

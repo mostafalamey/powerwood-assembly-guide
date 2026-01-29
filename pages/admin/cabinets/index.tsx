@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -36,9 +37,11 @@ export default function CabinetsListPage() {
     top: number;
     right: number;
   } | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
+    setIsMounted(true);
     fetchCabinets();
   }, []);
 
@@ -123,8 +126,8 @@ export default function CabinetsListPage() {
       const button = e.currentTarget as HTMLElement;
       const rect = button.getBoundingClientRect();
       setDropdownPosition({
-        top: rect.bottom + window.scrollY + 4,
-        right: window.innerWidth - rect.right + window.scrollX,
+        top: rect.bottom + 4,
+        right: window.innerWidth - rect.right,
       });
       setActiveDropdown(id);
     }
@@ -137,6 +140,19 @@ export default function CabinetsListPage() {
       cabinet.category.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  const getCategoryColor = (category: string) => {
+    const colors: Record<string, string> = {
+      base: "from-blue-500 to-blue-600",
+      wall: "from-emerald-500 to-emerald-600",
+      high: "from-purple-500 to-purple-600",
+      tall: "from-amber-500 to-amber-600",
+      "corner-base": "from-rose-500 to-rose-600",
+      "corner-wall": "from-cyan-500 to-cyan-600",
+      filler: "from-gray-500 to-gray-600",
+    };
+    return colors[category] || "from-gray-500 to-gray-600";
+  };
+
   return (
     <AuthGuard>
       <Head>
@@ -146,39 +162,77 @@ export default function CabinetsListPage() {
         <div className="p-4 sm:p-6">
           {/* Header Actions */}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-            <div className="flex-1 max-w-lg">
-              <input
-                type="text"
-                placeholder="Search cabinets..."
-                className="w-full px-3 sm:px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-sm sm:text-base"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500">
+                  search
+                </span>
+                <input
+                  type="text"
+                  placeholder="Search cabinets..."
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 
+                    bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
+                    placeholder-gray-400 dark:placeholder-gray-500
+                    focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    transition-all duration-200 text-sm"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <Link
                 href="/admin/qr-codes"
-                className="px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 inline-flex items-center gap-2 text-sm"
+                className="px-4 py-2.5 rounded-xl font-medium text-sm
+                  bg-gradient-to-r from-purple-500 to-purple-600 text-white
+                  hover:from-purple-600 hover:to-purple-700
+                  shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40
+                  transition-all duration-300 inline-flex items-center gap-2"
               >
-                <span className="material-symbols-rounded text-lg sm:text-xl">
+                <span className="material-symbols-rounded text-lg">
                   qr_code_scanner
                 </span>
                 <span className="hidden sm:inline">QR Codes</span>
               </Link>
               <button
                 onClick={handleAddNew}
-                className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-sm"
+                className="px-4 py-2.5 rounded-xl font-medium text-sm
+                  bg-gradient-to-r from-blue-500 to-indigo-600 text-white
+                  hover:from-blue-600 hover:to-indigo-700
+                  shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
+                  transition-all duration-300 inline-flex items-center gap-2"
               >
-                + Add
+                <span className="material-symbols-rounded text-lg">add</span>
+                Add Cabinet
               </button>
             </div>
           </div>
 
           {/* Loading State */}
           {loading && (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
+            <div className="text-center py-16">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
+                <svg
+                  className="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400">
                 Loading cabinets...
               </p>
             </div>
@@ -186,53 +240,61 @@ export default function CabinetsListPage() {
 
           {/* Error State */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4 mb-6">
-              <p className="text-red-800 dark:text-red-200">{error}</p>
+            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-rounded text-red-500 dark:text-red-400">
+                  error
+                </span>
+                <p className="text-red-700 dark:text-red-300">{error}</p>
+              </div>
             </div>
           )}
 
-          {/* Cabinets Table */}
+          {/* Cabinets Grid */}
           {!loading && !error && (
             <>
-              <div className="mb-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+              <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                 Showing {filteredCabinets.length} of {cabinets.length} cabinets
               </div>
 
               {/* Desktop Table View */}
-              <div className="hidden lg:block overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-700">
+              <div className="hidden lg:block rounded-xl border border-gray-200/50 dark:border-gray-700/50 overflow-visible">
+                <table className="min-w-full divide-y divide-gray-200/50 dark:divide-gray-700/50">
+                  <thead className="bg-gray-50/50 dark:bg-gray-800/50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                         Thumbnail
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                         ID
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                         Name (EN)
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                         Category
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                         Steps
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Time (min)
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                        Time
                       </th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className="divide-y divide-gray-200/50 dark:divide-gray-700/50 overflow-visible">
                     {filteredCabinets.length === 0 ? (
                       <tr>
                         <td
                           colSpan={7}
-                          className="px-6 py-8 text-center text-gray-500 dark:text-gray-400"
+                          className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                         >
+                          <span className="material-symbols-rounded text-4xl mb-2 block">
+                            inventory_2
+                          </span>
                           {searchTerm
                             ? "No cabinets match your search"
                             : "No cabinets yet"}
@@ -242,17 +304,17 @@ export default function CabinetsListPage() {
                       filteredCabinets.map((cabinet) => (
                         <tr
                           key={cabinet.id}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                          className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
                         >
-                          {/* Thumbnail (Desktop only) */}
+                          {/* Thumbnail */}
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <div className="w-16 h-16 relative bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center overflow-hidden">
+                            <div className="w-14 h-14 relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
                               {cabinet.image ? (
                                 <Image
                                   src={cabinet.image}
                                   alt={cabinet.name.en}
-                                  width={64}
-                                  height={64}
+                                  width={56}
+                                  height={56}
                                   className="object-cover"
                                   onError={(e) => {
                                     (
@@ -261,101 +323,56 @@ export default function CabinetsListPage() {
                                   }}
                                 />
                               ) : (
-                                <span className="material-symbols-rounded text-2xl text-gray-400">
+                                <span className="material-symbols-rounded text-2xl text-gray-400 dark:text-gray-500">
                                   image
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                            {cabinet.id}
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span className="text-sm font-mono font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                              {cabinet.id}
+                            </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                             {cabinet.name.en}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2.5 py-1 text-xs font-semibold rounded-lg text-white bg-gradient-to-r ${getCategoryColor(cabinet.category)} shadow-sm`}
+                            >
                               {cabinet.category}
                             </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {cabinet.stepCount !== undefined
-                              ? cabinet.stepCount
-                              : cabinet.steps?.length || 0}
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                              <span className="material-symbols-rounded text-base">
+                                format_list_numbered
+                              </span>
+                              {cabinet.stepCount !== undefined
+                                ? cabinet.stepCount
+                                : cabinet.steps?.length || 0}
+                            </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {cabinet.estimatedTime}
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                              <span className="material-symbols-rounded text-base">
+                                schedule
+                              </span>
+                              {cabinet.estimatedTime}m
+                            </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                          <td className="px-4 py-4 whitespace-nowrap text-right">
                             <button
                               onClick={(e) => toggleDropdown(cabinet.id, e)}
-                              className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 focus:outline-none"
+                              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 
+                                hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                               aria-label="Open actions menu"
                             >
-                              <span className="material-symbols-rounded text-lg">
+                              <span className="material-symbols-rounded text-xl">
                                 more_vert
                               </span>
                             </button>
-
-                            {/* Dropdown Menu */}
-                            {activeDropdown === cabinet.id &&
-                              dropdownPosition && (
-                                <div
-                                  className="fixed w-48 rounded-md shadow-lg dark:shadow-2xl bg-white dark:bg-gray-700 z-50 border border-gray-200 dark:border-gray-600"
-                                  style={{
-                                    top: `${dropdownPosition.top}px`,
-                                    right: `${dropdownPosition.right}px`,
-                                  }}
-                                >
-                                  <div className="py-1">
-                                    <Link
-                                      href={`/cabinet/${cabinet.id}`}
-                                      target="_blank"
-                                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                      <span className="flex items-center">
-                                        <span className="material-symbols-rounded text-base mr-2">
-                                          visibility
-                                        </span>
-                                        View
-                                      </span>
-                                    </Link>
-                                    <button
-                                      onClick={() => handleEdit(cabinet)}
-                                      className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                      <span className="flex items-center">
-                                        <span className="material-symbols-rounded text-base mr-2">
-                                          edit
-                                        </span>
-                                        Edit
-                                      </span>
-                                    </button>
-                                    <Link
-                                      href={`/admin/cabinets/${cabinet.id}/steps`}
-                                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                      <span className="flex items-center">
-                                        <span className="material-symbols-rounded text-base mr-2">
-                                          list_alt
-                                        </span>
-                                        Manage Steps
-                                      </span>
-                                    </Link>
-                                    <button
-                                      onClick={() => handleDelete(cabinet.id)}
-                                      className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600"
-                                    >
-                                      <span className="flex items-center">
-                                        <span className="material-symbols-rounded text-base mr-2">
-                                          delete
-                                        </span>
-                                        Delete
-                                      </span>
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
                           </td>
                         </tr>
                       ))
@@ -365,9 +382,12 @@ export default function CabinetsListPage() {
               </div>
 
               {/* Mobile Card View */}
-              <div className="lg:hidden space-y-4">
+              <div className="lg:hidden grid gap-4">
                 {filteredCabinets.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <div className="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
+                    <span className="material-symbols-rounded text-4xl mb-2 block">
+                      inventory_2
+                    </span>
                     {searchTerm
                       ? "No cabinets match your search"
                       : "No cabinets yet"}
@@ -376,11 +396,12 @@ export default function CabinetsListPage() {
                   filteredCabinets.map((cabinet) => (
                     <div
                       key={cabinet.id}
-                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 
+                        hover:shadow-lg hover:border-gray-300/50 dark:hover:border-gray-600/50 transition-all duration-300"
                     >
-                      <div className="flex gap-3">
+                      <div className="flex gap-4">
                         {/* Thumbnail */}
-                        <div className="w-16 h-16 flex-shrink-0 relative bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center overflow-hidden">
+                        <div className="w-16 h-16 flex-shrink-0 relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
                           {cabinet.image ? (
                             <Image
                               src={cabinet.image}
@@ -394,7 +415,7 @@ export default function CabinetsListPage() {
                               }}
                             />
                           ) : (
-                            <span className="material-symbols-rounded text-2xl text-gray-400">
+                            <span className="material-symbols-rounded text-2xl text-gray-400 dark:text-gray-500">
                               image
                             </span>
                           )}
@@ -407,96 +428,97 @@ export default function CabinetsListPage() {
                               <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                 {cabinet.name.en}
                               </h3>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              <p className="text-xs font-mono text-gray-500 dark:text-gray-400 mt-0.5 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded inline-block">
                                 {cabinet.id}
                               </p>
                             </div>
-                            <button
-                              onClick={(e) => toggleDropdown(cabinet.id, e)}
-                              className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 focus:outline-none flex-shrink-0"
-                              aria-label="Open actions menu"
-                            >
-                              <span className="material-symbols-rounded text-lg">
-                                more_vert
-                              </span>
-                            </button>
+                            <div className="relative flex-shrink-0">
+                              <button
+                                onClick={(e) => toggleDropdown(cabinet.id, e)}
+                                className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 
+                                  hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
+                                aria-label="Open actions menu"
+                              >
+                                <span className="material-symbols-rounded text-xl">
+                                  more_vert
+                                </span>
+                              </button>
+
+                              {/* Dropdown Menu for Mobile Cards */}
+                              {activeDropdown === cabinet.id && (
+                                <div
+                                  className="absolute top-full right-0 mt-1 w-48 rounded-xl shadow-xl bg-white dark:bg-gray-800 z-50 
+                                    border border-gray-200 dark:border-gray-700 overflow-hidden"
+                                >
+                                  <div className="py-1">
+                                    <Link
+                                      href={`/cabinet/${cabinet.id}`}
+                                      target="_blank"
+                                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                                    >
+                                      <span className="material-symbols-rounded text-lg">
+                                        visibility
+                                      </span>
+                                      View
+                                    </Link>
+                                    <button
+                                      onClick={() => handleEdit(cabinet)}
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                                    >
+                                      <span className="material-symbols-rounded text-lg">
+                                        edit
+                                      </span>
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleManageSteps(cabinet)}
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                                    >
+                                      <span className="material-symbols-rounded text-lg">
+                                        list_alt
+                                      </span>
+                                      Manage Steps
+                                    </button>
+                                    <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+                                    <button
+                                      onClick={() => handleDelete(cabinet.id)}
+                                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                    >
+                                      <span className="material-symbols-rounded text-lg">
+                                        delete
+                                      </span>
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
 
-                          <div className="flex flex-wrap items-center gap-2 mt-2">
-                            <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                          <div className="flex flex-wrap items-center gap-2 mt-3">
+                            <span
+                              className={`px-2 py-0.5 text-xs font-semibold rounded-lg text-white bg-gradient-to-r ${getCategoryColor(cabinet.category)} shadow-sm`}
+                            >
                               {cabinet.category}
                             </span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                            <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                              <span className="material-symbols-rounded text-sm">
+                                format_list_numbered
+                              </span>
                               {cabinet.stepCount !== undefined
                                 ? cabinet.stepCount
                                 : cabinet.steps?.length || 0}{" "}
                               steps
                             </span>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                              {cabinet.estimatedTime} min
+                            <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                              <span className="material-symbols-rounded text-sm">
+                                schedule
+                              </span>
+                              {cabinet.estimatedTime}m
                             </span>
                           </div>
                         </div>
                       </div>
-
-                      {/* Dropdown Menu */}
-                      {activeDropdown === cabinet.id && dropdownPosition && (
-                        <div
-                          className="fixed w-48 rounded-md shadow-lg dark:shadow-2xl bg-white dark:bg-gray-700 z-50 border border-gray-200 dark:border-gray-600"
-                          style={{
-                            top: `${dropdownPosition.top}px`,
-                            right: `${dropdownPosition.right}px`,
-                          }}
-                        >
-                          <div className="py-1">
-                            <Link
-                              href={`/cabinet/${cabinet.id}`}
-                              target="_blank"
-                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                              <span className="flex items-center">
-                                <span className="material-symbols-rounded text-base mr-2">
-                                  visibility
-                                </span>
-                                View
-                              </span>
-                            </Link>
-                            <button
-                              onClick={() => handleEdit(cabinet)}
-                              className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                              <span className="flex items-center">
-                                <span className="material-symbols-rounded text-base mr-2">
-                                  edit
-                                </span>
-                                Edit
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => handleManageSteps(cabinet)}
-                              className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                              <span className="flex items-center">
-                                <span className="material-symbols-rounded text-base mr-2">
-                                  list_alt
-                                </span>
-                                Manage Steps
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(cabinet.id)}
-                              className="w-full text-left px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                            >
-                              <span className="flex items-center">
-                                <span className="material-symbols-rounded text-base mr-2">
-                                  delete
-                                </span>
-                                Delete
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))
                 )}
@@ -504,6 +526,67 @@ export default function CabinetsListPage() {
             </>
           )}
         </div>
+
+        {/* Portal-rendered dropdown for desktop table view */}
+        {isMounted &&
+          activeDropdown &&
+          dropdownPosition &&
+          createPortal(
+            <div
+              className="fixed w-48 rounded-xl shadow-xl bg-white dark:bg-gray-800 z-[9999] 
+              border border-gray-200 dark:border-gray-700 overflow-hidden hidden lg:block"
+              style={{
+                top: dropdownPosition.top,
+                right: dropdownPosition.right,
+              }}
+            >
+              <div className="py-1">
+                <Link
+                  href={`/cabinet/${activeDropdown}`}
+                  target="_blank"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                  <span className="material-symbols-rounded text-lg">
+                    visibility
+                  </span>
+                  View
+                </Link>
+                <button
+                  onClick={() => {
+                    router.push(`/admin/cabinets/${activeDropdown}/edit`);
+                    setActiveDropdown(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                  <span className="material-symbols-rounded text-lg">edit</span>
+                  Edit
+                </button>
+                <Link
+                  href={`/admin/cabinets/${activeDropdown}/steps`}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                  <span className="material-symbols-rounded text-lg">
+                    list_alt
+                  </span>
+                  Manage Steps
+                </Link>
+                <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
+                <button
+                  onClick={() => {
+                    handleDelete(activeDropdown);
+                    setActiveDropdown(null);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                >
+                  <span className="material-symbols-rounded text-lg">
+                    delete
+                  </span>
+                  Delete
+                </button>
+              </div>
+            </div>,
+            document.body,
+          )}
       </AdminLayout>
     </AuthGuard>
   );

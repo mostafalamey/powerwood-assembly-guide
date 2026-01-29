@@ -11,6 +11,11 @@
   --background-rgb: 255, 255, 255;
 }
 
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 17, 24, 39;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -21,7 +26,6 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  overflow-y: auto;
   height: 100%;
 }
 
@@ -29,6 +33,13 @@ body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-rgb));
   font-family: "Inter", sans-serif;
+}
+
+/* Smooth color transitions for theme switching */
+html {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .material-symbols-rounded {
@@ -66,13 +77,52 @@ canvas {
   background: #f1f1f1;
 }
 
+.dark .step-list-scrollbar::-webkit-scrollbar-track {
+  background: #374151;
+}
+
 .step-list-scrollbar::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 3px;
 }
 
+.dark .step-list-scrollbar::-webkit-scrollbar-thumb {
+  background: #6b7280;
+}
+
 .step-list-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+.dark .step-list-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Custom scrollbar for all scrollable areas in dark mode */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* Loading animation */

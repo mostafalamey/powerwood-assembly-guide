@@ -138,43 +138,82 @@ export default function QRCodesPage() {
       <div className="print:hidden">
         <AdminLayout title="QR Codes">
           <div className="p-6">
-            {/* Header */}
-            <div className="mb-6">
-              <p className="text-gray-600 dark:text-gray-400">
-                Generate QR codes for cabinet assembly guides. Users can scan
-                these codes to access instructions directly on their mobile
-                devices.
-              </p>
+            {/* Header Card */}
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 mb-6">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                  <span className="material-symbols-rounded text-2xl text-white">
+                    qr_code_2
+                  </span>
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    QR Code Generator
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    Generate and print QR codes for cabinet assembly guides.
+                    Users can scan these codes to access instructions directly
+                    on their mobile devices.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {loading ? (
-              <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-12 text-center">
+                <svg
+                  className="animate-spin h-10 w-10 mx-auto text-blue-600 dark:text-blue-400"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">
                   Loading cabinets...
                 </p>
               </div>
             ) : (
               <>
                 {/* Actions Bar */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6 flex items-center justify-between print:hidden">
+                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
                   <div className="flex items-center gap-4">
                     <button
                       onClick={toggleAll}
-                      className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                      className="px-4 py-2 rounded-xl text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                     >
                       {selectedCabinets.size === cabinets.length
                         ? "Deselect All"
                         : "Select All"}
                     </button>
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {selectedCabinets.size} of {cabinets.length} selected
-                    </span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-700/50">
+                      <span className="material-symbols-rounded text-lg text-gray-500 dark:text-gray-400">
+                        check_box
+                      </span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {selectedCabinets.size} of {cabinets.length} selected
+                      </span>
+                    </div>
                   </div>
                   <button
                     onClick={printSelected}
                     disabled={selectedCabinets.size === 0}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium
+                      hover:from-blue-600 hover:to-indigo-700 
+                      disabled:opacity-50 disabled:cursor-not-allowed 
+                      shadow-lg shadow-blue-500/30 hover:shadow-xl
+                      transition-all duration-200 flex items-center gap-2"
                   >
                     <span className="material-symbols-rounded text-lg">
                       print
@@ -192,22 +231,35 @@ export default function QRCodesPage() {
                     return (
                       <div
                         key={cabinet.id}
-                        className={`bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden transition-all ${
+                        className={`bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border overflow-hidden transition-all duration-300 ${
                           isSelected
-                            ? "ring-2 ring-blue-500"
-                            : "ring-1 ring-gray-200 dark:ring-gray-700"
+                            ? "border-blue-500 dark:border-blue-400 shadow-xl shadow-blue-500/20"
+                            : "border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50"
                         } ${!isSelected ? "print:hidden" : ""}`}
                       >
                         {/* Selection Checkbox - Hidden in print */}
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 print:hidden">
-                          <label className="flex items-center gap-2 cursor-pointer">
+                        <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 print:hidden">
+                          <label className="flex items-center gap-3 cursor-pointer group">
+                            <div
+                              className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
+                                isSelected
+                                  ? "bg-gradient-to-r from-blue-500 to-indigo-600 border-blue-500"
+                                  : "border-gray-300 dark:border-gray-600 group-hover:border-blue-400"
+                              }`}
+                            >
+                              {isSelected && (
+                                <span className="material-symbols-rounded text-sm text-white">
+                                  check
+                                </span>
+                              )}
+                            </div>
                             <input
                               type="checkbox"
                               checked={isSelected}
                               onChange={() => toggleCabinet(cabinet.id)}
-                              className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                              className="sr-only"
                             />
-                            <span className="text-sm font-medium text-gray-900 dark:text-white">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                               Include in print
                             </span>
                           </label>
@@ -215,23 +267,23 @@ export default function QRCodesPage() {
 
                         {/* QR Code Display */}
                         <div className="p-6 text-center">
-                          <div className="bg-white p-4 rounded-lg inline-block mb-4">
+                          <div className="bg-white p-4 rounded-xl inline-block mb-4 shadow-inner">
                             <QRCode
                               id={`qr-${cabinet.id}`}
                               value={url}
-                              size={200}
+                              size={180}
                               level="H"
                               includeMargin={true}
                             />
                           </div>
 
-                          <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
+                          <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-1">
                             {cabinet.name.en}
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                          <span className="inline-block px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm font-mono text-gray-600 dark:text-gray-400 mb-3">
                             {cabinet.id}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-500 font-mono break-all mb-4">
+                          </span>
+                          <p className="text-xs text-gray-500 dark:text-gray-500 font-mono break-all px-2 mb-4">
                             {url}
                           </p>
 
@@ -241,16 +293,28 @@ export default function QRCodesPage() {
                               onClick={() =>
                                 downloadQRCode(cabinet.id, cabinet.name.en)
                               }
-                              className="flex-1 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl
+                                bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 
+                                hover:bg-gray-200 dark:hover:bg-gray-600 
+                                transition-colors flex items-center justify-center gap-2"
                             >
-                              Download PNG
+                              <span className="material-symbols-rounded text-lg">
+                                download
+                              </span>
+                              PNG
                             </button>
                             <Link
                               href={`/cabinet/${cabinet.id}`}
                               target="_blank"
-                              className="flex-1 px-3 py-2 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-center"
+                              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl
+                                bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 
+                                hover:bg-blue-100 dark:hover:bg-blue-900/50 
+                                transition-colors flex items-center justify-center gap-2"
                             >
-                              Test Link
+                              <span className="material-symbols-rounded text-lg">
+                                open_in_new
+                              </span>
+                              Test
                             </Link>
                           </div>
                         </div>
@@ -260,24 +324,31 @@ export default function QRCodesPage() {
                 </div>
 
                 {cabinets.length === 0 && (
-                  <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
-                    <span className="material-symbols-rounded text-4xl text-gray-400 mx-auto block">
-                      qr_code
-                    </span>
-                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-12 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center mx-auto mb-4">
+                      <span className="material-symbols-rounded text-3xl text-gray-400 dark:text-gray-500">
+                        qr_code
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       No cabinets yet
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-2 text-gray-500 dark:text-gray-400">
                       Create cabinets to generate QR codes.
                     </p>
-                    <div className="mt-6">
-                      <Link
-                        href="/admin/cabinets"
-                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                      >
-                        Go to Cabinets
-                      </Link>
-                    </div>
+                    <Link
+                      href="/admin/cabinets"
+                      className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 
+                        bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium
+                        hover:from-blue-600 hover:to-indigo-700 
+                        shadow-lg shadow-blue-500/30 hover:shadow-xl
+                        transition-all duration-200"
+                    >
+                      <span className="material-symbols-rounded">
+                        arrow_forward
+                      </span>
+                      Go to Cabinets
+                    </Link>
                   </div>
                 )}
               </>

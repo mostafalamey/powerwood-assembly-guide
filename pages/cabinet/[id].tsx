@@ -57,8 +57,16 @@ export default function CabinetPage() {
         <Head>
           <title>{`${t("loading")} - ${t("appTitle")}`}</title>
         </Head>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <p className="text-gray-600">{t("loading")}</p>
+        <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+          <Header showBackButton />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                {t("loading")}
+              </p>
+            </div>
+          </div>
         </div>
       </>
     );
@@ -70,21 +78,27 @@ export default function CabinetPage() {
         <Head>
           <title>{`${t("errors.notFound")} - ${t("appTitle")}`}</title>
         </Head>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          \n{" "}
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              {t("errors.notFound")}
-            </h1>
-            <p className="text-gray-600 mb-6">
-              {t("errors.notFoundDescription")}
-            </p>
-            <Link
-              href="/"
-              className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700"
-            >
-              {t("errors.goHome")}
-            </Link>
+        <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+          <Header showBackButton />
+          <div className="flex-1 flex items-center justify-center p-4">
+            <div className="text-center">
+              <span className="material-symbols-rounded text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
+                inventory_2
+              </span>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                {t("errors.notFound")}
+              </h1>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+                {t("errors.notFoundDescription")}
+              </p>
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors font-medium"
+              >
+                <span className="material-symbols-rounded text-lg">home</span>
+                {t("errors.goHome")}
+              </Link>
+            </div>
           </div>
         </div>
       </>
@@ -132,137 +146,188 @@ export default function CabinetPage() {
         />
       </Head>
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
         <Header showBackButton />
 
-        <main className="container mx-auto px-4 py-8 max-w-4xl">
-          {/* Cabinet Overview Card */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-            {/* Cabinet Image */}
-            <div className="bg-gradient-to-br from-primary-50 to-primary-100 h-64 flex items-center justify-center relative overflow-hidden">
-              {cabinet.image ? (
-                <Image
-                  src={cabinet.image}
-                  alt={cabinetName}
-                  fill
-                  className="object-contain p-6"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 896px"
-                />
-              ) : (
-                <div className="text-center">
-                  <span className="material-symbols-rounded text-6xl text-primary-300 mb-4 block">
-                    inventory_2
-                  </span>
-                  <p className="text-sm text-primary-600">
-                    {t("cabinet.overview")}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Cabinet Info */}
-            <div className="p-6 md:p-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                {cabinetName}
-              </h1>
-              <p className="text-gray-600 mb-6">{description}</p>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-symbols-rounded text-lg text-blue-600">
-                      schedule
+        <main className="flex-1 overflow-y-auto md:overflow-hidden">
+          <div className="h-full flex flex-col lg:flex-row p-4 md:p-6 gap-4 md:gap-6 max-w-7xl mx-auto">
+            {/* Left Panel - Cabinet Image & Quick Info */}
+            <div className="lg:w-2/5 xl:w-1/3 flex-shrink-0">
+              <div className="h-full bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
+                {/* Cabinet Image */}
+                <div className="relative h-48 lg:h-64 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 flex items-center justify-center overflow-hidden">
+                  {cabinet.image ? (
+                    <Image
+                      src={cabinet.image}
+                      alt={cabinetName}
+                      fill
+                      className="object-contain p-6"
+                      priority
+                      sizes="(max-width: 768px) 100vw, 400px"
+                    />
+                  ) : (
+                    <span className="material-symbols-rounded text-6xl text-primary-300 dark:text-primary-700">
+                      inventory_2
                     </span>
-                    <span className="text-sm font-medium text-blue-900">
-                      {t("cabinet.estimatedTime")}
-                    </span>
-                  </div>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {cabinet.estimatedTime}{" "}
-                    <span className="text-sm font-normal">
-                      {t("cabinet.minutes")}
-                    </span>
-                  </p>
+                  )}
                 </div>
 
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-symbols-rounded text-lg text-green-600">
-                      format_list_numbered
-                    </span>
-                    <span className="text-sm font-medium text-green-900">
-                      {t("cabinet.totalSteps")}
-                    </span>
-                  </div>
-                  <p className="text-2xl font-bold text-green-600">
-                    {cabinet.steps?.length || 0}{" "}
-                    <span className="text-sm font-normal">
-                      {t("cabinet.steps")}
-                    </span>
+                {/* Cabinet Info */}
+                <div className="flex-1 p-4 md:p-5 flex flex-col">
+                  <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    {cabinetName}
+                  </h1>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 lg:line-clamp-none">
+                    {description}
                   </p>
-                </div>
 
-                <div className="bg-purple-50 rounded-lg p-4 col-span-2 md:col-span-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-symbols-rounded text-lg text-purple-600">
-                      handyman
-                    </span>
-                    <span className="text-sm font-medium text-purple-900">
-                      {t("cabinet.requiredTools")}
-                    </span>
+                  {/* Stats Row */}
+                  <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 border border-blue-100 dark:border-blue-800/50">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="material-symbols-rounded text-sm text-blue-500">
+                          schedule
+                        </span>
+                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                          {t("cabinet.estimatedTime")}
+                        </span>
+                      </div>
+                      <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                        {cabinet.estimatedTime}{" "}
+                        <span className="text-xs font-normal">
+                          {t("cabinet.minutes")}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 border border-green-100 dark:border-green-800/50">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="material-symbols-rounded text-sm text-green-500">
+                          format_list_numbered
+                        </span>
+                        <span className="text-xs text-green-700 dark:text-green-300 font-medium">
+                          {t("cabinet.totalSteps")}
+                        </span>
+                      </div>
+                      <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                        {cabinet.steps?.length || 0}{" "}
+                        <span className="text-xs font-normal">
+                          {t("cabinet.steps")}
+                        </span>
+                      </p>
+                    </div>
                   </div>
-                  <ul className="text-sm text-purple-700 space-y-1">
-                    {tools &&
-                      tools
-                        .slice(0, 2)
-                        .map((tool: string, index: number) => (
-                          <li key={index}>• {tool}</li>
-                        ))}
-                    {tools && tools.length > 2 && (
-                      <li>• +{tools.length - 2} more</li>
-                    )}
-                  </ul>
+
+                  {/* Tools (if any) */}
+                  {tools && tools.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
+                        <span className="material-symbols-rounded text-sm text-purple-500">
+                          handyman
+                        </span>
+                        {t("cabinet.requiredTools")}
+                      </h3>
+                      <div className="flex flex-wrap gap-1.5">
+                        {tools
+                          .slice(0, 4)
+                          .map((tool: string, index: number) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-xs rounded-lg border border-purple-100 dark:border-purple-800/50"
+                            >
+                              {tool}
+                            </span>
+                          ))}
+                        {tools.length > 4 && (
+                          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-lg">
+                            +{tools.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Start Button */}
+                  <div className="mt-auto">
+                    <Link
+                      href={`/cabinet/${cabinet.id}/step/${cabinet.steps?.[0]?.id || "1"}`}
+                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 min-h-[48px]"
+                    >
+                      <span className="material-symbols-rounded text-lg">
+                        play_arrow
+                      </span>
+                      {t("cabinet.startAssembly")}
+                    </Link>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              {/* Start Assembly Button */}
-              <Link
-                href={`/cabinet/${cabinet.id}/step/${
-                  cabinet.steps?.[0]?.id || "1"
-                }`}
-                className="block w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors text-center text-lg shadow-lg hover:shadow-xl"
-              >
-                {t("cabinet.startAssembly")}
-              </Link>
+            {/* Right Panel - Steps Overview */}
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <span className="material-symbols-rounded text-primary-500">
+                    checklist
+                  </span>
+                  {t("cabinet.assemblySteps") || "Assembly Steps"}
+                </h2>
+                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
+                  {cabinet.steps?.length || 0} {t("cabinet.steps")}
+                </span>
+              </div>
+
+              {/* Steps List */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="grid gap-2 pb-4">
+                  {cabinet.steps?.map((step: any, index: number) => {
+                    const stepTitle =
+                      typeof step.title === "string"
+                        ? locale === "ar"
+                          ? step.titleAr || step.title
+                          : step.title
+                        : locale === "ar"
+                          ? step.title?.ar
+                          : step.title?.en;
+
+                    return (
+                      <Link
+                        key={step.id}
+                        href={`/cabinet/${cabinet.id}/step/${step.id}`}
+                        className="group flex items-center gap-4 p-3 md:p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 hover:shadow-lg hover:shadow-primary-500/10 transition-all hover:-translate-y-0.5"
+                      >
+                        {/* Step Number */}
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 flex items-center justify-center flex-shrink-0 group-hover:from-primary-500 group-hover:to-primary-600 transition-all">
+                          <span className="text-sm font-bold text-primary-600 dark:text-primary-400 group-hover:text-white transition-colors">
+                            {index + 1}
+                          </span>
+                        </div>
+
+                        {/* Step Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+                            {stepTitle}
+                          </h3>
+                          {step.duration && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
+                              <span className="material-symbols-rounded text-xs">
+                                schedule
+                              </span>
+                              {step.duration}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Arrow */}
+                        <span className="material-symbols-rounded text-gray-400 group-hover:text-primary-500 transition-colors rtl:rotate-180">
+                          chevron_right
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* Tools List (Full) */}
-          {tools && tools.length > 0 && (
-            <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <span className="material-symbols-rounded text-xl text-purple-600">
-                  handyman
-                </span>
-                {t("cabinet.requiredTools")}
-              </h2>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {tools.map((tool: string, index: number) => (
-                  <li
-                    key={index}
-                    className="flex items-center gap-2 text-gray-700"
-                  >
-                    <span className="material-symbols-rounded text-lg text-green-500">
-                      check_circle
-                    </span>
-                    {tool}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </main>
       </div>
     </>

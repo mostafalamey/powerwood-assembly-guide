@@ -26,7 +26,7 @@ function sendError($message, $statusCode = 400) {
 }
 
 function verifyAuth() {
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    $authHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
     if (!$authHeader || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
         sendError('Unauthorized', 401);
     }
@@ -43,8 +43,8 @@ verifyAuth();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // Get directory from POST data (matches client FormData field name)
-        $directory = $_POST['directory'] ?? 'uploads';
-        $requestedFilename = $_POST['filename'] ?? null;
+        $directory = isset($_POST['directory']) ? $_POST['directory'] : 'uploads';
+        $requestedFilename = isset($_POST['filename']) ? $_POST['filename'] : null;
         
         if (empty($_FILES['file'])) {
             sendError('No file uploaded', 400);
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
                 UPLOAD_ERR_EXTENSION => 'File upload stopped by extension',
             ];
-            $errorMsg = $errorMessages[$file['error']] ?? 'Unknown upload error';
+            $errorMsg = isset($errorMessages[$file['error']]) ? $errorMessages[$file['error']] : 'Unknown upload error';
             sendError($errorMsg, 500);
         }
         

@@ -87,8 +87,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $uri = $_SERVER['REQUEST_URI'];
     preg_match('/\/cabinets\/([^\/]+)\/steps\/([^\/]+)\/animation/', $uri, $matches);
     
-    $cabinetId = $matches[1] ?? $_GET['cabinetId'] ?? null;
-    $stepId = $matches[2] ?? $_GET['stepId'] ?? null;
+    $cabinetId = null;
+    $stepId = null;
+    if (isset($matches[1])) {
+        $cabinetId = $matches[1];
+    } elseif (isset($_GET['cabinetId'])) {
+        $cabinetId = $_GET['cabinetId'];
+    }
+
+    if (isset($matches[2])) {
+        $stepId = $matches[2];
+    } elseif (isset($_GET['stepId'])) {
+        $stepId = $_GET['stepId'];
+    }
     
     if (!$cabinetId || !$stepId) {
         sendError('Cabinet ID and Step ID required', 400);
@@ -162,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 'stepId' => $stepId,
                 'stepFound' => $stepFound,
                 'animationSaved' => isset($verifyStep['animation']),
-                'animationDuration' => $verifyStep['animation']['duration'] ?? 'N/A'
+                'animationDuration' => isset($verifyStep['animation']['duration']) ? $verifyStep['animation']['duration'] : 'N/A'
             ]
         ]);
     }

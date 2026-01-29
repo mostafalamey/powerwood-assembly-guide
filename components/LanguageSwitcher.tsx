@@ -11,14 +11,14 @@ export default function LanguageSwitcher() {
   return (
     <button
       onClick={toggleLanguage}
-      className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border border-gray-200"
+      className="flex items-center gap-2 px-3 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-200/50 dark:border-gray-700/50 min-h-[44px]"
       aria-label="Switch language"
     >
-      <span className="material-symbols-rounded text-xl text-gray-600">
-        language
+      <span className="material-symbols-rounded text-lg text-gray-600 dark:text-gray-400">
+        translate
       </span>
-      <span className="text-sm font-medium text-gray-700">
-        {locale === "en" ? "العربية" : "English"}
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        {locale === "en" ? "العربية" : "EN"}
       </span>
     </button>
   );

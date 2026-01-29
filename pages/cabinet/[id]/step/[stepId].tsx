@@ -131,15 +131,17 @@ export default function StepPage() {
         <Head>
           <title>{t("loading")}</title>
         </Head>
-        <Header />
-        <main className="min-h-screen bg-gray-50 pt-16">
-          <div className="flex items-center justify-center h-96">
+        <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+          <Header showBackButton />
+          <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-600">{t("loading")}</p>
+              <div className="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                {t("loading")}
+              </p>
             </div>
           </div>
-        </main>
+        </div>
       </>
     );
   }
@@ -180,118 +182,93 @@ export default function StepPage() {
         <title>{`${stepTitle} - ${cabinetName}`}</title>
       </Head>
 
-      <Header />
+      <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+        <Header showBackButton />
 
-      <main className="min-h-screen bg-gray-50 pt-2">
-        <div className="container mx-auto px-2 py-2 max-w-7xl">
+        <main className="flex-1 overflow-hidden">
           {/* Mobile Layout */}
-          <div className="lg:hidden space-y-2">
+          <div className="lg:hidden h-full flex flex-col p-2 gap-2">
             {/* 3D Viewer - Mobile */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
-              <div className="h-[360px]">
-                {modelUrl ? (
-                  !isDesktop && (
-                    <SceneViewer
-                      key={sceneViewerKey}
-                      modelUrl={modelUrl}
-                      currentStep={currentStep}
-                      cameraPosition={currentStep.cameraPosition}
-                      isPlaying={isPlaying}
-                      shouldAutoStart={false}
-                      height="100%"
-                      onAnimationComplete={handleAnimationComplete}
-                    />
-                  )
-                ) : (
-                  <div className="flex items-center justify-center bg-gray-100 h-full">
-                    <div className="text-center p-6">
-                      <span className="material-symbols-rounded text-5xl text-gray-400 mx-auto mb-4 block">
-                        view_in_ar
-                      </span>
-                      <p className="text-gray-600 font-medium">
-                        3D Model Not Available
-                      </p>
-                      <p className="text-gray-500 text-sm mt-2">
-                        Model file will be added soon
-                      </p>
-                    </div>
+            <div className="flex-1 min-h-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden relative">
+              {modelUrl ? (
+                !isDesktop && (
+                  <SceneViewer
+                    key={sceneViewerKey}
+                    modelUrl={modelUrl}
+                    currentStep={currentStep}
+                    cameraPosition={currentStep.cameraPosition}
+                    isPlaying={isPlaying}
+                    shouldAutoStart={false}
+                    height="100%"
+                    onAnimationComplete={handleAnimationComplete}
+                  />
+                )
+              ) : (
+                <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 h-full">
+                  <div className="text-center p-6">
+                    <span className="material-symbols-rounded text-5xl text-gray-400 dark:text-gray-600 mx-auto mb-4 block">
+                      view_in_ar
+                    </span>
+                    <p className="text-gray-600 dark:text-gray-400 font-medium">
+                      3D Model Not Available
+                    </p>
                   </div>
-                )}
-              </div>
-              {/* Refresh Button */}
+                </div>
+              )}
+              {/* Restart Button */}
               {modelUrl && (
                 <button
                   onClick={handleRestart}
-                  className="absolute top-3 right-3 w-10 h-10 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-colors z-10"
+                  className="absolute top-3 end-3 w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors z-10 min-h-[44px] min-w-[44px]"
                   aria-label="Restart animation"
                 >
-                  <span className="material-symbols-rounded text-lg text-gray-700">
+                  <span className="material-symbols-rounded text-lg text-gray-700 dark:text-gray-300">
                     restart_alt
                   </span>
                 </button>
               )}
             </div>
 
-            {/* Shared Audio Player - Single instance */}
-            <div>
-              <AudioPlayer
-                cabinetId={cabinet.id}
-                stepId={currentStep.id}
-                audioUrl={currentStep.audioUrl}
-                autoPlay={false}
-                onPlayPause={handleAudioPlayPause}
-              />
-            </div>
-
-            {/* Step Info */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              {/* Collapsible Header */}
+            {/* Step Info Card - Mobile */}
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
               <button
                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                className="w-full p-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full p-3 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors min-h-[48px]"
               >
-                <div className="flex-1 text-left">
-                  <div className="mb-1">
-                    <span className="text-xs text-gray-500">{cabinetName}</span>
-                  </div>
-                  <h1 className="text-xl font-bold text-gray-900">
+                <div className="flex-1 text-start">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {cabinetName}
+                  </span>
+                  <h1 className="text-lg font-bold text-gray-900 dark:text-white">
                     {stepTitle}
                   </h1>
                 </div>
                 <span
-                  className={`material-symbols-rounded text-lg text-gray-500 transition-transform ${
-                    isDescriptionExpanded ? "rotate-180" : ""
-                  }`}
+                  className={`material-symbols-rounded text-lg text-gray-500 dark:text-gray-400 transition-transform ${isDescriptionExpanded ? "rotate-180" : ""}`}
                 >
                   expand_more
                 </span>
               </button>
 
-              {/* Collapsible Content */}
               <div
-                className={`transition-all duration-300 ease-in-out ${
-                  isDescriptionExpanded
-                    ? "max-h-96 opacity-100"
-                    : "max-h-0 opacity-0"
-                } overflow-hidden`}
+                className={`transition-all duration-300 ease-in-out ${isDescriptionExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
               >
                 <div className="px-3 pb-3">
-                  <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line mb-3">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line mb-3">
                     {stepDescription}
                   </p>
 
-                  {/* Tools Required */}
                   {currentStep.toolsRequired &&
                     currentStep.toolsRequired.length > 0 && (
-                      <div className="mt-2 pt-2 border-t border-gray-200">
-                        <h3 className="text-xs font-semibold text-gray-700 mb-1">
+                      <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
                           {t("toolsRequired")}:
                         </h3>
                         <div className="flex flex-wrap gap-1">
                           {currentStep.toolsRequired.map((tool, index) => (
                             <span
                               key={index}
-                              className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs rounded-full border border-blue-200"
+                              className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full border border-blue-200 dark:border-blue-800"
                             >
                               {tool}
                             </span>
@@ -299,21 +276,20 @@ export default function StepPage() {
                         </div>
                       </div>
                     )}
-
-                  {/* Duration */}
-                  {currentStep.duration && (
-                    <div className="mt-2 flex items-center gap-2 text-xs text-gray-600">
-                      <span className="material-symbols-rounded text-base">
-                        schedule
-                      </span>
-                      <span>{currentStep.duration}</span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
 
-            {/* Navigation */}
+            {/* Audio Player - Mobile */}
+            <AudioPlayer
+              cabinetId={cabinet.id}
+              stepId={currentStep.id}
+              audioUrl={currentStep.audioUrl}
+              autoPlay={false}
+              onPlayPause={handleAudioPlayPause}
+            />
+
+            {/* Navigation - Mobile */}
             <StepNavigation
               cabinetId={cabinet.id}
               steps={cabinet.steps as Step[]}
@@ -328,24 +304,27 @@ export default function StepPage() {
           </div>
 
           {/* Desktop Layout */}
-          <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6">
-            {/* Left Column: Navigation */}
-            <div className="lg:col-span-1">
-              <div className="sticky top-20">
-                <div className="mb-4 bg-white rounded-lg shadow-md p-4">
-                  <h2 className="text-lg font-bold text-gray-900 mb-1">
-                    {cabinetName}
-                  </h2>
-                  <p className="text-sm text-gray-600">
-                    {typeof cabinet.description === "string"
-                      ? locale === "ar"
-                        ? (cabinet as any).descriptionAr
-                        : cabinet.description
-                      : locale === "ar"
-                        ? cabinet.description?.ar
-                        : cabinet.description?.en}
-                  </p>
-                </div>
+          <div className="hidden lg:flex h-full p-4 gap-4">
+            {/* Left Sidebar - Steps Navigation */}
+            <div className="w-72 xl:w-80 flex-shrink-0 flex flex-col gap-3">
+              {/* Cabinet Info */}
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 p-4">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">
+                  {cabinetName}
+                </h2>
+                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                  {typeof cabinet.description === "string"
+                    ? locale === "ar"
+                      ? (cabinet as any).descriptionAr
+                      : cabinet.description
+                    : locale === "ar"
+                      ? cabinet.description?.ar
+                      : cabinet.description?.en}
+                </p>
+              </div>
+
+              {/* Steps List */}
+              <div className="flex-1 overflow-y-auto">
                 <StepNavigation
                   cabinetId={cabinet.id}
                   steps={cabinet.steps as Step[]}
@@ -360,86 +339,101 @@ export default function StepPage() {
               </div>
             </div>
 
-            {/* Middle & Right Columns: Viewer and Info */}
-            <div className="lg:col-span-2 space-y-4">
+            {/* Main Content - 3D Viewer */}
+            <div className="flex-1 flex flex-col gap-3 min-w-0">
               {/* 3D Viewer - Desktop */}
-              <div className="bg-white rounded-lg shadow-md overflow-hidden relative">
-                <div className="h-[500px]">
-                  {modelUrl ? (
-                    isDesktop && (
-                      <SceneViewer
-                        key={sceneViewerKey}
-                        modelUrl={modelUrl}
-                        currentStep={currentStep}
-                        cameraPosition={currentStep.cameraPosition}
-                        isPlaying={isPlaying}
-                        shouldAutoStart={false}
-                        height="100%"
-                        onAnimationComplete={handleAnimationComplete}
-                      />
-                    )
-                  ) : (
-                    <div className="flex items-center justify-center bg-gray-100 h-full">
-                      <div className="text-center p-6">
-                        <span className="material-symbols-rounded text-6xl text-gray-400 mx-auto mb-4 block">
-                          view_in_ar
-                        </span>
-                        <p className="text-gray-600 font-medium text-lg">
-                          3D Model Not Available
-                        </p>
-                        <p className="text-gray-500 mt-2">
-                          Model file will be added soon
-                        </p>
-                      </div>
+              <div className="flex-1 min-h-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden relative">
+                {modelUrl ? (
+                  isDesktop && (
+                    <SceneViewer
+                      key={sceneViewerKey}
+                      modelUrl={modelUrl}
+                      currentStep={currentStep}
+                      cameraPosition={currentStep.cameraPosition}
+                      isPlaying={isPlaying}
+                      shouldAutoStart={false}
+                      height="100%"
+                      onAnimationComplete={handleAnimationComplete}
+                    />
+                  )
+                ) : (
+                  <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 h-full">
+                    <div className="text-center p-6">
+                      <span className="material-symbols-rounded text-6xl text-gray-400 dark:text-gray-600 mx-auto mb-4 block">
+                        view_in_ar
+                      </span>
+                      <p className="text-gray-600 dark:text-gray-400 font-medium text-lg">
+                        3D Model Not Available
+                      </p>
+                      <p className="text-gray-500 dark:text-gray-500 mt-2">
+                        Model file will be added soon
+                      </p>
                     </div>
-                  )}
-                </div>
-                {/* Refresh Button */}
+                  </div>
+                )}
+                {/* Restart Button */}
                 {modelUrl && (
                   <button
                     onClick={handleRestart}
-                    className="absolute top-3 right-3 w-10 h-10 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-colors z-10"
+                    className="absolute top-3 end-3 w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors z-10 min-h-[44px] min-w-[44px]"
                     aria-label="Restart animation"
                   >
-                    <span className="material-symbols-rounded text-lg text-gray-700">
+                    <span className="material-symbols-rounded text-lg text-gray-700 dark:text-gray-300">
                       restart_alt
                     </span>
                   </button>
                 )}
               </div>
 
-              {/* Shared Audio Player - Single instance */}
-              <div>
-                <AudioPlayer
-                  cabinetId={cabinet.id}
-                  stepId={currentStep.id}
-                  audioUrl={currentStep.audioUrl}
-                  autoPlay={false}
-                  onPlayPause={handleAudioPlayPause}
-                />
-              </div>
+              {/* Audio Player - Desktop */}
+              <AudioPlayer
+                cabinetId={cabinet.id}
+                stepId={currentStep.id}
+                audioUrl={currentStep.audioUrl}
+                autoPlay={false}
+                onPlayPause={handleAudioPlayPause}
+              />
+            </div>
 
-              {/* Step Info */}
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            {/* Right Sidebar - Step Info */}
+            <div className="w-80 xl:w-96 flex-shrink-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
+              {/* Step Header */}
+              <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-primary-50/50 to-blue-50/50 dark:from-primary-900/20 dark:to-blue-900/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-8 h-8 rounded-lg bg-primary-500 text-white flex items-center justify-center text-sm font-bold">
+                    {currentStepIndex + 1}
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {t("cabinet.step")} {currentStepIndex + 1} /{" "}
+                    {cabinet.steps?.length || 0}
+                  </span>
+                </div>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                   {stepTitle}
                 </h1>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line text-lg">
+              </div>
+
+              {/* Step Description */}
+              <div className="flex-1 overflow-y-auto p-4">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                   {stepDescription}
                 </p>
 
                 {/* Tools Required */}
                 {currentStep.toolsRequired &&
                   currentStep.toolsRequired.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-gray-200">
-                      <h3 className="text-lg font-semibold text-gray-700 mb-3">
-                        {t("toolsRequired")}:
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
+                        <span className="material-symbols-rounded text-sm text-purple-500">
+                          handyman
+                        </span>
+                        {t("toolsRequired")}
                       </h3>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
                         {currentStep.toolsRequired.map((tool, index) => (
                           <span
                             key={index}
-                            className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full border border-blue-200"
+                            className="px-2.5 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs rounded-lg border border-purple-200 dark:border-purple-800"
                           >
                             {tool}
                           </span>
@@ -450,8 +444,8 @@ export default function StepPage() {
 
                 {/* Duration */}
                 {currentStep.duration && (
-                  <div className="mt-4 flex items-center gap-2 text-gray-600">
-                    <span className="material-symbols-rounded text-lg">
+                  <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                    <span className="material-symbols-rounded text-base text-blue-500">
                       schedule
                     </span>
                     <span>{currentStep.duration}</span>
@@ -460,8 +454,8 @@ export default function StepPage() {
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </>
   );
 }

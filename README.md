@@ -3,8 +3,8 @@
 > Mobile-first, multilingual 3D web application for kitchen cabinet assembly instructions
 
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
-![Phase](https://img.shields.io/badge/phase-8%20of%2010-blue)
-![Progress](https://img.shields.io/badge/progress-75%25-green)
+![Phase](https://img.shields.io/badge/phase-8.5%20of%2010-blue)
+![Progress](https://img.shields.io/badge/progress-80%25-green)
 
 ---
 
@@ -20,9 +20,10 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 - 📱 **Mobile-First** - Optimized for smartphones and tablets ✅
 - 🎬 **Step Animations** - Watch parts come together in 3D ✅
 - 🔊 **Audio Narration** - Listen while you work ✅
-- 🛠️ **Admin Panel** - Content management system ✅
+- 🛠️ **Admin Panel** - Content management system with dashboard ✅
 - 📋 **QR Generation** - Print-ready codes for packaging ✅
 - 🎬 **Animation Authoring** - Visual keyframe editor for step animations ✅
+- 📊 **Admin Dashboard** - Statistics, alerts, and quick actions ✅
 - ⚡ **Fast & Offline** - Static hosting, PWA support (V2)
 
 ---
@@ -38,22 +39,24 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 - ✅ **Phase 5.5: UI/UX** (100%) - Bug fixes, layout improvements
 - ✅ **Phase 6: Admin Panel** (100%) - Auth, CRUD, step management, QR codes, authoring, reuse
 - ✅ **Phase 8: Polish** (100%) - Toast notifications, sidebar collapse, authoring UX, icons
+- ✅ **Phase 8.5: Dark Mode** (100%) - Enhanced theme support, UI polish
 - ⏳ **Phase 9-10** - Upcoming
 
 ### Latest Updates
 
+- **Jan 29, 2026:** Admin Dashboard - Real-time stats, category breakdown, needs attention alerts, quick actions, recent cabinets widget
+- **Jan 29, 2026:** Dark mode polish - ThemeToggle component, CSS transitions, scrollbar styling, home page redesign, PHP path resolution improvements
+- **Jan 28, 2026:** Hostinger deployment - PHP API backend, dynamic data loading, .htaccess routing
 - **Jan 27, 2026:** Phase 8 completed - Toast notifications, collapsible sidebar, 3-column authoring layout, Material Symbols icons, performance optimizations
 - **Jan 27, 2026:** Phase 6 completed - offset keyframes, undo/redo, easing curves, bulk ops, step copy/reuse
 - **Jan 26, 2026:** Audio workflow unified (JSON `audioUrl`), admin uploads deferred to Save, visual editor audio sync
-- **Jan 22, 2026:** Phase 6 at 90% - Animation authoring tool with keyframe editing
-- **Jan 20, 2026:** Phase 6 at 80% - Admin panel with QR code print layout
 
 ### Tech Stack
 
 ```tech
 Frontend:    Next.js 14 (Pages Router) + TypeScript 5.3
 3D Engine:   Three.js 0.160.0 + GSAP 3.12.2
-UI:          Tailwind CSS 3.4 (RTL support)
+UI:          Tailwind CSS 3.4 (RTL support + Dark Mode)
 Auth:        bcryptjs 2.4.3 (token-based)
 QR Codes:    qrcode.react 3.1.0
 i18n:        Custom (localStorage + React Context)

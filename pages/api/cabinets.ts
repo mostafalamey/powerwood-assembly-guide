@@ -22,10 +22,13 @@ export default async function handler(
     });
   }
 
-  // Simple auth check - verify token in header
-  const token = req.headers.authorization?.replace("Bearer ", "");
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+  // Auth check - only required for write operations (POST, PUT, DELETE)
+  // GET requests are public for viewing cabinets
+  if (req.method !== "GET") {
+    const token = req.headers.authorization?.replace("Bearer ", "");
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
   }
 
   try {

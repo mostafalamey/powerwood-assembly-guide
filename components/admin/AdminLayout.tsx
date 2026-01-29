@@ -29,7 +29,10 @@ export default function AdminLayout({
   // Persist sidebar state and trigger window resize for 3D viewport
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("admin_sidebar_collapsed", String(isSidebarCollapsed));
+      localStorage.setItem(
+        "admin_sidebar_collapsed",
+        String(isSidebarCollapsed),
+      );
       // Trigger window resize event after transition completes
       const timeoutId = setTimeout(() => {
         window.dispatchEvent(new Event("resize"));
@@ -45,14 +48,15 @@ export default function AdminLayout({
   };
 
   const isActive = (path: string) => router.pathname === path;
+  const isActivePrefix = (path: string) => router.pathname.startsWith(path);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="flex min-h-screen">
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+      <div className="flex h-full">
         {/* Mobile overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -60,67 +64,70 @@ export default function AdminLayout({
         {/* Sidebar */}
         <aside
           className={`
-            fixed lg:sticky top-0 h-screen z-50 lg:z-[60]
-            w-64 ${isSidebarCollapsed ? "lg:w-24" : "lg:w-64"} border-r border-gray-200 dark:border-gray-800 
-            bg-white/90 dark:bg-gray-900/80 backdrop-blur
+            fixed lg:sticky top-0 h-full z-50 lg:z-[60]
+            w-64 ${isSidebarCollapsed ? "lg:w-20" : "lg:w-64"}
+            bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl
+            border-r border-white/50 dark:border-gray-700/50
+            shadow-xl shadow-gray-200/30 dark:shadow-gray-900/50
             transform transition-[transform,width] duration-300 ease-in-out
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
           `}
         >
           <div className="relative h-full flex flex-col">
+            {/* Collapse toggle button */}
             <button
               onClick={() => setIsSidebarCollapsed((prev) => !prev)}
-              className="hidden lg:flex items-center justify-center absolute -right-3 top-4 w-6 h-6 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 shadow hover:bg-gray-100 dark:hover:bg-gray-700 z-[80]"
+              className="hidden lg:flex items-center justify-center absolute -right-3 top-6 w-6 h-6 rounded-full 
+                bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600
+                text-gray-500 dark:text-gray-400 shadow-lg
+                hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200
+                transition-all duration-200 z-[80]"
               title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               aria-label={
                 isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
               }
             >
-              <span className="material-symbols-rounded text-base leading-none">
+              <span className="material-symbols-rounded text-sm leading-none">
                 {isSidebarCollapsed ? "chevron_right" : "chevron_left"}
               </span>
             </button>
-            <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-800">
-              <h1
-                className={`text-lg font-bold text-gray-900 dark:text-white ${
-                  isSidebarCollapsed ? "lg:hidden" : ""
-                }`}
+
+            {/* Logo section */}
+            <div className="px-5 py-5 border-b border-gray-200/50 dark:border-gray-700/50">
+              <div
+                className={`flex items-center gap-3 ${isSidebarCollapsed ? "lg:justify-center" : ""}`}
               >
-                PW Assembly Guide
-              </h1>
-              <p
-                className={`text-xs text-gray-500 dark:text-gray-400 mt-1 ${
-                  isSidebarCollapsed ? "lg:hidden" : ""
-                }`}
-              >
-                Admin Panel
-              </p>
-              {isSidebarCollapsed && (
-                <div className="hidden lg:flex items-center justify-center text-sm font-bold text-gray-700 dark:text-gray-200">
-                  PW
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                  <span className="material-symbols-rounded text-white text-xl">
+                    construction
+                  </span>
                 </div>
-              )}
+                <div className={isSidebarCollapsed ? "lg:hidden" : ""}>
+                  <h1 className="text-sm font-bold text-gray-900 dark:text-white">
+                    PW Assembly
+                  </h1>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                    Admin Panel
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <nav className="flex-1 px-4 py-4 space-y-1">
+            {/* Navigation */}
+            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
               <Link
                 href="/admin"
                 title="Dashboard"
-                className={`flex items-center gap-2 px-2 py-2 rounded-md text-sm font-medium ${
-                  isActive("/admin")
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                } ${
-                  isSidebarCollapsed
-                    ? "lg:justify-center lg:px-2 lg:py-2 lg:gap-0"
-                    : ""
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActive("/admin")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 onClick={() => setSidebarOpen(false)}
               >
                 <span
-                  className={`material-symbols-rounded ${
-                    isSidebarCollapsed ? "text-xl" : "text-lg"
-                  }`}
+                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
                 >
                   dashboard
                 </span>
@@ -128,25 +135,20 @@ export default function AdminLayout({
                   Dashboard
                 </span>
               </Link>
+
               <Link
                 href="/admin/cabinets"
                 title="Cabinets"
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/admin/cabinets") ||
-                  router.pathname.startsWith("/admin/cabinets")
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                } ${
-                  isSidebarCollapsed
-                    ? "lg:justify-center lg:px-2 lg:py-2 lg:gap-0"
-                    : ""
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActivePrefix("/admin/cabinets")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 onClick={() => setSidebarOpen(false)}
               >
                 <span
-                  className={`material-symbols-rounded ${
-                    isSidebarCollapsed ? "text-xl" : "text-lg"
-                  }`}
+                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
                 >
                   inventory_2
                 </span>
@@ -154,24 +156,20 @@ export default function AdminLayout({
                   Cabinets
                 </span>
               </Link>
+
               <Link
                 href="/admin/qr-codes"
                 title="QR Codes"
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${
-                  isActive("/admin/qr-codes")
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                } ${
-                  isSidebarCollapsed
-                    ? "lg:justify-center lg:px-2 lg:py-2 lg:gap-0"
-                    : ""
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActive("/admin/qr-codes")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 onClick={() => setSidebarOpen(false)}
               >
                 <span
-                  className={`material-symbols-rounded ${
-                    isSidebarCollapsed ? "text-xl" : "text-lg"
-                  }`}
+                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
                 >
                   qr_code_2
                 </span>
@@ -181,21 +179,19 @@ export default function AdminLayout({
               </Link>
             </nav>
 
-            <div className="px-4 py-4 border-t border-gray-200 dark:border-gray-800 space-y-3">
+            {/* Bottom actions */}
+            <div className="px-3 py-4 border-t border-gray-200/50 dark:border-gray-700/50 space-y-2">
               <Link
                 href="/"
                 target="_blank"
                 title="View Site"
-                className={`flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md ${
-                  isSidebarCollapsed
-                    ? "lg:justify-center lg:px-2 lg:py-3 lg:gap-0"
-                    : ""
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+                  text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md
+                  transition-all duration-200
+                  ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
               >
                 <span
-                  className={`material-symbols-rounded ${
-                    isSidebarCollapsed ? "text-xl" : "text-lg"
-                  }`}
+                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
                 >
                   open_in_new
                 </span>
@@ -203,75 +199,77 @@ export default function AdminLayout({
                   View Site
                 </span>
               </Link>
+
               <button
                 onClick={toggleTheme}
-                className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md ${
-                  isSidebarCollapsed
-                    ? "lg:justify-center lg:px-2 lg:py-3 lg:gap-0"
-                    : ""
-                }`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+                  text-gray-600 dark:text-gray-400 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md
+                  transition-all duration-200
+                  ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
               >
                 <span
-                  className={`material-symbols-rounded ${
-                    isSidebarCollapsed ? "text-xl" : "text-lg"
-                  }`}
+                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
                 >
                   {theme === "light" ? "dark_mode" : "light_mode"}
                 </span>
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
-                  Theme
+                  {theme === "light" ? "Dark Mode" : "Light Mode"}
                 </span>
               </button>
+
               <button
                 onClick={handleLogout}
-                className={`w-full px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${
-                  isSidebarCollapsed ? "lg:px-2" : ""
-                }`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+                  text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 hover:shadow-md
+                  transition-all duration-200
+                  ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
               >
-                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
-                  Logout
-                </span>
                 <span
-                  className={`material-symbols-rounded ${
-                    isSidebarCollapsed ? "hidden lg:inline text-xl" : "hidden"
-                  }`}
+                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
                 >
                   logout
+                </span>
+                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
+                  Logout
                 </span>
               </button>
             </div>
           </div>
         </aside>
 
-        {/* Content */}
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+          {/* Header */}
+          <header className="flex-shrink-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b border-white/50 dark:border-gray-700/50 sticky top-0 z-30">
             <div className="px-4 sm:px-6 py-4 flex items-center gap-4">
               {/* Mobile menu button */}
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="lg:hidden p-2 rounded-xl text-gray-600 dark:text-gray-300 
+                  hover:bg-white/80 dark:hover:bg-gray-700/80 hover:shadow-md transition-all duration-200"
                 aria-label="Open sidebar"
               >
                 <span className="material-symbols-rounded text-2xl">menu</span>
               </button>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                 {title}
               </h2>
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+          {/* Main content */}
+          <main className="flex-1 overflow-auto p-4 sm:p-6">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50">
               {children}
             </div>
           </main>
 
-          <footer className="border-t border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-900/80">
-            <div className="px-4 sm:px-6 py-4">
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                PWAssemblyGuide Admin Panel © {new Date().getFullYear()}
+          {/* Footer */}
+          <footer className="flex-shrink-0 border-t border-white/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+            <div className="px-4 sm:px-6 py-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                PWAssemblyGuide Admin © {new Date().getFullYear()}
               </p>
             </div>
           </footer>

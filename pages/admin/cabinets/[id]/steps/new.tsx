@@ -193,9 +193,31 @@ export default function NewStepPage() {
           <title>Add Step - Admin Panel</title>
         </Head>
         <AdminLayout title="Add Step">
-          <div className="p-6 text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">Loading...</p>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <svg
+                className="animate-spin h-10 w-10 mx-auto text-blue-600 dark:text-blue-400"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">
+                Loading cabinet data...
+              </p>
+            </div>
           </div>
         </AdminLayout>
       </AuthGuard>
@@ -210,16 +232,29 @@ export default function NewStepPage() {
         </Head>
         <AdminLayout title="Error">
           <div className="p-6">
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
-              <p className="text-red-800 dark:text-red-200">
-                Cabinet not found
-              </p>
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 shadow-xl p-6 mb-6">
+              <div className="flex items-start gap-3">
+                <span className="material-symbols-rounded text-2xl text-red-500">
+                  error
+                </span>
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                    Cabinet Not Found
+                  </h3>
+                  <p className="text-red-600 dark:text-red-400 mt-1">
+                    The cabinet you're looking for doesn't exist.
+                  </p>
+                </div>
+              </div>
             </div>
             <Link
               href="/admin/cabinets"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
             >
-              ← Back to Cabinets
+              <span className="material-symbols-rounded text-lg">
+                arrow_back
+              </span>
+              Back to Cabinets
             </Link>
           </div>
         </AdminLayout>
@@ -238,33 +273,41 @@ export default function NewStepPage() {
           <div className="mb-6">
             <Link
               href={`/admin/cabinets/${id}/steps`}
-              className="text-blue-600 dark:text-blue-400 hover:underline text-sm"
+              className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              ← Back to Steps
+              <span className="material-symbols-rounded text-lg">
+                arrow_back
+              </span>
+              Back to Steps
             </Link>
           </div>
 
           {/* Form */}
           <div className="max-w-5xl">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                  <p className="text-red-800 dark:text-red-200">{error}</p>
+                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 p-4 flex items-start gap-3">
+                  <span className="material-symbols-rounded text-red-500">
+                    error
+                  </span>
+                  <p className="text-red-600 dark:text-red-400">{error}</p>
                 </div>
               )}
 
-              <div className="bg-white/90 dark:bg-gray-800/80 backdrop-blur rounded-xl border border-gray-200/70 dark:border-gray-700/60 p-5 space-y-4">
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 space-y-5">
                 {/* Step ID (Read-only) */}
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Step Number
                   </label>
-                  <input
-                    type="text"
-                    value={formData.id}
-                    disabled
-                    className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400"
-                  />
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">
+                      {formData.id}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      This will be step #{formData.id} in the assembly sequence
+                    </p>
+                  </div>
                 </div>
 
                 {/* Title (Bilingual) */}
@@ -272,9 +315,9 @@ export default function NewStepPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Title <span className="text-red-500">*</span>
                   </label>
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                         English
                       </label>
                       <input
@@ -283,13 +326,15 @@ export default function NewStepPage() {
                         onChange={(e) =>
                           handleChange("title.en", e.target.value)
                         }
-                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
+                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         placeholder="Attach one leg to base panel"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                         Arabic
                       </label>
                       <input
@@ -298,7 +343,9 @@ export default function NewStepPage() {
                         onChange={(e) =>
                           handleChange("title.ar", e.target.value)
                         }
-                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white text-right"
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-right
+                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                         dir="rtl"
                         placeholder="تثبيت ساق واحدة على اللوحة الأساسية"
                         required
@@ -312,9 +359,9 @@ export default function NewStepPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Description <span className="text-red-500">*</span>
                   </label>
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                         English
                       </label>
                       <textarea
@@ -322,14 +369,16 @@ export default function NewStepPage() {
                         onChange={(e) =>
                           handleChange("description.en", e.target.value)
                         }
-                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
+                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
                         rows={4}
                         placeholder="Detailed assembly instructions..."
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                         Arabic
                       </label>
                       <textarea
@@ -337,7 +386,9 @@ export default function NewStepPage() {
                         onChange={(e) =>
                           handleChange("description.ar", e.target.value)
                         }
-                        className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white text-right"
+                        className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-right
+                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
                         dir="rtl"
                         rows={4}
                         placeholder="تعليمات التجميع التفصيلية..."
@@ -352,32 +403,41 @@ export default function NewStepPage() {
                   <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
                     Estimated Duration (minutes)
                   </label>
-                  <input
-                    type="number"
-                    value={formData.duration || ""}
-                    onChange={(e) =>
-                      handleChange("duration", parseInt(e.target.value) || 0)
-                    }
-                    className="w-full max-w-xs px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-gray-900/60 dark:text-white"
-                    min="1"
-                    placeholder="3"
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <div className="relative w-full max-w-xs">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 text-lg">
+                      schedule
+                    </span>
+                    <input
+                      type="number"
+                      value={formData.duration || ""}
+                      onChange={(e) =>
+                        handleChange("duration", parseInt(e.target.value) || 0)
+                      }
+                      className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                        bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
+                        focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                      min="1"
+                      placeholder="3"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
                     Approximate time to complete this step
                   </p>
                 </div>
 
                 {/* Animation Note */}
-                <div className="bg-blue-50/80 dark:bg-blue-900/20 border border-blue-200/70 dark:border-blue-800/70 rounded-lg p-3">
+                <div className="bg-blue-50/80 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/50 p-4">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-rounded text-lg text-blue-600 dark:text-blue-400 mt-0.5">
-                      info
-                    </span>
+                    <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                      <span className="material-symbols-rounded text-xl text-blue-600 dark:text-blue-400">
+                        movie
+                      </span>
+                    </div>
                     <div>
-                      <h4 className="font-medium text-blue-900 dark:text-blue-200 text-sm">
+                      <h4 className="font-medium text-blue-800 dark:text-blue-200 text-sm">
                         Add 3D Animation Later
                       </h4>
-                      <p className="text-xs text-blue-800 dark:text-blue-300 mt-0.5">
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
                         After creating the step, you can add or edit 3D
                         animations using the Visual Editor.
                       </p>
@@ -387,19 +447,52 @@ export default function NewStepPage() {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between pt-2">
                 <Link
                   href={`/admin/cabinets/${id}/steps`}
-                  className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                  className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 
+                    hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
                 >
                   Cancel
                 </Link>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 text-sm font-medium rounded-xl
+                    bg-gradient-to-r from-blue-500 to-indigo-600 text-white
+                    hover:from-blue-600 hover:to-indigo-700
+                    shadow-lg shadow-blue-500/30 hover:shadow-xl
+                    disabled:opacity-50 disabled:cursor-not-allowed
+                    transition-all duration-200 flex items-center gap-2"
                 >
-                  {saving ? "Creating..." : "Create Step"}
+                  {saving ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                        />
+                      </svg>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-rounded text-lg">
+                        add
+                      </span>
+                      Create Step
+                    </>
+                  )}
                 </button>
               </div>
             </form>

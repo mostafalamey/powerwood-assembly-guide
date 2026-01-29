@@ -2,6 +2,7 @@ import { useTranslation } from "@/lib/i18n";
 import Head from "next/head";
 import Link from "next/link";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import ThemeToggle from "@/components/ThemeToggle";
 import Image from "next/image";
 
 export default function Home() {
@@ -18,6 +19,16 @@ export default function Home() {
     fillers: "/cabinets/button_fillerUnits.png",
   };
 
+  const categories = [
+    "base",
+    "wall",
+    "high",
+    "tall",
+    "cornerBase",
+    "cornerWall",
+    "fillers",
+  ];
+
   return (
     <>
       <Head>
@@ -29,135 +40,161 @@ export default function Home() {
         />
       </Head>
 
-      <main className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
-        <div className="container mx-auto px-4 py-8">
-          {/* Language Switcher */}
-          <div className="flex justify-end mb-8">
+      <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+        {/* Top Bar */}
+        <header className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-800/50 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
+              <span className="material-symbols-rounded text-xl text-white">
+                view_in_ar
+              </span>
+            </div>
+            <div>
+              <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight">
+                {t("appTitle")}
+              </h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                {t("homeDescription")}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <LanguageSwitcher />
           </div>
+        </header>
 
-          {/* Header */}
-          <header className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              {t("welcome")}
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {t("homeDescription")}
-            </p>
-          </header>
-
-          {/* Quick Start Section */}
-          <div className="max-w-4xl mx-auto mb-16">
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <div className="flex items-center justify-center mb-6">
-                <span className="material-symbols-rounded text-6xl text-primary-500">
-                  qr_code_scanner
-                </span>
-              </div>
-              <h2 className="text-2xl font-bold text-center mb-4">
-                {t("scanQRCode")}
-              </h2>
-              <p className="text-gray-600 text-center mb-6">
-                {t("scanInstructions")}
-              </p>
-              <div className="bg-blue-50 rounded-lg p-6 text-center">
-                <p className="text-sm text-gray-700">{t("qrCodeLocation")}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Categories Section */}
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">
-              {t("browseCategories")}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                "base",
-                "wall",
-                "high",
-                "tall",
-                "cornerBase",
-                "cornerWall",
-                "fillers",
-              ].map((category) => (
-                <Link
-                  key={category}
-                  href={`/categories/${category}`}
-                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all p-4 border border-gray-200 hover:border-primary-400 group overflow-hidden flex items-center gap-4"
-                >
-                  {/* Category Image */}
-                  <div className="relative w-24 h-24 flex-shrink-0 bg-gray-50 rounded-lg overflow-hidden">
-                    <Image
-                      src={categoryImages[category]}
-                      alt={t(`categories.${category}`)}
-                      fill
-                      className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                      unoptimized
-                    />
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto md:overflow-hidden">
+          <div className="h-full flex flex-col md:flex-row p-3 md:p-6 gap-3 md:gap-6">
+            {/* Left Panel - QR Scanner Card - Compact on mobile */}
+            <div className="flex-shrink-0 md:w-80 lg:w-96">
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl md:rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 p-3 md:p-6 md:h-full flex flex-col">
+                {/* Mobile: Horizontal compact layout */}
+                <div className="flex md:flex-col items-center md:items-stretch gap-3 md:gap-0">
+                  {/* QR Icon */}
+                  <div className="relative w-12 h-12 md:w-20 md:h-20 flex-shrink-0 md:mx-auto md:mb-4">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl md:rounded-2xl opacity-20 animate-pulse" />
+                    <div className="absolute inset-1 bg-white dark:bg-gray-800 rounded-lg md:rounded-xl flex items-center justify-center">
+                      <span className="material-symbols-rounded text-2xl md:text-4xl text-primary-500">
+                        qr_code_scanner
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Category Text */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold mb-1 text-gray-900 group-hover:text-primary-600 transition-colors">
-                      {t(`categories.${category}`)}
-                    </h3>
-                    <p className="text-gray-600 text-sm line-clamp-2">
-                      {t(`categories.${category}Description`)}
+                  <div className="flex-1 md:flex-none">
+                    <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-white md:text-center md:mb-2">
+                      {t("scanQRCode")}
+                    </h2>
+                    <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 md:text-center md:mb-4 leading-relaxed hidden md:block">
+                      {t("scanInstructions")}
                     </p>
                   </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+                </div>
 
-          {/* Features Section */}
-          <div className="max-w-6xl mx-auto mt-16">
-            <h2 className="text-3xl font-bold text-center mb-8">
-              {t("features")}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="material-symbols-rounded text-3xl text-primary-600">
-                    view_in_ar
-                  </span>
+                {/* Info Badge - Hidden on mobile */}
+                <div className="hidden md:block mt-auto bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800/50">
+                  <div className="flex items-start gap-3">
+                    <span className="material-symbols-rounded text-blue-500 text-lg flex-shrink-0 mt-0.5">
+                      info
+                    </span>
+                    <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                      {t("qrCodeLocation")}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{t("feature3D")}</h3>
-                <p className="text-gray-600 text-sm">
-                  {t("feature3DDescription")}
-                </p>
+
+                {/* Features - Hidden on mobile */}
+                <div className="hidden md:grid mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid-cols-3 gap-2">
+                  <div className="text-center p-2">
+                    <span className="material-symbols-rounded text-lg text-primary-500 mb-1 block">
+                      view_in_ar
+                    </span>
+                    <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
+                      3D View
+                    </span>
+                  </div>
+                  <div className="text-center p-2">
+                    <span className="material-symbols-rounded text-lg text-primary-500 mb-1 block">
+                      language
+                    </span>
+                    <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
+                      Bilingual
+                    </span>
+                  </div>
+                  <div className="text-center p-2">
+                    <span className="material-symbols-rounded text-lg text-primary-500 mb-1 block">
+                      volume_up
+                    </span>
+                    <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
+                      Audio
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="material-symbols-rounded text-3xl text-primary-600">
-                    language
-                  </span>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {t("featureMultilingual")}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {t("featureMultilingualDescription")}
-                </p>
+            </div>
+
+            {/* Right Panel - Categories Grid - Takes priority on mobile */}
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex items-center justify-between mb-2 md:mb-4">
+                <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-white">
+                  {t("browseCategories")}
+                </h2>
+                <span className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 md:py-1 rounded-full">
+                  {categories.length} categories
+                </span>
               </div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="material-symbols-rounded text-3xl text-primary-600">
-                    volume_up
-                  </span>
+
+              {/* Categories Grid */}
+              <div className="flex-1 overflow-y-auto md:overflow-hidden">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 md:gap-3 pb-2 md:pb-0 md:h-full md:content-start">
+                  {categories.map((category) => (
+                    <Link
+                      key={category}
+                      href={`/categories/${category}`}
+                      className="group relative bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl md:rounded-xl shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 dark:hover:shadow-primary-500/5 transition-all duration-300 hover:-translate-y-0.5"
+                    >
+                      {/* Category Image */}
+                      <div className="relative aspect-square md:aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-2 md:p-3">
+                        <Image
+                          src={categoryImages[category]}
+                          alt={t(`categories.${category}`)}
+                          fill
+                          className="object-contain p-8 md:p-10 group-hover:scale-105 transition-transform duration-500"
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
+
+                      {/* Category Label */}
+                      <div className="p-2 bg-white/80 dark:bg-gray-800/80">
+                        <h3 className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+                          {t(`categories.${category}`)}
+                        </h3>
+                      </div>
+
+                      {/* Arrow indicator */}
+                      <span className="absolute top-2 end-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/80 dark:bg-gray-700/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                        <span className="material-symbols-rounded text-xs md:text-sm text-primary-500 rtl:rotate-180">
+                          arrow_forward
+                        </span>
+                      </span>
+                    </Link>
+                  ))}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {t("featureAudio")}
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  {t("featureAudioDescription")}
-                </p>
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
+
+        {/* Footer */}
+        <footer className="flex-shrink-0 px-4 py-2 text-center border-t border-gray-200/50 dark:border-gray-800/50 bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm">
+          <p className="text-[10px] text-gray-400 dark:text-gray-500">
+            © 2026 PW Assembly Guide • Interactive 3D Cabinet Assembly
+            Instructions
+          </p>
+        </footer>
+      </div>
     </>
   );
 }

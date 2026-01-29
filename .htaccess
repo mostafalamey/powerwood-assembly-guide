@@ -6,15 +6,15 @@ RewriteCond %{HTTP:Authorization} .
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
 # API Routes - handle these first
-RewriteRule ^api/auth/login$ php-api/auth.php [L]
-RewriteRule ^api/auth/validate$ php-api/auth.php [L]
-RewriteRule ^api/cabinets$ php-api/cabinets.php [L,QSA]
-RewriteRule ^api/categories$ php-api/categories.php [L]
-RewriteRule ^api/upload$ php-api/upload.php [L]
+RewriteRule ^api/auth/login/?$ php-api/auth.php [L]
+RewriteRule ^api/auth/validate/?$ php-api/auth.php [L]
+RewriteRule ^api/cabinets/?$ php-api/cabinets.php [L,QSA]
+RewriteRule ^api/categories/?$ php-api/categories.php [L]
+RewriteRule ^api/upload/?$ php-api/upload.php [L]
 RewriteRule ^api/admin/cabinets/([^/]+)/steps/([^/]+)/animation/?$ php-api/admin/animation.php?cabinetId=$1&stepId=$2 [L,QSA]
 
-# Map public asset directories to the public folder
-RewriteRule ^(images|models|audio|cabinets)/(.+)$ public/$1/$2 [L]
+# Map asset directories directly to the web root (static export)
+RewriteRule ^(images|models|audio|cabinets)/(.+)$ $1/$2 [L]
 
 # Serve static files directly (images, JS, CSS, etc.)
 RewriteCond %{REQUEST_FILENAME} -f

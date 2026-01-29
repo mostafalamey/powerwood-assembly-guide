@@ -578,21 +578,40 @@ export default function StepAuthoringPage() {
   }, []);
 
   const getEasingPath = useCallback(
-    (easing?: string) => {
+    (easing?: string): { path: string; minY: number; maxY: number } => {
       const width = 120;
       const height = 60;
-      const steps = 36;
+      const steps = 48;
       let path = "";
+      let minEased = 0;
+      let maxEased = 1;
 
+      // First pass: find min/max values
+      for (let i = 0; i <= steps; i += 1) {
+        const t = i / steps;
+        const eased = applyEasing(t, easing);
+        minEased = Math.min(minEased, eased);
+        maxEased = Math.max(maxEased, eased);
+      }
+
+      // Add padding for curves that exceed 0-1
+      const range = maxEased - minEased;
+      const padding = range > 1 ? 0.1 : 0;
+      minEased -= padding;
+      maxEased += padding;
+      const adjustedRange = maxEased - minEased;
+
+      // Second pass: generate path with adjusted scale
       for (let i = 0; i <= steps; i += 1) {
         const t = i / steps;
         const eased = applyEasing(t, easing);
         const x = t * width;
-        const y = height - eased * height;
+        const normalizedY = (eased - minEased) / adjustedRange;
+        const y = height - normalizedY * height;
         path += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
       }
 
-      return path;
+      return { path, minY: minEased, maxY: maxEased };
     },
     [applyEasing],
   );
@@ -1083,18 +1102,42 @@ export default function StepAuthoringPage() {
     );
   }, [selectedKeyframeTime, selectedObject, pushHistory]);
 
-  const handleDeleteAllKeyframesAtTime = useCallback(() => {
-    if (selectedKeyframeTime === null) return;
+  const handleDeleteAllKeyframesAtTime = useCallback(async () => {
+    const targetName = selectedObject ? getObjectId(selectedObject) : "camera";
+    const confirmMessage = selectedObject
+      ? `This will permanently remove all keyframes for "${targetName}" from the entire timeline.`
+      : "This will permanently remove all camera keyframes from the entire timeline.";
+
+    const confirmed = await toast.confirm({
+      title: selectedObject
+        ? "Delete Object Keyframes?"
+        : "Delete Camera Keyframes?",
+      message: confirmMessage,
+      confirmText: "Delete All",
+      cancelText: "Cancel",
+      type: "danger",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     pushHistory();
 
-    setObjectKeyframes((prev) =>
-      prev.filter((kf) => kf.time !== selectedKeyframeTime),
-    );
-    setCameraKeyframes((prev) =>
-      prev.filter((kf) => kf.time !== selectedKeyframeTime),
-    );
+    if (selectedObject) {
+      // Delete ALL keyframes for the selected object across entire timeline
+      const objectId = getObjectId(selectedObject);
+      setObjectKeyframes((prev) =>
+        prev.filter((kf) => kf.objectId !== objectId),
+      );
+      toast.success(`Deleted all keyframes for "${objectId}"`);
+    } else {
+      // Delete ALL camera keyframes across entire timeline
+      setCameraKeyframes([]);
+      toast.success("Deleted all camera keyframes");
+    }
     setSelectedKeyframeTime(null);
-  }, [selectedKeyframeTime, pushHistory]);
+  }, [selectedObject, pushHistory, toast]);
 
   const handleShiftAllKeyframes = useCallback(() => {
     if (!bulkShiftSeconds || Number.isNaN(bulkShiftSeconds)) return;
@@ -1549,13 +1592,13 @@ export default function StepAuthoringPage() {
         <title>Visual Step Editor - Admin Panel</title>
       </Head>
       <AdminLayout title="Visual Step Editor">
-        <div className="min-h-[calc(100vh-140px)] flex flex-col">
+        <div className="min-h-[calc(100vh-140px)] flex flex-col overflow-hidden rounded-xl">
           <audio ref={audioRef} className="hidden" preload="auto" />
           {/* Top toolbar */}
-          <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4">
+          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b border-white/50 dark:border-gray-700/50 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4 shadow-sm">
             <Link
               href={`/admin/cabinets/${id}/steps`}
-              className="text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm flex items-center gap-1"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               <span className="material-symbols-rounded text-sm sm:text-base">
                 arrow_back
@@ -1563,33 +1606,56 @@ export default function StepAuthoringPage() {
               <span className="hidden sm:inline">Back to Steps</span>
               <span className="sm:hidden">Back</span>
             </Link>
-            <span className="text-gray-400 hidden sm:inline">|</span>
+            <div className="hidden sm:block w-px h-5 bg-gray-300 dark:bg-gray-600" />
             <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate flex-1 sm:flex-initial">
-              Cabinet: {id}
+              <span className="text-gray-500 dark:text-gray-400">Cabinet:</span>{" "}
+              <span className="font-semibold">{id}</span>
               {step &&
                 cabinet?.steps &&
                 (() => {
                   const stepData = cabinet.steps.find(
                     (s: any) => s.id === step,
                   );
-                  return stepData
-                    ? ` - Step ${step}: ${stepData.title?.en || ""}`
-                    : ` - Step: ${step}`;
+                  return stepData ? (
+                    <>
+                      {" "}
+                      <span className="text-gray-400 dark:text-gray-500">
+                        •
+                      </span>{" "}
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Step {step}:
+                      </span>{" "}
+                      <span className="font-semibold">
+                        {stepData.title?.en || ""}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      {" "}
+                      <span className="text-gray-400 dark:text-gray-500">
+                        •
+                      </span>{" "}
+                      <span className="text-gray-500 dark:text-gray-400">
+                        Step:
+                      </span>{" "}
+                      <span className="font-semibold">{step}</span>
+                    </>
+                  );
                 })()}
             </span>
 
             {/* Right side controls */}
             <div className="flex items-center gap-1 sm:gap-2 ml-auto">
               {/* Transform mode buttons */}
-              <div className="hidden md:flex gap-1 bg-gray-100 dark:bg-gray-700 rounded p-1">
+              <div className="hidden md:flex gap-1 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 dark:border-gray-600/50">
                 <button
                   onClick={() => setTransformMode("translate")}
                   disabled={!selectedObject}
                   title="Move (W)"
-                  className={`px-2 sm:px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  className={`px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed ${
                     transformMode === "translate" && selectedObject
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <span className="material-symbols-rounded text-sm sm:text-base">
@@ -1600,10 +1666,10 @@ export default function StepAuthoringPage() {
                   onClick={() => setTransformMode("rotate")}
                   disabled={!selectedObject}
                   title="Rotate (E)"
-                  className={`px-2 sm:px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  className={`px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed ${
                     transformMode === "rotate" && selectedObject
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <span className="material-symbols-rounded text-sm sm:text-base">
@@ -1614,10 +1680,10 @@ export default function StepAuthoringPage() {
                   onClick={() => setTransformMode("scale")}
                   disabled={!selectedObject}
                   title="Scale (R)"
-                  className={`px-2 sm:px-3 py-1.5 text-sm rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                  className={`px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed ${
                     transformMode === "scale" && selectedObject
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <span className="material-symbols-rounded text-sm sm:text-base">
@@ -1630,7 +1696,7 @@ export default function StepAuthoringPage() {
               <div className="hidden md:block relative" ref={snapDropdownRef}>
                 <button
                   onClick={() => setSnapDropdownOpen(!snapDropdownOpen)}
-                  className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="px-3 py-1.5 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-xl hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 border border-gray-200/50 dark:border-gray-600/50"
                   title="Snap Settings"
                 >
                   <span className="material-symbols-rounded text-base">
@@ -1640,13 +1706,16 @@ export default function StepAuthoringPage() {
 
                 {/* Dropdown panel */}
                 {snapDropdownOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-72 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50">
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  <div className="absolute right-0 top-full mt-2 w-72 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/50 dark:border-gray-700/50 p-4 z-50">
+                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <span className="material-symbols-rounded text-blue-500">
+                        tune
+                      </span>
                       Snap Settings
                     </h4>
 
                     {/* Translation snap */}
-                    <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div className="mb-4 pb-4 border-b border-gray-200/50 dark:border-gray-700/50">
                       <div className="flex items-center justify-between mb-2">
                         <label className="text-sm text-gray-700 dark:text-gray-300">
                           Move Snap
@@ -1687,9 +1756,9 @@ export default function StepAuthoringPage() {
                             onClick={(e) => e.stopPropagation()}
                             step="1"
                             min="0.1"
-                            className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="flex-1 px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                           />
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                             cm
                           </span>
                         </div>
@@ -1737,9 +1806,9 @@ export default function StepAuthoringPage() {
                             onClick={(e) => e.stopPropagation()}
                             step="1"
                             min="1"
-                            className="flex-1 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            className="flex-1 px-3 py-1.5 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                           />
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                             °
                           </span>
                         </div>
@@ -1750,11 +1819,11 @@ export default function StepAuthoringPage() {
               </div>
 
               {/* Undo / Redo */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <button
                   onClick={handleUndo}
                   disabled={historyPast.length === 0}
-                  className="px-2 py-2 text-xs sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed border border-gray-200/50 dark:border-gray-600/50"
                   title="Undo (Ctrl+Z / ⌘Z)"
                 >
                   <span className="material-symbols-rounded text-base">
@@ -1764,7 +1833,7 @@ export default function StepAuthoringPage() {
                 <button
                   onClick={handleRedo}
                   disabled={historyFuture.length === 0}
-                  className="px-2 py-2 text-xs sm:text-sm bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed border border-gray-200/50 dark:border-gray-600/50"
                   title="Redo (Ctrl+Y / ⌘Shift+Z)"
                 >
                   <span className="material-symbols-rounded text-base">
@@ -1780,7 +1849,7 @@ export default function StepAuthoringPage() {
                   !sceneReady ||
                   (objectKeyframes.length === 0 && cameraKeyframes.length === 0)
                 }
-                className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-2 font-medium"
+                className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-2 font-medium shadow-lg shadow-green-500/30"
                 title="Save animation to step"
               >
                 <span className="material-symbols-rounded text-sm sm:text-base">
@@ -1795,24 +1864,36 @@ export default function StepAuthoringPage() {
           {/* Main content area */}
           <div className="flex-1 grid grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)_360px]">
             {/* Left column: Scene status + hierarchy */}
-            <div className="bg-white dark:bg-gray-800 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 flex flex-col min-h-[30vh] md:min-h-0">
-              <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/50 dark:border-gray-700/50 flex flex-col min-h-[30vh] md:min-h-0">
+              <div className="p-3 sm:p-4 border-b border-gray-200/50 dark:border-gray-700/50">
+                <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3 flex items-center gap-2">
+                  <span className="material-symbols-rounded text-blue-500">
+                    view_in_ar
+                  </span>
                   Scene Status
                 </h3>
-                <div className="text-xs sm:text-sm">
+                <div className="text-xs sm:text-sm flex items-center gap-2 flex-wrap">
                   {sceneReady ? (
-                    <span className="text-green-600 dark:text-green-400">
-                      ✓ Ready
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
+                      <span className="material-symbols-rounded text-xs">
+                        check_circle
+                      </span>
+                      Ready
                     </span>
                   ) : (
-                    <span className="text-yellow-600 dark:text-yellow-400">
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-medium">
+                      <span className="material-symbols-rounded text-xs animate-spin">
+                        progress_activity
+                      </span>
                       Initializing...
                     </span>
                   )}
                   {modelLoaded && (
-                    <span className="ml-2 text-green-600 dark:text-green-400">
-                      • Model loaded
+                    <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium">
+                      <span className="material-symbols-rounded text-xs">
+                        deployed_code
+                      </span>
+                      Model loaded
                     </span>
                   )}
                 </div>
@@ -1829,7 +1910,10 @@ export default function StepAuthoringPage() {
               ) : (
                 <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
                   <div>
-                    <h4 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3">
+                    <h4 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3 flex items-center gap-2">
+                      <span className="material-symbols-rounded text-purple-500">
+                        upload_file
+                      </span>
                       Load 3D Model
                     </h4>
                     <div className="space-y-2 sm:space-y-3">
@@ -1846,25 +1930,27 @@ export default function StepAuthoringPage() {
                           disabled={!sceneReady}
                           className="block w-full text-sm text-gray-500 dark:text-gray-400
                             file:mr-4 file:py-2 file:px-4
-                            file:rounded file:border-0
+                            file:rounded-lg file:border-0
                             file:text-sm file:font-semibold
-                            file:bg-blue-50 file:text-blue-700
-                            hover:file:bg-blue-100
-                            dark:file:bg-blue-900/30 dark:file:text-blue-400
+                            file:bg-gradient-to-r file:from-blue-500 file:to-indigo-600 file:text-white
+                            file:cursor-pointer file:shadow-lg file:shadow-blue-500/30
+                            hover:file:from-blue-600 hover:file:to-indigo-700
                             disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                       </label>
 
                       {loadError && (
-                        <div className="flex items-start gap-2 text-red-600 dark:text-red-400 text-sm">
-                          <span className="material-symbols-rounded text-base mt-0.5 flex-shrink-0">
+                        <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                          <span className="material-symbols-rounded text-base text-red-500 mt-0.5 flex-shrink-0">
                             error
                           </span>
-                          <span>{loadError}</span>
+                          <span className="text-sm text-red-700 dark:text-red-400">
+                            {loadError}
+                          </span>
                         </div>
                       )}
 
-                      <p className="text-xs text-gray-500 dark:text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {cabinet?.model
                           ? "Cabinet model will load automatically, or upload a different one."
                           : "Upload a 3D model to begin creating animations."}
@@ -1876,7 +1962,7 @@ export default function StepAuthoringPage() {
             </div>
 
             {/* Middle column: 3D Viewport + Timeline */}
-            <div className="flex flex-col bg-gray-100 dark:bg-gray-900 min-h-[50vh] md:min-h-0">
+            <div className="flex flex-col bg-gradient-to-br from-slate-100 to-gray-200 dark:from-gray-900 dark:to-slate-900 min-h-[50vh] md:min-h-0">
               <div className="flex-1 min-h-[50vh]">
                 <AuthoringSceneViewer
                   modelPath={modelPath}
@@ -1898,7 +1984,7 @@ export default function StepAuthoringPage() {
                   onGetCameraState={() => null}
                 />
               </div>
-              <div className="border-t border-gray-200 dark:border-gray-700">
+              <div className="border-t border-white/50 dark:border-gray-700/50">
                 <Timeline
                   duration={duration}
                   currentTime={currentTime}
@@ -1933,7 +2019,7 @@ export default function StepAuthoringPage() {
             </div>
 
             {/* Right column: Keyframe Properties Editor */}
-            <div className="bg-white dark:bg-gray-800 border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 px-4 py-2 overflow-y-auto">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/50 dark:border-gray-700/50 px-4 py-3 overflow-y-auto">
               {(() => {
                 const hasSelection = selectedKeyframeTime !== null;
                 // Find the selected keyframe(s)
@@ -1956,84 +2042,109 @@ export default function StepAuthoringPage() {
                 return (
                   <div className="flex flex-col gap-3">
                     {!hasSelection && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        No keyframe selected. Select a keyframe to edit values.
-                      </p>
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <span className="material-symbols-rounded text-4xl text-gray-300 dark:text-gray-600 mb-2">
+                          touch_app
+                        </span>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          No keyframe selected
+                        </p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          Select a keyframe on the timeline to edit its values
+                        </p>
+                      </div>
                     )}
-                    <div className="flex flex-wrap items-center gap-3 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 px-3 py-2">
-                      <div className="inline-flex items-center rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <button
-                          onClick={handleCopyKeyframeValues}
-                          disabled={!hasSelection}
-                          className="px-2 py-1 text-xs bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          title="Copy keyframe values"
-                        >
-                          Copy
-                        </button>
-                        <button
-                          onClick={handlePasteKeyframeValues}
-                          disabled={
-                            !hasSelection ||
-                            !copiedKeyframeType ||
-                            copiedKeyframeType !==
-                              (objectKf ? "object" : "camera")
-                          }
-                          className="px-2 py-1 text-xs bg-white text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors"
-                          title="Paste keyframe values"
-                        >
-                          Paste
-                        </button>
-                      </div>
+                    {hasSelection && (
+                      <div className="flex flex-col gap-3 rounded-xl border border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm px-3 py-3">
+                        {/* Row 1: Time */}
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-14">
+                            Time
+                          </label>
+                          <input
+                            type="number"
+                            step="0.001"
+                            min="0"
+                            max={duration}
+                            disabled={!hasSelection}
+                            key={`kf-time-${selectedKeyframeTime ?? "none"}-${objectKf?.objectId || "camera"}`}
+                            defaultValue={roundTo3(
+                              hasSelection
+                                ? (selectedKeyframeTime as number)
+                                : currentTime,
+                            )}
+                            onFocus={handleBeginEdit}
+                            onBlur={(e) => {
+                              if (
+                                !hasSelection ||
+                                selectedKeyframeTime === null
+                              ) {
+                                return;
+                              }
+                              const value = roundTo3(Number(e.target.value));
+                              const clamped = Math.max(
+                                0,
+                                Math.min(duration, value),
+                              );
+                              handleKeyframeMoved(
+                                selectedKeyframeTime,
+                                clamped,
+                              );
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                (e.target as HTMLInputElement).blur();
+                              }
+                            }}
+                            title="Keyframe time in seconds"
+                            className="flex-1 px-2.5 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          />
+                          <span className="text-xs text-gray-400">sec</span>
+                        </div>
 
-                      {/* Time */}
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                          Time (seconds)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.001"
-                          min="0"
-                          max={duration}
-                          disabled={!hasSelection}
-                          key={`kf-time-${selectedKeyframeTime ?? "none"}-${objectKf?.objectId || "camera"}`}
-                          defaultValue={roundTo3(
-                            hasSelection
-                              ? (selectedKeyframeTime as number)
-                              : currentTime,
-                          )}
-                          onFocus={handleBeginEdit}
-                          onBlur={(e) => {
-                            if (
-                              !hasSelection ||
-                              selectedKeyframeTime === null
-                            ) {
-                              return;
-                            }
-                            const value = roundTo3(Number(e.target.value));
-                            const clamped = Math.max(
-                              0,
-                              Math.min(duration, value),
-                            );
-                            handleKeyframeMoved(selectedKeyframeTime, clamped);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              (e.target as HTMLInputElement).blur();
-                            }
-                          }}
-                          title="Keyframe time in seconds"
-                          className="w-24 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                        />
-                      </div>
+                        {/* Row 2: Copy/Paste */}
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-14">
+                            Clipboard
+                          </label>
+                          <div className="flex-1 inline-flex items-center rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                            <button
+                              onClick={handleCopyKeyframeValues}
+                              disabled={!hasSelection}
+                              className="flex-1 px-2.5 py-1.5 text-xs font-medium bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                              title="Copy keyframe values"
+                            >
+                              <span className="material-symbols-rounded text-xs">
+                                content_copy
+                              </span>
+                              Copy
+                            </button>
+                            <button
+                              onClick={handlePasteKeyframeValues}
+                              disabled={
+                                !hasSelection ||
+                                !copiedKeyframeType ||
+                                copiedKeyframeType !==
+                                  (objectKf ? "object" : "camera")
+                              }
+                              className="flex-1 px-2.5 py-1.5 text-xs font-medium bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors border-l border-gray-200 dark:border-gray-700 flex items-center justify-center gap-1"
+                              title="Paste keyframe values"
+                            >
+                              <span className="material-symbols-rounded text-xs">
+                                content_paste
+                              </span>
+                              Paste
+                            </button>
+                          </div>
+                        </div>
 
-                      {(objectKf || cameraKf) && (
-                        <div className="flex flex-wrap items-center gap-3">
-                          {objectKf && (
-                            <div className="flex items-center gap-2">
-                              <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                Easing:
-                              </label>
+                        {/* Row 3: Easing Selector */}
+                        {(objectKf || cameraKf) && (
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-14">
+                              Easing
+                            </label>
+                            {objectKf && (
                               <select
                                 value={objectKf.easing || "linear"}
                                 aria-label="Object easing"
@@ -2056,7 +2167,7 @@ export default function StepAuthoringPage() {
                                     ),
                                   );
                                 }}
-                                className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="flex-1 px-2.5 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               >
                                 {easingOptions.map((option) => (
                                   <option
@@ -2067,14 +2178,8 @@ export default function StepAuthoringPage() {
                                   </option>
                                 ))}
                               </select>
-                            </div>
-                          )}
-
-                          {cameraKf && (
-                            <div className="flex items-center gap-2">
-                              <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                                Easing:
-                              </label>
+                            )}
+                            {cameraKf && (
                               <select
                                 value={cameraKf.easing || "linear"}
                                 aria-label="Camera easing"
@@ -2096,7 +2201,7 @@ export default function StepAuthoringPage() {
                                     ),
                                   );
                                 }}
-                                className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="flex-1 px-2.5 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               >
                                 {easingOptions.map((option) => (
                                   <option
@@ -2107,80 +2212,193 @@ export default function StepAuthoringPage() {
                                   </option>
                                 ))}
                               </select>
-                            </div>
-                          )}
+                            )}
+                          </div>
+                        )}
 
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                              Curve:
+                        {/* Row 4: Curve Viewer */}
+                        {(objectKf || cameraKf) &&
+                          (() => {
+                            const easingData = getEasingPath(
+                              (objectKf?.easing || cameraKf?.easing) ??
+                                "linear",
+                            );
+                            const range = easingData.maxY - easingData.minY;
+                            const showExtendedRange = range > 1.1;
+                            return (
+                              <div className="flex items-start gap-2">
+                                <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-14 pt-1">
+                                  Curve
+                                </label>
+                                <div className="flex-1 relative">
+                                  <svg
+                                    viewBox="0 0 120 60"
+                                    className="w-full h-16 border border-gray-200/50 dark:border-gray-700/50 rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900"
+                                    preserveAspectRatio="none"
+                                  >
+                                    {/* Grid lines */}
+                                    <line
+                                      x1="0"
+                                      y1="30"
+                                      x2="120"
+                                      y2="30"
+                                      stroke="rgba(148,163,184,0.2)"
+                                      strokeWidth="1"
+                                    />
+                                    <line
+                                      x1="60"
+                                      y1="0"
+                                      x2="60"
+                                      y2="60"
+                                      stroke="rgba(148,163,184,0.2)"
+                                      strokeWidth="1"
+                                    />
+                                    {/* Linear reference */}
+                                    <line
+                                      x1="0"
+                                      y1="60"
+                                      x2="120"
+                                      y2="0"
+                                      stroke="rgba(148,163,184,0.3)"
+                                      strokeWidth="1"
+                                      strokeDasharray="4 4"
+                                    />
+                                    {/* 0 and 1 boundary lines for extended curves */}
+                                    {showExtendedRange && (
+                                      <>
+                                        <line
+                                          x1="0"
+                                          y1={
+                                            60 -
+                                            ((0 - easingData.minY) / range) * 60
+                                          }
+                                          x2="120"
+                                          y2={
+                                            60 -
+                                            ((0 - easingData.minY) / range) * 60
+                                          }
+                                          stroke="rgba(239,68,68,0.4)"
+                                          strokeWidth="1"
+                                          strokeDasharray="2 2"
+                                        />
+                                        <line
+                                          x1="0"
+                                          y1={
+                                            60 -
+                                            ((1 - easingData.minY) / range) * 60
+                                          }
+                                          x2="120"
+                                          y2={
+                                            60 -
+                                            ((1 - easingData.minY) / range) * 60
+                                          }
+                                          stroke="rgba(34,197,94,0.4)"
+                                          strokeWidth="1"
+                                          strokeDasharray="2 2"
+                                        />
+                                      </>
+                                    )}
+                                    {/* Easing curve */}
+                                    <path
+                                      d={easingData.path}
+                                      fill="none"
+                                      stroke="url(#easing-gradient)"
+                                      strokeWidth="2.5"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                    <defs>
+                                      <linearGradient
+                                        id="easing-gradient"
+                                        x1="0%"
+                                        y1="0%"
+                                        x2="100%"
+                                        y2="0%"
+                                      >
+                                        <stop offset="0%" stopColor="#3b82f6" />
+                                        <stop
+                                          offset="100%"
+                                          stopColor="#8b5cf6"
+                                        />
+                                      </linearGradient>
+                                    </defs>
+                                  </svg>
+                                  {/* Value range indicator */}
+                                  {showExtendedRange && (
+                                    <div className="absolute -right-1 top-0 bottom-0 flex flex-col justify-between text-[9px] text-gray-400 dark:text-gray-500">
+                                      <span>{easingData.maxY.toFixed(1)}</span>
+                                      <span>{easingData.minY.toFixed(1)}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })()}
+                      </div>
+                    )}
+
+                    {hasSelection && (
+                      <div className="flex flex-col gap-2 rounded-xl border border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                            <span className="material-symbols-rounded text-xs">
+                              apps
                             </span>
-                            <svg
-                              width="120"
-                              height="60"
-                              viewBox="0 0 120 60"
-                              className="border border-gray-200 dark:border-gray-700 rounded bg-white dark:bg-gray-900"
-                            >
-                              <line
-                                x1="0"
-                                y1="60"
-                                x2="120"
-                                y2="0"
-                                stroke="rgba(148,163,184,0.5)"
-                                strokeWidth="1"
-                                strokeDasharray="3 3"
-                              />
-                              <path
-                                d={getEasingPath(
-                                  (objectKf?.easing || cameraKf?.easing) ??
-                                    "linear",
-                                )}
-                                fill="none"
-                                stroke="#3b82f6"
-                                strokeWidth="2"
-                              />
-                            </svg>
+                            Bulk:
+                          </span>
+                        </div>
+
+                        {/* Delete Row */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={handleDeleteAllKeyframesAtTime}
+                            disabled={!hasSelection}
+                            className="flex-1 px-2.5 py-1.5 text-xs font-medium bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                            title={
+                              selectedObject
+                                ? "Delete all keyframes for this object"
+                                : "Delete all camera keyframes"
+                            }
+                          >
+                            <span className="material-symbols-rounded text-xs">
+                              delete
+                            </span>
+                            {selectedObject
+                              ? "Delete All Object KF"
+                              : "Delete All Camera KF"}
+                          </button>
+                        </div>
+
+                        {/* Shift Row */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={handleShiftAllKeyframes}
+                            disabled={!hasSelection}
+                            className="px-2.5 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                            title="Shift all keyframes by delta"
+                          >
+                            <span className="material-symbols-rounded text-xs">
+                              schedule
+                            </span>
+                            Shift All
+                          </button>
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              step="0.05"
+                              value={bulkShiftSeconds}
+                              onChange={(e) =>
+                                setBulkShiftSeconds(Number(e.target.value))
+                              }
+                              disabled={!hasSelection}
+                              className="w-16 px-2.5 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                              title="Shift all keyframes by seconds"
+                            />
+                            <span className="text-xs text-gray-400">s</span>
                           </div>
                         </div>
-                      )}
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 px-3 py-2">
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                        Bulk:
-                      </span>
-                      <button
-                        onClick={handleDeleteAllKeyframesAtTime}
-                        disabled={!hasSelection}
-                        className="px-2 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                        title="Delete all keyframes at selected time"
-                      >
-                        Delete Time
-                      </button>
-                      <div className="flex items-center gap-1">
-                        <input
-                          type="number"
-                          step="0.05"
-                          value={bulkShiftSeconds}
-                          onChange={(e) =>
-                            setBulkShiftSeconds(Number(e.target.value))
-                          }
-                          disabled={!hasSelection}
-                          className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                          title="Shift all keyframes by seconds"
-                        />
-                        <span className="text-xs text-gray-500 dark:text-gray-500">
-                          s
-                        </span>
                       </div>
-                      <button
-                        onClick={handleShiftAllKeyframes}
-                        disabled={!hasSelection}
-                        className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        title="Shift all keyframes by delta"
-                      >
-                        Shift All
-                      </button>
-                    </div>
+                    )}
 
                     <div className="flex flex-col gap-3">
                       {objectKf?.transform && (
@@ -2229,7 +2447,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2271,7 +2489,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2313,7 +2531,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                           </div>
@@ -2366,7 +2584,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2412,7 +2630,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2458,7 +2676,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                           </div>
@@ -2507,7 +2725,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2549,7 +2767,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2591,7 +2809,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                           </div>
@@ -2627,8 +2845,8 @@ export default function StepAuthoringPage() {
                       {/* Camera Position */}
                       {cameraKf?.position && (
                         <>
-                          <div className="flex items-center gap-2">
-                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-16 shrink-0">
                               Camera Position:
                             </label>
                             <div className="flex items-center gap-1">
@@ -2664,7 +2882,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2700,7 +2918,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2736,14 +2954,14 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                           </div>
 
                           {/* Camera Target */}
-                          <div className="flex items-center gap-2">
-                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-16 shrink-0">
                               Camera Target:
                             </label>
                             <div className="flex items-center gap-1">
@@ -2779,7 +2997,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2815,7 +3033,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                             <div className="flex items-center gap-1">
@@ -2851,7 +3069,7 @@ export default function StepAuthoringPage() {
                                     (e.target as HTMLInputElement).blur();
                                   }
                                 }}
-                                className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                               />
                             </div>
                           </div>

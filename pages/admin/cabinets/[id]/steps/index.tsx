@@ -297,11 +297,29 @@ export default function StepManagementPage() {
           <title>Manage Steps - Admin Panel</title>
         </Head>
         <AdminLayout title="Manage Steps">
-          <div className="p-6 text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              Loading steps...
-            </p>
+          <div className="p-8 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
+              <svg
+                className="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400">Loading steps...</p>
           </div>
         </AdminLayout>
       </AuthGuard>
@@ -316,16 +334,24 @@ export default function StepManagementPage() {
         </Head>
         <AdminLayout title="Error">
           <div className="p-6">
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
-              <p className="text-red-800 dark:text-red-200">
-                {error || "Cabinet not found"}
-              </p>
+            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 mb-4">
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-rounded text-red-500 dark:text-red-400">
+                  error
+                </span>
+                <p className="text-red-700 dark:text-red-300">
+                  {error || "Cabinet not found"}
+                </p>
+              </div>
             </div>
             <Link
               href="/admin/cabinets"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
-              ← Back to Cabinets
+              <span className="material-symbols-rounded text-lg">
+                arrow_back
+              </span>
+              Back to Cabinets
             </Link>
           </div>
         </AdminLayout>
@@ -341,84 +367,112 @@ export default function StepManagementPage() {
       <AdminLayout title={`Manage Steps: ${cabinet.name.en}`}>
         <div className="p-4 sm:p-6">
           {/* Breadcrumb */}
-          <div className="mb-4 sm:mb-6 flex items-center gap-2 text-xs sm:text-sm overflow-x-auto">
+          <div className="mb-6 flex items-center gap-2 text-sm overflow-x-auto">
             <Link
               href="/admin/cabinets"
-              className="text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap"
+              className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
             >
               Cabinets
             </Link>
-            <span className="text-gray-400">/</span>
+            <span className="material-symbols-rounded text-gray-400 text-base">
+              chevron_right
+            </span>
             <Link
               href={`/admin/cabinets/${id}/edit`}
-              className="text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap"
+              className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap font-mono"
             >
               {cabinet.id}
             </Link>
-            <span className="text-gray-400">/</span>
-            <span className="text-gray-600 dark:text-gray-400">Steps</span>
+            <span className="material-symbols-rounded text-gray-400 text-base">
+              chevron_right
+            </span>
+            <span className="text-gray-900 dark:text-white font-medium">
+              Steps
+            </span>
           </div>
 
           {/* Header Actions */}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Assembly Steps
               </h2>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {steps.length} step{steps.length !== 1 ? "s" : ""}
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                {steps.length} step{steps.length !== 1 ? "s" : ""} configured
               </p>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => router.push(`/admin/cabinets/${id}/steps/new`)}
-                className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                className="px-4 py-2.5 rounded-xl font-medium text-sm
+                  bg-gradient-to-r from-blue-500 to-indigo-600 text-white
+                  hover:from-blue-600 hover:to-indigo-700
+                  shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
+                  transition-all duration-300 inline-flex items-center gap-2"
               >
-                + Add Step
+                <span className="material-symbols-rounded text-lg">add</span>
+                Add Step
               </button>
               <button
                 onClick={openCopyModal}
-                className="px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+                className="px-4 py-2.5 rounded-xl font-medium text-sm
+                  bg-gradient-to-r from-indigo-500 to-indigo-600 text-white
+                  hover:from-indigo-600 hover:to-indigo-700
+                  shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40
+                  transition-all duration-300 inline-flex items-center gap-2"
               >
-                ♻️ Copy/Reuse Step
+                <span className="material-symbols-rounded text-lg">
+                  content_copy
+                </span>
+                <span className="hidden sm:inline">Copy Step</span>
               </button>
               <button
                 onClick={() =>
                   router.push(`/admin/cabinets/${id}/steps/authoring`)
                 }
-                className="px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex items-center gap-1"
+                className="px-4 py-2.5 rounded-xl font-medium text-sm
+                  bg-gradient-to-r from-purple-500 to-purple-600 text-white
+                  hover:from-purple-600 hover:to-purple-700
+                  shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40
+                  transition-all duration-300 inline-flex items-center gap-2"
               >
-                <span>🎨</span>
+                <span className="material-symbols-rounded text-lg">movie</span>
                 <span className="hidden sm:inline">Visual Editor</span>
-                <span className="sm:hidden">Editor</span>
               </button>
             </div>
           </div>
 
           {/* Steps List */}
           {steps.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-12 text-center">
-              <span className="material-symbols-rounded text-4xl text-gray-400 mx-auto block">
-                list_alt
-              </span>
-              <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
+            <div className="rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-12 text-center bg-gray-50/50 dark:bg-gray-800/50">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4">
+                <span className="material-symbols-rounded text-3xl text-gray-400 dark:text-gray-500">
+                  list_alt
+                </span>
+              </div>
+              <h3 className="text-base font-medium text-gray-900 dark:text-white">
                 No steps yet
               </h3>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Get started by creating a new assembly step.
               </p>
               <div className="mt-6">
                 <button
                   onClick={() => router.push(`/admin/cabinets/${id}/steps/new`)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  className="px-6 py-2.5 rounded-xl font-medium text-sm
+                    bg-gradient-to-r from-blue-500 to-indigo-600 text-white
+                    hover:from-blue-600 hover:to-indigo-700
+                    shadow-lg shadow-blue-500/30 hover:shadow-xl
+                    transition-all duration-300 inline-flex items-center gap-2"
                 >
-                  + Add Your First Step
+                  <span className="material-symbols-rounded text-lg">add</span>
+                  Add Your First Step
                 </button>
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="rounded-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+              <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
                 {steps.map((step, index) => (
                   <div
                     key={step.id}
@@ -426,23 +480,23 @@ export default function StepManagementPage() {
                     onDragStart={() => handleDragStart(index)}
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDragEnd={handleDragEnd}
-                    className={`p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-move ${
+                    className={`p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-all duration-200 cursor-move ${
                       draggedIndex === index
-                        ? "opacity-50 bg-blue-50 dark:bg-blue-900/20"
+                        ? "opacity-50 bg-blue-50 dark:bg-blue-900/20 scale-[0.98]"
                         : ""
                     }`}
                   >
                     <div className="flex items-start gap-4">
                       {/* Drag Handle */}
                       <div className="flex-shrink-0 mt-1">
-                        <span className="material-symbols-rounded text-lg text-gray-400">
+                        <span className="material-symbols-rounded text-lg text-gray-400 dark:text-gray-500">
                           drag_indicator
                         </span>
                       </div>
 
                       {/* Step Number Badge */}
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 flex items-center justify-center font-semibold text-sm">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/30">
                           {index + 1}
                         </div>
                       </div>
@@ -457,38 +511,50 @@ export default function StepManagementPage() {
                             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
                               {step.description.en}
                             </p>
-                            <div className="flex items-center gap-4 mt-2">
+                            <div className="flex flex-wrap items-center gap-3 mt-3">
                               {step.duration && (
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
-                                  ⏱️ {step.duration} min
+                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                  <span className="material-symbols-rounded text-sm">
+                                    schedule
+                                  </span>
+                                  {step.duration}m
                                 </span>
                               )}
                               {step.animation && (
-                                <span className="text-xs text-green-600 dark:text-green-400">
-                                  ✓ Animation
+                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                  <span className="material-symbols-rounded text-sm">
+                                    check_circle
+                                  </span>
+                                  Animation
                                 </span>
                               )}
                               {(step.audioUrl?.en || step.audioUrl?.ar) && (
-                                <span className="text-xs text-green-600 dark:text-green-400">
-                                  ✓ Audio
+                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+                                  <span className="material-symbols-rounded text-sm">
+                                    check_circle
+                                  </span>
+                                  Audio
                                 </span>
                               )}
                             </div>
                           </div>
 
                           {/* Actions */}
-                          <div className="flex items-center gap-2 ml-4">
+                          <div className="flex items-center gap-1 ml-4">
                             <button
                               onClick={() =>
                                 router.push(
                                   `/admin/cabinets/${id}/steps/authoring?step=${step.id}`,
                                 )
                               }
-                              className="p-2 text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
+                                hover:text-purple-600 dark:hover:text-purple-400 
+                                hover:bg-purple-50 dark:hover:bg-purple-900/20 
+                                transition-all duration-200"
                               title="Open Visual Editor"
                             >
-                              <span className="material-symbols-rounded text-lg">
-                                play_circle
+                              <span className="material-symbols-rounded text-xl">
+                                movie
                               </span>
                             </button>
                             <button
@@ -497,19 +563,25 @@ export default function StepManagementPage() {
                                   `/admin/cabinets/${id}/steps/${step.id}/edit`,
                                 )
                               }
-                              className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
+                                hover:text-blue-600 dark:hover:text-blue-400 
+                                hover:bg-blue-50 dark:hover:bg-blue-900/20 
+                                transition-all duration-200"
                               title="Edit step"
                             >
-                              <span className="material-symbols-rounded text-lg">
+                              <span className="material-symbols-rounded text-xl">
                                 edit
                               </span>
                             </button>
                             <button
                               onClick={() => handleDeleteStep(step.id)}
-                              className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
+                                hover:text-red-600 dark:hover:text-red-400 
+                                hover:bg-red-50 dark:hover:bg-red-900/20 
+                                transition-all duration-200"
                               title="Delete step"
                             >
-                              <span className="material-symbols-rounded text-lg">
+                              <span className="material-symbols-rounded text-xl">
                                 delete
                               </span>
                             </button>
@@ -525,32 +597,37 @@ export default function StepManagementPage() {
 
           {/* Help Text */}
           {steps.length > 0 && (
-            <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              💡 Tip: Drag and drop steps to reorder them
+            <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <span className="material-symbols-rounded text-lg">
+                lightbulb
+              </span>
+              <span>Drag and drop steps to reorder them</span>
             </div>
           )}
         </div>
 
+        {/* Copy Modal */}
         {isCopyModalOpen && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl mx-4 max-h-[85vh] overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[85vh] overflow-hidden border border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Copy/Reuse Step
+                  Copy Step from Another Cabinet
                 </h3>
                 <button
                   onClick={() => setIsCopyModalOpen(false)}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 
+                    hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   title="Close"
                 >
-                  ✕
+                  <span className="material-symbols-rounded">close</span>
                 </button>
               </div>
 
-              <div className="p-4 space-y-4">
-                <div className="grid gap-3 sm:grid-cols-3">
+              <div className="p-6 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-3">
                   <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Source Cabinet
                     </label>
                     <select
@@ -558,7 +635,9 @@ export default function StepManagementPage() {
                       onChange={(e) =>
                         handleSelectSourceCabinet(e.target.value)
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                        focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     >
                       <option value="">Select cabinet...</option>
                       {cabinetIndex.map((item) => (
@@ -570,53 +649,88 @@ export default function StepManagementPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Search Steps
                     </label>
-                    <input
-                      type="text"
-                      value={copySearch}
-                      onChange={(e) => setCopySearch(e.target.value)}
-                      placeholder="Search by title or description"
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 text-lg">
+                        search
+                      </span>
+                      <input
+                        type="text"
+                        value={copySearch}
+                        onChange={(e) => setCopySearch(e.target.value)}
+                        placeholder="Search..."
+                        className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                          focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                      Insert Position
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Insert at Position
                     </label>
                     <select
                       value={copyInsertIndex}
                       onChange={(e) =>
                         setCopyInsertIndex(Number(e.target.value))
                       }
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
+                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
+                        focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     >
                       {Array.from(
                         { length: steps.length + 1 },
                         (_, idx) => idx + 1,
                       ).map((position) => (
                         <option key={position} value={position}>
-                          {position}
+                          Position {position}
                         </option>
                       ))}
                     </select>
                   </div>
                 </div>
 
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                   <div className="max-h-[50vh] overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
                     {copyLoading && (
-                      <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
-                        Loading steps...
+                      <div className="p-8 text-center">
+                        <svg
+                          className="animate-spin h-6 w-6 mx-auto text-blue-600 dark:text-blue-400"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                          />
+                        </svg>
+                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                          Loading steps...
+                        </p>
+                      </div>
+                    )}
+                    {!copyLoading && !sourceCabinetId && (
+                      <div className="p-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                        Select a source cabinet to view available steps
                       </div>
                     )}
                     {!copyLoading &&
                       sourceCabinetId &&
                       sourceSteps.length === 0 && (
-                        <div className="p-4 text-sm text-gray-500 dark:text-gray-400">
-                          No steps available in this cabinet.
+                        <div className="p-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                          No steps available in this cabinet
                         </div>
                       )}
                     {!copyLoading &&
@@ -635,28 +749,54 @@ export default function StepManagementPage() {
                         .map((step) => (
                           <div
                             key={`${sourceCabinetId}-${step.id}`}
-                            className="p-4 flex items-start justify-between gap-4"
+                            className="p-4 flex items-start justify-between gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                           >
                             <div className="flex-1">
-                              <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                Step {step.id}: {step.title.en}
+                              <div className="flex items-center gap-2">
+                                <span className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-bold">
+                                  {step.id}
+                                </span>
+                                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                  {step.title.en}
+                                </span>
                               </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2 ml-9">
                                 {step.description.en}
-                              </div>
-                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 flex gap-3">
+                              </p>
+                              <div className="flex flex-wrap gap-2 mt-2 ml-9">
                                 {step.duration && (
-                                  <span>⏱️ {step.duration} min</span>
+                                  <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                    <span className="material-symbols-rounded text-sm">
+                                      schedule
+                                    </span>
+                                    {step.duration}m
+                                  </span>
                                 )}
-                                {step.animation && <span>✓ Animation</span>}
+                                {step.animation && (
+                                  <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                                    <span className="material-symbols-rounded text-sm">
+                                      check
+                                    </span>
+                                    Animation
+                                  </span>
+                                )}
                                 {(step.audioUrl?.en || step.audioUrl?.ar) && (
-                                  <span>✓ Audio</span>
+                                  <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                                    <span className="material-symbols-rounded text-sm">
+                                      check
+                                    </span>
+                                    Audio
+                                  </span>
                                 )}
                               </div>
                             </div>
                             <button
                               onClick={() => handleCopyStep(step)}
-                              className="px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                              className="px-4 py-2 rounded-xl text-sm font-medium
+                                bg-gradient-to-r from-blue-500 to-indigo-600 text-white
+                                hover:from-blue-600 hover:to-indigo-700
+                                shadow-md shadow-blue-500/20 hover:shadow-lg
+                                transition-all duration-200"
                             >
                               Copy
                             </button>

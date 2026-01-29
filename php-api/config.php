@@ -18,12 +18,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Define paths
-define('DATA_DIR', __DIR__ . '/../data');
+// Resolve paths (support Hostinger deployment layouts)
+function resolvePath($candidates) {
+    if (!is_array($candidates)) {
+        return '';
+    }
+    foreach ($candidates as $candidate) {
+        if ($candidate && file_exists($candidate)) {
+            return $candidate;
+        }
+    }
+    foreach ($candidates as $candidate) {
+        if ($candidate) {
+            return $candidate;
+        }
+    }
+    return '';
+}
+
+$projectRoot = realpath(__DIR__ . '/..');
+$documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : '';
+
+$dataDir = resolvePath([
+    $projectRoot ? $projectRoot . '/data' : null,
+    $documentRoot ? $documentRoot . '/data' : null,
+    __DIR__ . '/data',
+]);
+
+$publicDir = resolvePath([
+    $documentRoot ?: null,
+    $projectRoot ? $projectRoot . '/public' : null,
+    $projectRoot ?: null,
+]);
+
+define('DATA_DIR', $dataDir);
 define('CABINETS_INDEX', DATA_DIR . '/cabinets-index.json');
 define('CABINETS_DIR', DATA_DIR . '/cabinets');
 define('CATEGORIES_FILE', DATA_DIR . '/categories.json');
-define('UPLOAD_DIR', __DIR__ . '/../public');
+define('UPLOAD_DIR', $publicDir);
 
 // Admin password hash (same as your Next.js auth)
 define('ADMIN_PASSWORD_HASH', '$2a$10$abcdefghijklmnopqrstuv1234567890abcdefghijklmnopqrst'); // Replace with your actual hash
@@ -46,7 +78,14 @@ function readJSON($filepath) {
         return null;
     }
     $content = file_get_contents($filepath);
-    return json_decode($content, true);
+    if ($content === false) {
+        return null;
+    }
+    $decoded = json_decode($content, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        return null;
+    }
+    return $decoded;
 }
 
 // Helper function to write JSON file
@@ -75,7 +114,12 @@ function getAllHeaders() {
 // Helper function to verify auth token
 function verifyAuth() {
     $headers = getAllHeaders();
-    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    $authHeader = '';
+    if (isset($headers['Authorization'])) {
+        $authHeader = $headers['Authorization'];
+    } elseif (isset($headers['authorization'])) {
+        $authHeader = $headers['authorization'];
+    }
     
     if (!$authHeader || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
         sendError('Unauthorized', 401);

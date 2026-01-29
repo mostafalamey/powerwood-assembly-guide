@@ -17,6 +17,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.14.0] - 2026-01-29
+
+### ✨ Added - Admin Dashboard
+
+- **Dashboard Overview Page:**
+  - New dedicated dashboard at `/admin` replacing redirect to cabinets
+  - Welcome header with gradient banner and quick-add cabinet button
+  - Real-time statistics cards: Total Cabinets, Total Steps, 3D Models coverage, Categories count
+  - Progress bars showing model completion percentage
+  - Average steps per cabinet calculation
+
+- **Dashboard Widgets:**
+  - **Cabinets by Category** - Visual breakdown with progress bars
+  - **Needs Attention** - Lists cabinets missing 3D models or steps
+  - **Quick Actions** - Add Cabinet, Manage Cabinets, QR Codes, View Site links
+  - **Recent Cabinets** - Quick access to recently added cabinets with thumbnails
+
+- **Enhanced Admin Layout:**
+  - Modernized sidebar with glass-morphism effects and gradient active states
+  - Animated collapse button with improved hover states
+  - Logo section with branded icon and gradient background
+  - Full-height layout with overflow handling
+  - Improved navigation item styling with shadows and transitions
+
+### 🔧 Changed
+
+- Admin sidebar width reduced when collapsed (24px → 20px)
+- Navigation items now use rounded-xl corners with gradient active states
+- Production warning page redesigned with gradient header and modern card layout
+- Sidebar toggle button refined with subtle shadow and hover effects
+
+---
+
+## [0.13.0] - 2026-01-29
+
+### ✨ Added - UI/UX Improvements & Dark Mode Polish
+
+- **Dark Mode Enhancements:**
+  - Added dedicated `ThemeToggle` component with animated sun/moon icons
+  - Theme toggle now appears on home page header alongside language switcher
+  - Smooth CSS transitions for theme switching (background, text colors)
+  - Custom scrollbar styling for dark mode (semi-transparent, rounded)
+  - Added CSS variables for foreground/background RGB in dark mode
+
+- **Home Page Redesign:**
+  - Modern card-based UI with gradient backgrounds
+  - Glass-morphism effects with backdrop blur
+  - Responsive header with app icon and title
+  - Improved category grid layout
+
+- **PHP API Path Resolution:**
+  - Dynamic path resolution supporting multiple deployment layouts
+  - `resolvePath()` helper function checks multiple candidate paths
+  - Supports both development (`/data`) and Hostinger production paths
+  - More robust JSON reading with error handling for `json_decode`
+
+- **GitHub Copilot Instructions:**
+  - Added `.github/copilot-instructions.md` with comprehensive project guidelines
+  - Documents tech stack, coding standards, animation system, and i18n patterns
+
+### 🔧 Changed
+
+- **htaccess Routing:**
+  - Added optional trailing slash support to all API routes (`/?$`)
+  - Asset rewrite rules simplified for static export structure
+
+- **Component Updates:**
+  - `AudioPlayer`: Improved dark mode styling
+  - `Header`: Enhanced dark mode contrast
+  - `LanguageSwitcher`: Dark mode button styles
+  - `StepNavigation`: Dark mode panel styling with proper borders
+  - `AdminLayout`: Refined sidebar transitions and dark mode colors
+  - `ObjectHierarchyTree`: Dark mode tree node styling
+  - `Timeline`: Dark mode track and scrubber colors
+  - `ToastProvider`: Enhanced toast notifications with better dark mode support
+
+- **Admin Pages:**
+  - All admin pages updated with consistent dark mode theming
+  - Improved form inputs with dark backgrounds and borders
+  - Better contrast for text and interactive elements
+
+- **Viewer Pages:**
+  - Cabinet viewer with dark mode gradient backgrounds
+  - Step viewer with improved dark mode panel styling
+  - Category pages with dark mode card designs
+
+### 🐛 Fixed
+
+- Removed duplicate/backup `.gitignore` file (`- Copy.gitignore`)
+- CSS `overflow-y: auto` removed from body to prevent scroll issues
+- More defensive authorization header checking in PHP config
+
+### 📝 Documentation
+
+- Added Copilot instructions for consistent AI-assisted development
+
+---
+
 ## [0.12.0] - 2026-01-28
 
 ### 🚀 Changed - Deployment Architecture Migration

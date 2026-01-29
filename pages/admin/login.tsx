@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../../contexts/AuthContext";
+import { useTheme } from "../../contexts/ThemeContext";
 import Head from "next/head";
 import { useToast } from "../../components/admin/ToastProvider";
 
 export default function AdminLogin() {
   const toast = useToast();
+  const { theme, toggleTheme } = useTheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -35,77 +37,195 @@ export default function AdminLogin() {
       <Head>
         <title>Admin Login - PWAssemblyGuide</title>
       </Head>
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-        <div className="max-w-md w-full space-y-8">
-          <div>
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-blue-400/20 to-indigo-500/20 dark:from-blue-500/10 dark:to-indigo-600/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-gradient-to-br from-indigo-400/20 to-purple-500/20 dark:from-indigo-500/10 dark:to-purple-600/10 blur-3xl" />
+        </div>
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="absolute top-4 right-4 p-3 rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl
+            border border-white/50 dark:border-gray-700/50 shadow-lg
+            text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white
+            hover:shadow-xl transition-all duration-300"
+          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+        >
+          <span className="material-symbols-rounded text-xl">
+            {theme === "light" ? "dark_mode" : "light_mode"}
+          </span>
+        </button>
+
+        <div className="relative w-full max-w-md">
+          {/* Logo and heading */}
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
+              <span className="material-symbols-rounded text-white text-3xl">
+                construction
+              </span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Admin Panel
-            </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
+            </h1>
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               PWAssemblyGuide Content Management
             </p>
           </div>
+
+          {/* Login form card */}
           <form
-            className="mt-8 space-y-6 bg-white p-8 rounded-lg shadow-md"
+            className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 p-8"
             onSubmit={handleSubmit}
           >
-            <div className="rounded-md shadow-sm -space-y-px">
+            <div className="space-y-5">
+              {/* Username field */}
               <div>
-                <label htmlFor="username" className="sr-only">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Username
                 </label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500 text-xl">
+                    person
+                  </span>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
+                    required
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
+                      bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
+                      placeholder-gray-400 dark:placeholder-gray-500
+                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                      transition-all duration-200"
+                    placeholder="Enter username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
               </div>
+
+              {/* Password field */}
               <div>
-                <label htmlFor="password" className="sr-only">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Password
                 </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500 text-xl">
+                    lock
+                  </span>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
+                      bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
+                      placeholder-gray-400 dark:placeholder-gray-500
+                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                      transition-all duration-200"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={loading}
+                  />
+                </div>
               </div>
-            </div>
 
-            {error && (
-              <div className="rounded-md bg-red-50 p-4">
-                <p className="text-sm text-red-800">{error}</p>
-              </div>
-            )}
+              {/* Error message */}
+              {error && (
+                <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-rounded text-red-500 dark:text-red-400">
+                      error
+                    </span>
+                    <p className="text-sm text-red-700 dark:text-red-300">
+                      {error}
+                    </p>
+                  </div>
+                </div>
+              )}
 
-            <div>
+              {/* Submit button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-full py-3 px-4 rounded-xl text-white font-medium
+                  bg-gradient-to-r from-blue-500 to-indigo-600 
+                  hover:from-blue-600 hover:to-indigo-700
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                  shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
+                  disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg
+                  transition-all duration-300 flex items-center justify-center gap-2"
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                      />
+                    </svg>
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Sign in</span>
+                    <span className="material-symbols-rounded text-xl">
+                      arrow_forward
+                    </span>
+                  </>
+                )}
               </button>
             </div>
 
-            <div className="text-xs text-gray-500 text-center">
-              Default credentials: admin / admin123
+            {/* Help text */}
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                Default credentials:{" "}
+                <code className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 font-mono">
+                  admin
+                </code>{" "}
+                /{" "}
+                <code className="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 font-mono">
+                  admin123
+                </code>
+              </p>
             </div>
           </form>
+
+          {/* Back to site link */}
+          <div className="mt-6 text-center">
+            <a
+              href="/"
+              className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              <span className="material-symbols-rounded text-lg">
+                arrow_back
+              </span>
+              Back to website
+            </a>
+          </div>
         </div>
       </div>
     </>

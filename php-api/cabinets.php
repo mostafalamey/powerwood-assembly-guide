@@ -43,7 +43,7 @@ function sendError($message, $statusCode = 400) {
 }
 
 function verifyAuth() {
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    $authHeader = isset($_SERVER['HTTP_AUTHORIZATION']) ? $_SERVER['HTTP_AUTHORIZATION'] : '';
     if (!$authHeader || !preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
         sendError('Unauthorized', 401);
     }
@@ -58,14 +58,24 @@ function getRequestBody() {
     return json_decode(file_get_contents('php://input'), true);
 }
 
+function normalizeCabinetsIndex($indexData) {
+    if (!is_array($indexData)) {
+        return [];
+    }
+    if (isset($indexData['cabinets']) && is_array($indexData['cabinets'])) {
+        return $indexData['cabinets'];
+    }
+    return $indexData;
+}
+
 // GET /api/cabinets
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $id = $_GET['id'] ?? null;
+    $id = isset($_GET['id']) ? $_GET['id'] : null;
     
     if ($id) {
         // Get single cabinet
         $indexData = readJSON(CABINETS_INDEX);
-        $index = $indexData['cabinets'] ?? $indexData ?? [];
+        $index = normalizeCabinetsIndex($indexData);
         $cabinetMeta = null;
         
         foreach ($index as $cabinet) {
@@ -82,17 +92,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         // Load steps from individual file
         $cabinetFile = CABINETS_DIR . '/' . $id . '.json';
         $cabinetData = readJSON($cabinetFile);
+        $steps = [];
+        if (is_array($cabinetData) && isset($cabinetData['steps']) && is_array($cabinetData['steps'])) {
+            $steps = $cabinetData['steps'];
+        }
         
         // Merge metadata with steps
         $result = array_merge($cabinetMeta, [
-            'steps' => $cabinetData['steps'] ?? []
+            'steps' => $steps
         ]);
         
         sendJSON($result);
     } else {
         // Get all cabinets (index only)
         $indexData = readJSON(CABINETS_INDEX);
-        $cabinets = $indexData['cabinets'] ?? $indexData ?? [];
+        $cabinets = normalizeCabinetsIndex($indexData);
         sendJSON($cabinets);
     }
 }
@@ -101,14 +115,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyAuth();
     $body = getRequestBody();
+
+    if (!is_array($body)) {
+        sendError('Invalid request body', 400);
+    }
     
     // Validate required fields
     if (empty($body['id']) || empty($body['name'])) {
         sendError('Missing required fields: id and name', 400);
     }
     
-    $indexData = readJSON(CABINETS_INDEX) ?? ['cabinets' => []];
-    $index = $indexData['cabinets'] ?? [];
+    $indexData = readJSON(CABINETS_INDEX);
+    $index = normalizeCabinetsIndex($indexData);
     
     // Check for duplicate ID
     foreach ($index as $existingCabinet) {
@@ -121,11 +139,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newCabinet = [
         'id' => $body['id'],
         'name' => $body['name'],
-        'description' => $body['description'] ?? ['en' => '', 'ar' => ''],
+        'description' => isset($body['description']) ? $body['description'] : ['en' => '', 'ar' => ''],
         'category' => $body['category'],
-        'image' => $body['image'] ?? '',
-        'model' => $body['model'] ?? '',
-        'estimatedTime' => $body['estimatedTime'] ?? 0,
+        'image' => isset($body['image']) ? $body['image'] : '',
+        'model' => isset($body['model']) ? $body['model'] : '',
+        'estimatedTime' => isset($body['estimatedTime']) ? $body['estimatedTime'] : 0,
         'stepCount' => 0
     ];
     
@@ -154,11 +172,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     verifyAuth();
     $body = getRequestBody();
+    if (!is_array($body) || !isset($body['id'])) {
+        sendError('Invalid request body', 400);
+    }
     $id = $body['id'];
     
     // Update index
-    $indexData = readJSON(CABINETS_INDEX) ?? ['cabinets' => []];
-    $index = $indexData['cabinets'] ?? [];
+    $indexData = readJSON(CABINETS_INDEX);
+    $index = normalizeCabinetsIndex($indexData);
     $found = false;
     
     foreach ($index as &$cabinet) {
@@ -166,8 +187,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             $cabinet['name'] = $body['name'];
             $cabinet['description'] = $body['description'];
             $cabinet['category'] = $body['category'];
-            $cabinet['image'] = $body['image'] ?? $cabinet['image'];
-            $cabinet['model'] = $body['model'] ?? $cabinet['model'];
+            if (isset($body['image'])) {
+                $cabinet['image'] = $body['image'];
+            }
+            if (isset($body['model'])) {
+                $cabinet['model'] = $body['model'];
+            }
             
             // Update stepCount if steps provided
             if (isset($body['steps'])) {
@@ -194,15 +219,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 // DELETE /api/cabinets
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     verifyAuth();
-    $id = $_GET['id'] ?? null;
+    $id = isset($_GET['id']) ? $_GET['id'] : null;
     
     if (!$id) {
         sendError('Cabinet ID required', 400);
     }
     
     // Remove from index
-    $indexData = readJSON(CABINETS_INDEX) ?? ['cabinets' => []];
-    $index = $indexData['cabinets'] ?? [];
+    $indexData = readJSON(CABINETS_INDEX);
+    $index = normalizeCabinetsIndex($indexData);
     $index = array_filter($index, function($cabinet) use ($id) {
         return $cabinet['id'] !== $id;
     });

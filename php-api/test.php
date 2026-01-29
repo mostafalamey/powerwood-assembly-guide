@@ -5,6 +5,6 @@ header('Access-Control-Allow-Origin: *');
 echo json_encode([
     'status' => 'ok',
     'phpVersion' => phpversion(),
-    'serverSoftware' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
-    'requestMethod' => $_SERVER['REQUEST_METHOD'] ?? 'unknown'
+    'serverSoftware' => isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : 'unknown',
+    'requestMethod' => isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'unknown'
 ]);
