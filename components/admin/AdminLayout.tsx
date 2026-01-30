@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useToast } from "./ToastProvider";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export default function AdminLayout({
   const { logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const toast = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     // Initialize from localStorage
@@ -41,8 +43,16 @@ export default function AdminLayout({
     }
   }, [isSidebarCollapsed]);
 
-  const handleLogout = () => {
-    if (confirm("Are you sure you want to log out?")) {
+  const handleLogout = async () => {
+    const confirmed = await toast.confirm({
+      title: "Log Out",
+      message: "Are you sure you want to log out?",
+      confirmText: "Log Out",
+      cancelText: "Cancel",
+      type: "warning",
+    });
+
+    if (confirmed) {
       logout();
     }
   };

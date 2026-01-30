@@ -1595,7 +1595,7 @@ export default function StepAuthoringPage() {
         <div className="min-h-[calc(100vh-140px)] flex flex-col overflow-hidden rounded-xl">
           <audio ref={audioRef} className="hidden" preload="auto" />
           {/* Top toolbar */}
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b border-white/50 dark:border-gray-700/50 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4 shadow-sm">
+          <div className="relative z-20 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b border-white/50 dark:border-gray-700/50 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4 shadow-sm">
             <Link
               href={`/admin/cabinets/${id}/steps`}
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"

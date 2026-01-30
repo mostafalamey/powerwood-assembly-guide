@@ -143,11 +143,40 @@ export default function AuthoringSceneViewer({
     // OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
+    controls.dampingFactor = 0.15;
+    controls.rotateSpeed = 0.25; // Reduced from default 1.0
+    controls.panSpeed = 0.25; // Reduced from default 1.0
     controls.minDistance = 1;
     controls.maxDistance = 20;
     controls.target.set(0, 0.45, 0);
     controlsRef.current = controls;
+
+    // Track orbit controls dragging to prevent selection on camera orbit/pan
+    // We need to track actual mouse movement, not just start/end events
+    let mouseDownPos = { x: 0, y: 0 };
+    let didOrbitDrag = false;
+    const DRAG_THRESHOLD = 5; // pixels
+
+    renderer.domElement.addEventListener(
+      "pointerdown",
+      (event: PointerEvent) => {
+        mouseDownPos = { x: event.clientX, y: event.clientY };
+        didOrbitDrag = false;
+      },
+    );
+
+    renderer.domElement.addEventListener(
+      "pointermove",
+      (event: PointerEvent) => {
+        if (event.buttons > 0) {
+          const dx = event.clientX - mouseDownPos.x;
+          const dy = event.clientY - mouseDownPos.y;
+          if (Math.sqrt(dx * dx + dy * dy) > DRAG_THRESHOLD) {
+            didOrbitDrag = true;
+          }
+        }
+      },
+    );
 
     // Camera update function for animation playback
     (window as any).__updateCamera = () => {
@@ -259,8 +288,9 @@ export default function AuthoringSceneViewer({
       if (!mountRef.current || !cameraRef.current || !loadedModelRef.current)
         return;
 
-      // Don't select if we're currently dragging or just finished dragging
-      if (isDragging || justFinishedDragging) return;
+      // Don't select if we're currently dragging or just finished dragging (transform controls)
+      // or if we dragged the camera (orbit/pan)
+      if (isDragging || justFinishedDragging || didOrbitDrag) return;
 
       const rect = mountRef.current.getBoundingClientRect();
       mouseRef.current.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;

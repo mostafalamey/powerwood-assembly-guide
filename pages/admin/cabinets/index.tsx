@@ -78,9 +78,15 @@ export default function CabinetsListPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm(`Are you sure you want to delete cabinet ${id}?`)) {
-      return;
-    }
+    const confirmed = await toast.confirm({
+      title: "Delete Cabinet",
+      message: `Are you sure you want to delete cabinet ${id}? This action cannot be undone.`,
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      type: "danger",
+    });
+
+    if (!confirmed) return;
 
     try {
       const token = localStorage.getItem("admin_token");

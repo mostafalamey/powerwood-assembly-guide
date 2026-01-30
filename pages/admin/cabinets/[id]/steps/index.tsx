@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
+import { useToast } from "../../../../../components/admin/ToastProvider";
 
 interface Step {
   id: string;
@@ -38,6 +39,7 @@ interface CabinetIndexItem {
 
 export default function StepManagementPage() {
   const router = useRouter();
+  const toast = useToast();
   const { id } = router.query;
   const [cabinet, setCabinet] = useState<Cabinet | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
@@ -278,7 +280,16 @@ export default function StepManagementPage() {
   };
 
   const handleDeleteStep = async (stepId: string) => {
-    if (!confirm("Are you sure you want to delete this step?")) return;
+    const confirmed = await toast.confirm({
+      title: "Delete Step",
+      message:
+        "Are you sure you want to delete this step? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      type: "danger",
+    });
+
+    if (!confirmed) return;
 
     const newSteps = steps
       .filter((s) => s.id !== stepId)

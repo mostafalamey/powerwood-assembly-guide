@@ -17,6 +17,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.14.1] - 2026-01-30
+
+### 🔧 Fixed - Authoring Tool UX Improvements
+
+- **Snap Settings Dropdown:**
+  - Fixed z-index issue where snap popup menu was covered by 3D scene
+  - Added `relative z-20` to toolbar for proper stacking context
+
+- **Camera Controls:**
+  - Reduced orbit and pan sensitivity (from 1.0 to 0.25) for finer control
+  - Increased damping factor for smoother camera movements
+
+- **Object Selection:**
+  - Fixed issue where objects were unintentionally selected when releasing mouse after orbiting/panning
+  - Added drag threshold detection (5px) to distinguish between clicks and drags
+  - Camera orbit/pan no longer triggers object selection on mouse up
+
+### ✨ Changed - Toast Notifications
+
+- **Confirmation Dialogs:**
+  - Replaced browser `confirm()` dialogs with toast-based confirmations
+  - Cabinet deletion now uses danger-styled toast confirmation
+  - Step deletion now uses danger-styled toast confirmation
+  - Logout now uses warning-styled toast confirmation
+  - Improved UX consistency across all admin actions
+
+---
+
 ## [0.14.0] - 2026-01-29
 
 ### ✨ Added - Admin Dashboard
