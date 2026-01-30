@@ -44,6 +44,7 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 
 ### Latest Updates
 
+- **Jan 30, 2026:** View Transitions API - Smooth page transitions, custom 404 page with cabinet-themed design
 - **Jan 29, 2026:** Admin Dashboard - Real-time stats, category breakdown, needs attention alerts, quick actions, recent cabinets widget
 - **Jan 29, 2026:** Dark mode polish - ThemeToggle component, CSS transitions, scrollbar styling, home page redesign, PHP path resolution improvements
 - **Jan 28, 2026:** Hostinger deployment - PHP API backend, dynamic data loading, .htaccess routing

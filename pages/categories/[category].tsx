@@ -1,6 +1,7 @@
 import { useTranslation } from "@/lib/i18n";
 import Head from "next/head";
 import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -155,7 +156,7 @@ export default function CategoryPage() {
                         : cabinet.description?.en;
 
                   return (
-                    <Link
+                    <TransitionLink
                       key={cabinet.id}
                       href={`/cabinet/${cabinet.id}`}
                       className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all"
@@ -207,7 +208,7 @@ export default function CategoryPage() {
                           </div>
                         </div>
                       </div>
-                    </Link>
+                    </TransitionLink>
                   );
                 })}
               </div>

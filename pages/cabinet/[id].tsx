@@ -1,6 +1,7 @@
 import { useTranslation } from "@/lib/i18n";
 import Head from "next/head";
 import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -248,7 +249,7 @@ export default function CabinetPage() {
 
                   {/* Start Button */}
                   <div className="mt-auto">
-                    <Link
+                    <TransitionLink
                       href={`/cabinet/${cabinet.id}/step/${cabinet.steps?.[0]?.id || "1"}`}
                       className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 min-h-[48px]"
                     >
@@ -256,7 +257,7 @@ export default function CabinetPage() {
                         play_arrow
                       </span>
                       {t("cabinet.startAssembly")}
-                    </Link>
+                    </TransitionLink>
                   </div>
                 </div>
               </div>
@@ -290,7 +291,7 @@ export default function CabinetPage() {
                           : step.title?.en;
 
                     return (
-                      <Link
+                      <TransitionLink
                         key={step.id}
                         href={`/cabinet/${cabinet.id}/step/${step.id}`}
                         className="group flex items-center gap-4 p-3 md:p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 hover:shadow-lg hover:shadow-primary-500/10 transition-all hover:-translate-y-0.5"
@@ -321,7 +322,7 @@ export default function CabinetPage() {
                         <span className="material-symbols-rounded text-gray-400 group-hover:text-primary-500 transition-colors rtl:rotate-180">
                           chevron_right
                         </span>
-                      </Link>
+                      </TransitionLink>
                     );
                   })}
                 </div>

@@ -3,6 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import TransitionLink from "../TransitionLink";
 import { useToast } from "./ToastProvider";
 
 interface AdminLayoutProps {
@@ -125,7 +126,7 @@ export default function AdminLayout({
 
             {/* Navigation */}
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-              <Link
+              <TransitionLink
                 href="/admin"
                 title="Dashboard"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
@@ -144,9 +145,9 @@ export default function AdminLayout({
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   Dashboard
                 </span>
-              </Link>
+              </TransitionLink>
 
-              <Link
+              <TransitionLink
                 href="/admin/cabinets"
                 title="Cabinets"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
@@ -165,9 +166,9 @@ export default function AdminLayout({
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   Cabinets
                 </span>
-              </Link>
+              </TransitionLink>
 
-              <Link
+              <TransitionLink
                 href="/admin/qr-codes"
                 title="QR Codes"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
@@ -186,7 +187,7 @@ export default function AdminLayout({
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   QR Codes
                 </span>
-              </Link>
+              </TransitionLink>
             </nav>
 
             {/* Bottom actions */}

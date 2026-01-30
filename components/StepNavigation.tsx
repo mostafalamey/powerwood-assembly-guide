@@ -1,5 +1,5 @@
 import { useTranslation } from "@/lib/i18n";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import { Step } from "@/types/cabinet";
 
 interface StepNavigationProps {
@@ -47,7 +47,7 @@ export default function StepNavigation({
       {/* Navigation Buttons */}
       <div className="flex gap-2">
         {hasPrevious ? (
-          <Link
+          <TransitionLink
             href={`/cabinet/${cabinetId}/step/${steps[currentStepIndex - 1].id}`}
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl hover:bg-white dark:hover:bg-gray-700 border border-white/50 dark:border-gray-700/50 rounded-xl transition-all shadow-sm hover:shadow min-h-[44px]"
           >
@@ -57,7 +57,7 @@ export default function StepNavigation({
             <span className="font-medium text-sm text-gray-700 dark:text-gray-300">
               {t("navigation.previous")}
             </span>
-          </Link>
+          </TransitionLink>
         ) : (
           <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gray-100/50 dark:bg-gray-800/30 border border-gray-200/50 dark:border-gray-700/30 rounded-xl text-gray-400 dark:text-gray-600 cursor-not-allowed min-h-[44px]">
             <span className="material-symbols-rounded text-base rtl:rotate-180">
@@ -80,7 +80,7 @@ export default function StepNavigation({
               </span>
             </div>
           ) : (
-            <Link
+            <TransitionLink
               href={`/cabinet/${cabinetId}/step/${steps[currentStepIndex + 1].id}`}
               className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl min-h-[44px]"
             >
@@ -90,10 +90,10 @@ export default function StepNavigation({
               <span className="material-symbols-rounded text-base rtl:rotate-180">
                 arrow_forward
               </span>
-            </Link>
+            </TransitionLink>
           )
         ) : (
-          <Link
+          <TransitionLink
             href={`/cabinet/${cabinetId}`}
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all shadow-lg shadow-green-500/25 hover:shadow-xl min-h-[44px]"
           >
@@ -103,7 +103,7 @@ export default function StepNavigation({
             <span className="font-medium text-sm">
               {t("navigation.complete") || "Complete"}
             </span>
-          </Link>
+          </TransitionLink>
         )}
       </div>
 
@@ -152,7 +152,7 @@ export default function StepNavigation({
                 </div>
               </div>
             ) : (
-              <Link
+              <TransitionLink
                 key={step.id}
                 href={`/cabinet/${cabinetId}/step/${step.id}`}
                 onClick={handleClick}
@@ -196,7 +196,7 @@ export default function StepNavigation({
                     </p>
                   </div>
                 </div>
-              </Link>
+              </TransitionLink>
             );
           })}
         </div>

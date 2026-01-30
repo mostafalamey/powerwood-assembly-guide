@@ -1,6 +1,6 @@
 import { useTranslation } from "@/lib/i18n";
 import Head from "next/head";
-import Link from "next/link";
+import TransitionLink from "@/components/TransitionLink";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
 import Image from "next/image";
@@ -149,7 +149,7 @@ export default function Home() {
               <div className="flex-1 overflow-y-auto md:overflow-hidden">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 md:gap-3 pb-2 md:pb-0 md:h-full md:content-start">
                   {categories.map((category) => (
-                    <Link
+                    <TransitionLink
                       key={category}
                       href={`/categories/${category}`}
                       className="group relative bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl md:rounded-xl shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 dark:hover:shadow-primary-500/5 transition-all duration-300 hover:-translate-y-0.5"
@@ -179,7 +179,7 @@ export default function Home() {
                           arrow_forward
                         </span>
                       </span>
-                    </Link>
+                    </TransitionLink>
                   ))}
                 </div>
               </div>

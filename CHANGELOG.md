@@ -17,6 +17,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.14.2] - 2026-01-30
+
+### ✨ Added - View Transitions & 404 Page
+
+- **View Transitions API:**
+  - Created `TransitionLink` component for smooth page transitions
+  - Integrated View Transitions API with Next.js client-side routing
+  - Added crossfade animation (0.3s) between page navigations
+  - Applied to all navigation in admin sidebar (Dashboard, Cabinets, QR Codes)
+  - Applied to public site: Header, StepNavigation, category cards, cabinet cards
+  - Graceful fallback for unsupported browsers
+
+- **Custom 404 Page:**
+  - New visually appealing 404 error page with cabinet-themed image
+  - Full-screen background image with content overlay on right side
+  - "Page Not Found" title and descriptive message
+  - "Go Back Home" button using app's primary color
+  - Responsive layout for all screen sizes
+
+### 🔧 Changed
+
+- Updated `globals.css` with View Transitions API styles
+- Replaced `@view-transition { navigation: auto }` with JavaScript-based transitions for SPA compatibility
+
+---
+
 ## [0.14.1] - 2026-01-30
 
 ### 🔧 Fixed - Authoring Tool UX Improvements
