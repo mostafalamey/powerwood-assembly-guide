@@ -4,6 +4,16 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
 import Head from "next/head";
 import { useToast } from "../../components/admin/ToastProvider";
+import {
+  Moon,
+  Sun,
+  Wrench,
+  User,
+  Lock,
+  AlertCircle,
+  ArrowRight,
+  ArrowLeft,
+} from "lucide-react";
 
 export default function AdminLogin() {
   const toast = useToast();
@@ -53,18 +63,18 @@ export default function AdminLogin() {
             hover:shadow-xl transition-all duration-300"
           aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
         >
-          <span className="material-symbols-rounded text-xl">
-            {theme === "light" ? "dark_mode" : "light_mode"}
-          </span>
+          {theme === "light" ? (
+            <Moon className="w-5 h-5" />
+          ) : (
+            <Sun className="w-5 h-5" />
+          )}
         </button>
 
         <div className="relative w-full max-w-md">
           {/* Logo and heading */}
           <div className="text-center mb-8">
             <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
-              <span className="material-symbols-rounded text-white text-3xl">
-                construction
-              </span>
+              <Wrench className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Admin Panel
@@ -89,9 +99,7 @@ export default function AdminLogin() {
                   Username
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500 text-xl">
-                    person
-                  </span>
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                   <input
                     id="username"
                     name="username"
@@ -120,9 +128,7 @@ export default function AdminLogin() {
                   Password
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500 text-xl">
-                    lock
-                  </span>
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                   <input
                     id="password"
                     name="password"
@@ -146,9 +152,7 @@ export default function AdminLogin() {
               {error && (
                 <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
                   <div className="flex items-center gap-3">
-                    <span className="material-symbols-rounded text-red-500 dark:text-red-400">
-                      error
-                    </span>
+                    <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                     <p className="text-sm text-red-700 dark:text-red-300">
                       {error}
                     </p>
@@ -191,9 +195,7 @@ export default function AdminLogin() {
                 ) : (
                   <>
                     <span>Sign in</span>
-                    <span className="material-symbols-rounded text-xl">
-                      arrow_forward
-                    </span>
+                    <ArrowRight className="w-5 h-5" />
                   </>
                 )}
               </button>
@@ -220,9 +222,7 @@ export default function AdminLogin() {
               href="/"
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              <span className="material-symbols-rounded text-lg">
-                arrow_back
-              </span>
+              <ArrowLeft className="w-5 h-5" />
               Back to website
             </a>
           </div>

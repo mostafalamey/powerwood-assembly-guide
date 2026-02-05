@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { Upload, AlertCircle } from "lucide-react";
 
 interface FileUploadFieldProps {
   label: string;
@@ -122,9 +123,7 @@ export default function FileUploadField({
             : "border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50"
         } ${uploading ? "opacity-50 pointer-events-none" : ""}`}
       >
-        <span className="material-symbols-rounded text-5xl text-gray-400 mx-auto block">
-          cloud_upload
-        </span>
+        <Upload className="w-12 h-12 text-gray-400 mx-auto block" />
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           <span className="font-semibold">Drop file here</span> or click "Choose
           File"
@@ -144,7 +143,7 @@ export default function FileUploadField({
 
       {uploadError && (
         <div className="mt-2 flex items-center gap-2 text-red-600 dark:text-red-400 text-sm">
-          <span className="material-symbols-rounded text-base">error</span>
+          <AlertCircle className="w-4 h-4" />
           <span>{uploadError}</span>
         </div>
       )}

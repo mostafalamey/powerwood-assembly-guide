@@ -5,6 +5,19 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import TransitionLink from "../TransitionLink";
 import { useToast } from "./ToastProvider";
+import {
+  Wrench,
+  ChevronRight,
+  ChevronLeft,
+  LayoutDashboard,
+  Package,
+  QrCode,
+  ExternalLink,
+  Moon,
+  Sun,
+  LogOut,
+  Menu,
+} from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -98,9 +111,11 @@ export default function AdminLayout({
                 isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
               }
             >
-              <span className="material-symbols-rounded text-sm leading-none">
-                {isSidebarCollapsed ? "chevron_right" : "chevron_left"}
-              </span>
+              {isSidebarCollapsed ? (
+                <ChevronRight className="w-4 h-4" />
+              ) : (
+                <ChevronLeft className="w-4 h-4" />
+              )}
             </button>
 
             {/* Logo section */}
@@ -109,9 +124,7 @@ export default function AdminLayout({
                 className={`flex items-center gap-3 ${isSidebarCollapsed ? "lg:justify-center" : ""}`}
               >
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <span className="material-symbols-rounded text-white text-xl">
-                    construction
-                  </span>
+                  <Wrench className="w-5 h-5 text-white" />
                 </div>
                 <div className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   <h1 className="text-sm font-bold text-gray-900 dark:text-white">
@@ -137,11 +150,11 @@ export default function AdminLayout({
                   } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 onClick={() => setSidebarOpen(false)}
               >
-                <span
-                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
-                >
-                  dashboard
-                </span>
+                <LayoutDashboard
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   Dashboard
                 </span>
@@ -158,11 +171,11 @@ export default function AdminLayout({
                   } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 onClick={() => setSidebarOpen(false)}
               >
-                <span
-                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
-                >
-                  inventory_2
-                </span>
+                <Package
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   Cabinets
                 </span>
@@ -179,11 +192,11 @@ export default function AdminLayout({
                   } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 onClick={() => setSidebarOpen(false)}
               >
-                <span
-                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
-                >
-                  qr_code_2
-                </span>
+                <QrCode
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   QR Codes
                 </span>
@@ -201,11 +214,11 @@ export default function AdminLayout({
                   transition-all duration-200
                   ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
               >
-                <span
-                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
-                >
-                  open_in_new
-                </span>
+                <ExternalLink
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   View Site
                 </span>
@@ -219,11 +232,19 @@ export default function AdminLayout({
                   ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
                 title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
               >
-                <span
-                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
-                >
-                  {theme === "light" ? "dark_mode" : "light_mode"}
-                </span>
+                {theme === "light" ? (
+                  <Moon
+                    className={
+                      isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                    }
+                  />
+                ) : (
+                  <Sun
+                    className={
+                      isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                    }
+                  />
+                )}
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   {theme === "light" ? "Dark Mode" : "Light Mode"}
                 </span>
@@ -236,11 +257,11 @@ export default function AdminLayout({
                   transition-all duration-200
                   ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
               >
-                <span
-                  className={`material-symbols-rounded ${isSidebarCollapsed ? "text-xl" : "text-lg"}`}
-                >
-                  logout
-                </span>
+                <LogOut
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   Logout
                 </span>
@@ -261,7 +282,7 @@ export default function AdminLayout({
                   hover:bg-white/80 dark:hover:bg-gray-700/80 hover:shadow-md transition-all duration-200"
                 aria-label="Open sidebar"
               >
-                <span className="material-symbols-rounded text-2xl">menu</span>
+                <Menu className="w-6 h-6" />
               </button>
               <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
                 {title}

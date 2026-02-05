@@ -1,4 +1,5 @@
 import { useTranslation } from "@/lib/i18n";
+import { RotateCcw, Focus } from "lucide-react";
 
 interface StepControlsProps {
   onRestart: () => void;
@@ -19,7 +20,7 @@ export default function StepControls({
         className="flex items-center justify-center w-10 h-10 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-colors"
         aria-label={t("controls.restart")}
       >
-        <span className="material-symbols-rounded text-lg">restart_alt</span>
+        <RotateCcw className="w-[18px] h-[18px]" />
       </button>
 
       {/* Reset Camera Button */}
@@ -28,9 +29,7 @@ export default function StepControls({
         className="flex items-center gap-1 px-3 h-10 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full transition-colors"
         aria-label={t("navigation.reset")}
       >
-        <span className="material-symbols-rounded text-base">
-          center_focus_strong
-        </span>
+        <Focus className="w-4 h-4" />
         <span className="text-xs font-medium">{t("navigation.reset")}</span>
       </button>
     </div>

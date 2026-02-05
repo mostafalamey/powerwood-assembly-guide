@@ -2,6 +2,7 @@ import { useTranslation } from "@/lib/i18n";
 import TransitionLink from "./TransitionLink";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
+import { ArrowLeft, Box } from "lucide-react";
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -21,16 +22,12 @@ export default function Header({ showBackButton = false }: HeaderProps) {
                 className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
                 aria-label="Go back"
               >
-                <span className="material-symbols-rounded text-xl text-gray-600 dark:text-gray-400 rtl:rotate-180">
-                  arrow_back
-                </span>
+                <ArrowLeft className="w-5 h-5 text-gray-600 dark:text-gray-400 rtl:rotate-180" />
               </TransitionLink>
             )}
             <TransitionLink href="/" className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-md shadow-primary-500/20">
-                <span className="material-symbols-rounded text-lg text-white">
-                  view_in_ar
-                </span>
+                <Box className="w-5 h-5 text-white" />
               </div>
               <h1 className="text-lg font-bold text-gray-900 dark:text-white hidden sm:block">
                 {t("appTitle")}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import AdminLayout from "../../../components/admin/AdminLayout";
 import AuthGuard from "../../../components/admin/AuthGuard";
 import FileUploadField from "../../../components/admin/FileUploadField";
+import { ArrowLeft, AlertCircle, Clock, Plus } from "lucide-react";
 
 interface CabinetFormData {
   id: string;
@@ -103,9 +104,7 @@ export default function NewCabinetPage() {
               href="/admin/cabinets"
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              <span className="material-symbols-rounded text-lg">
-                arrow_back
-              </span>
+              <ArrowLeft className="w-5 h-5" />
               Back to Cabinets
             </Link>
           </div>
@@ -115,9 +114,7 @@ export default function NewCabinetPage() {
             {error && (
               <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-rounded text-red-500 dark:text-red-400">
-                    error
-                  </span>
+                  <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                   <p className="text-red-700 dark:text-red-300">{error}</p>
                 </div>
               </div>
@@ -225,9 +222,7 @@ export default function NewCabinetPage() {
                   Estimated Time (minutes)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500">
-                    schedule
-                  </span>
+                  <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                   <input
                     type="number"
                     value={formData.estimatedTime}
@@ -364,9 +359,7 @@ export default function NewCabinetPage() {
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-rounded text-lg">
-                      add
-                    </span>
+                    <Plus className="w-5 h-5" />
                     Create Cabinet
                   </>
                 )}

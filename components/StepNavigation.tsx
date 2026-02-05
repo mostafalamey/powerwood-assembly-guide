@@ -1,6 +1,7 @@
 import { useTranslation } from "@/lib/i18n";
 import TransitionLink from "@/components/TransitionLink";
 import { Step } from "@/types/cabinet";
+import { ArrowLeft, ArrowRight, CheckCircle, Check } from "lucide-react";
 
 interface StepNavigationProps {
   cabinetId: string;
@@ -51,18 +52,14 @@ export default function StepNavigation({
             href={`/cabinet/${cabinetId}/step/${steps[currentStepIndex - 1].id}`}
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl hover:bg-white dark:hover:bg-gray-700 border border-white/50 dark:border-gray-700/50 rounded-xl transition-all shadow-sm hover:shadow min-h-[44px]"
           >
-            <span className="material-symbols-rounded text-base rtl:rotate-180 text-gray-700 dark:text-gray-300">
-              arrow_back
-            </span>
+            <ArrowLeft className="w-4 h-4 rtl:rotate-180 text-gray-700 dark:text-gray-300" />
             <span className="font-medium text-sm text-gray-700 dark:text-gray-300">
               {t("navigation.previous")}
             </span>
           </TransitionLink>
         ) : (
           <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gray-100/50 dark:bg-gray-800/30 border border-gray-200/50 dark:border-gray-700/30 rounded-xl text-gray-400 dark:text-gray-600 cursor-not-allowed min-h-[44px]">
-            <span className="material-symbols-rounded text-base rtl:rotate-180">
-              arrow_back
-            </span>
+            <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
             <span className="font-medium text-sm">
               {t("navigation.previous")}
             </span>
@@ -75,9 +72,7 @@ export default function StepNavigation({
               <span className="font-medium text-sm">
                 {t("navigation.next")}
               </span>
-              <span className="material-symbols-rounded text-base animate-pulse rtl:rotate-180">
-                arrow_forward
-              </span>
+              <ArrowRight className="w-4 h-4 animate-pulse rtl:rotate-180" />
             </div>
           ) : (
             <TransitionLink
@@ -87,9 +82,7 @@ export default function StepNavigation({
               <span className="font-medium text-sm">
                 {t("navigation.next")}
               </span>
-              <span className="material-symbols-rounded text-base rtl:rotate-180">
-                arrow_forward
-              </span>
+              <ArrowRight className="w-4 h-4 rtl:rotate-180" />
             </TransitionLink>
           )
         ) : (
@@ -97,9 +90,7 @@ export default function StepNavigation({
             href={`/cabinet/${cabinetId}`}
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all shadow-lg shadow-green-500/25 hover:shadow-xl min-h-[44px]"
           >
-            <span className="material-symbols-rounded text-base">
-              check_circle
-            </span>
+            <CheckCircle className="w-4 h-4" />
             <span className="font-medium text-sm">
               {t("navigation.complete") || "Complete"}
             </span>
@@ -175,9 +166,7 @@ export default function StepNavigation({
                     }`}
                   >
                     {isCompleted ? (
-                      <span className="material-symbols-rounded text-sm">
-                        check
-                      </span>
+                      <Check className="w-3.5 h-3.5" />
                     ) : (
                       index + 1
                     )}

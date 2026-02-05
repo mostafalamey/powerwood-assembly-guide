@@ -6,6 +6,7 @@ import React, {
   forwardRef,
 } from "react";
 import { useTranslation } from "@/lib/i18n";
+import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
 
 export interface AudioPlayerRef {
   seekTo: (time: number) => void;
@@ -255,13 +256,9 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
             {isLoading ? (
               <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
             ) : isPlaying ? (
-              <span className="material-symbols-rounded text-xl text-white">
-                pause
-              </span>
+              <Pause className="w-5 h-5 text-white" />
             ) : (
-              <span className="material-symbols-rounded text-xl text-white ml-0.5">
-                play_arrow
-              </span>
+              <Play className="w-5 h-5 text-white ml-0.5" />
             )}
           </button>
 
@@ -300,17 +297,11 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
               aria-label={t("volume") || "Volume"}
             >
               {volume === 0 ? (
-                <span className="material-symbols-rounded text-lg text-gray-600 dark:text-gray-400">
-                  volume_off
-                </span>
+                <VolumeX className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               ) : volume < 0.5 ? (
-                <span className="material-symbols-rounded text-lg text-gray-600 dark:text-gray-400">
-                  volume_down
-                </span>
+                <Volume1 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               ) : (
-                <span className="material-symbols-rounded text-lg text-gray-600 dark:text-gray-400">
-                  volume_up
-                </span>
+                <Volume2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               )}
             </button>
 

@@ -6,6 +6,16 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
+import {
+  Package,
+  Home,
+  Clock,
+  ListOrdered,
+  Wrench,
+  Play,
+  CheckSquare,
+  ChevronRight,
+} from "lucide-react";
 
 interface Cabinet {
   id: string;
@@ -83,9 +93,7 @@ export default function CabinetPage() {
           <Header showBackButton />
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="text-center">
-              <span className="material-symbols-rounded text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
-                inventory_2
-              </span>
+              <Package className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4 mx-auto" />
               <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                 {t("errors.notFound")}
               </h1>
@@ -96,7 +104,7 @@ export default function CabinetPage() {
                 href="/"
                 className="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors font-medium"
               >
-                <span className="material-symbols-rounded text-lg">home</span>
+                <Home className="w-5 h-5" />
                 {t("errors.goHome")}
               </Link>
             </div>
@@ -167,9 +175,7 @@ export default function CabinetPage() {
                       sizes="(max-width: 768px) 100vw, 400px"
                     />
                   ) : (
-                    <span className="material-symbols-rounded text-6xl text-primary-300 dark:text-primary-700">
-                      inventory_2
-                    </span>
+                    <Package className="w-16 h-16 text-primary-300 dark:text-primary-700" />
                   )}
                 </div>
 
@@ -186,9 +192,7 @@ export default function CabinetPage() {
                   <div className="grid grid-cols-2 gap-3 mb-4">
                     <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 border border-blue-100 dark:border-blue-800/50">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="material-symbols-rounded text-sm text-blue-500">
-                          schedule
-                        </span>
+                        <Clock className="w-4 h-4 text-blue-500" />
                         <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">
                           {t("cabinet.estimatedTime")}
                         </span>
@@ -202,9 +206,7 @@ export default function CabinetPage() {
                     </div>
                     <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 border border-green-100 dark:border-green-800/50">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="material-symbols-rounded text-sm text-green-500">
-                          format_list_numbered
-                        </span>
+                        <ListOrdered className="w-4 h-4 text-green-500" />
                         <span className="text-xs text-green-700 dark:text-green-300 font-medium">
                           {t("cabinet.totalSteps")}
                         </span>
@@ -222,9 +224,7 @@ export default function CabinetPage() {
                   {tools && tools.length > 0 && (
                     <div className="mb-4">
                       <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
-                        <span className="material-symbols-rounded text-sm text-purple-500">
-                          handyman
-                        </span>
+                        <Wrench className="w-4 h-4 text-purple-500" />
                         {t("cabinet.requiredTools")}
                       </h3>
                       <div className="flex flex-wrap gap-1.5">
@@ -253,9 +253,7 @@ export default function CabinetPage() {
                       href={`/cabinet/${cabinet.id}/step/${cabinet.steps?.[0]?.id || "1"}`}
                       className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 min-h-[48px]"
                     >
-                      <span className="material-symbols-rounded text-lg">
-                        play_arrow
-                      </span>
+                      <Play className="w-5 h-5" />
                       {t("cabinet.startAssembly")}
                     </TransitionLink>
                   </div>
@@ -267,9 +265,7 @@ export default function CabinetPage() {
             <div className="flex-1 flex flex-col min-h-0">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <span className="material-symbols-rounded text-primary-500">
-                    checklist
-                  </span>
+                  <CheckSquare className="w-6 h-6 text-primary-500" />
                   {t("cabinet.assemblySteps") || "Assembly Steps"}
                 </h2>
                 <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
@@ -310,18 +306,14 @@ export default function CabinetPage() {
                           </h3>
                           {step.duration && (
                             <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
-                              <span className="material-symbols-rounded text-xs">
-                                schedule
-                              </span>
+                              <Clock className="w-3 h-3" />
                               {step.duration}
                             </p>
                           )}
                         </div>
 
                         {/* Arrow */}
-                        <span className="material-symbols-rounded text-gray-400 group-hover:text-primary-500 transition-colors rtl:rotate-180">
-                          chevron_right
-                        </span>
+                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary-500 transition-colors rtl:rotate-180" />
                       </TransitionLink>
                     );
                   })}

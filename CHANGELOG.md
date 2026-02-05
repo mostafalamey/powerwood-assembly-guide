@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ⚡ Changed - Icon Library Migration (2026-02-06)
+
+**Migrated from Material Symbols to Lucide React icons**
+
+- **Performance**: Reduced initial load time by eliminating external Google Fonts CDN dependency
+- **Bundle size**: Icons are now tree-shaken and only used icons are included in the bundle (~5-15KB vs ~150-200KB)
+- **Offline-first**: All icons load instantly without network requests, improving PWA offline capability
+- **TypeScript-native**: Better type safety and IDE autocomplete with Lucide React components
+- **Consistent sizing**: All icons now use Tailwind utility classes (w-4 h-4, w-5 h-5, etc.) instead of text-\* sizing
+
+**Files updated:**
+
+- Removed Google Fonts CDN link from `_document.tsx`
+- Updated 50+ component and page files across the app
+- Common icon mappings:
+  - `view_in_ar` → `Box`
+  - `qr_code_scanner` → `ScanLine`
+  - `error` → `AlertCircle`
+  - `check_circle` → `CheckCircle`
+  - `arrow_forward` / `arrow_back` → `ArrowRight` / `ArrowLeft`
+  - `delete` → `Trash2`
+  - `edit` → `Edit` or `Pencil`
+  - And 100+ more icon replacements
+
+**Dependencies:**
+
+- Added: `lucide-react` (^0.x)
+- Removed: Material Symbols Google Fonts dependency
+
 ### In Progress
 
 - Device testing (Phase 9)

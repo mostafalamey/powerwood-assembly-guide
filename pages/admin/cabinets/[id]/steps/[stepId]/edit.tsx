@@ -2,6 +2,18 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Clock,
+  CheckCircle,
+  Film,
+  Save,
+  Mic,
+  FileAudio,
+  Upload,
+  FolderOpen,
+} from "lucide-react";
 import AdminLayout from "../../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../../components/admin/AuthGuard";
 
@@ -395,9 +407,7 @@ export default function EditStepPage() {
           <div className="p-6">
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 shadow-xl p-6 mb-6">
               <div className="flex items-start gap-3">
-                <span className="material-symbols-rounded text-2xl text-red-500">
-                  error
-                </span>
+                <AlertCircle className="w-6 h-6 text-red-500" />
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">
                     Error Loading Step
@@ -412,9 +422,7 @@ export default function EditStepPage() {
               href={`/admin/cabinets/${id}/steps`}
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
             >
-              <span className="material-symbols-rounded text-lg">
-                arrow_back
-              </span>
+              <ArrowLeft className="w-4 h-4" />
               Back to Steps
             </Link>
           </div>
@@ -440,9 +448,7 @@ export default function EditStepPage() {
               href={`/admin/cabinets/${id}/steps`}
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              <span className="material-symbols-rounded text-lg">
-                arrow_back
-              </span>
+              <ArrowLeft className="w-4 h-4" />
               Back to Steps
             </Link>
           </div>
@@ -453,9 +459,7 @@ export default function EditStepPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
                   <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 p-4 flex items-start gap-3">
-                    <span className="material-symbols-rounded text-red-500">
-                      error
-                    </span>
+                    <AlertCircle className="w-5 h-5 text-red-500" />
                     <p className="text-red-600 dark:text-red-400">{error}</p>
                   </div>
                 )}
@@ -570,9 +574,7 @@ export default function EditStepPage() {
                       Estimated Duration (minutes)
                     </label>
                     <div className="relative w-full max-w-xs">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 text-lg">
-                        schedule
-                      </span>
+                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="number"
                         value={formData.duration || ""}
@@ -604,9 +606,7 @@ export default function EditStepPage() {
                         <div className="flex flex-wrap items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
-                              <span className="material-symbols-rounded text-xl text-green-600 dark:text-green-400">
-                                check_circle
-                              </span>
+                              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                             </div>
                             <div>
                               <h4 className="font-medium text-green-800 dark:text-green-200 text-sm">
@@ -635,9 +635,7 @@ export default function EditStepPage() {
                         <div className="flex flex-wrap items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
-                              <span className="material-symbols-rounded text-xl text-blue-600 dark:text-blue-400">
-                                movie
-                              </span>
+                              <Film className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                             </div>
                             <div>
                               <h4 className="font-medium text-blue-800 dark:text-blue-200 text-sm">
@@ -707,9 +705,7 @@ export default function EditStepPage() {
                       </>
                     ) : (
                       <>
-                        <span className="material-symbols-rounded text-lg">
-                          save
-                        </span>
+                        <Save className="w-4 h-4" />
                         Save Changes
                       </>
                     )}
@@ -722,9 +718,7 @@ export default function EditStepPage() {
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 h-full flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                      <span className="material-symbols-rounded text-xl text-white">
-                        mic
-                      </span>
+                      <Mic className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -767,9 +761,7 @@ export default function EditStepPage() {
                       >
                         {pendingFiles.eng ? (
                           <>
-                            <span className="material-symbols-rounded text-2xl text-green-500 mb-2">
-                              audio_file
-                            </span>
+                            <FileAudio className="w-6 h-6 text-green-500 mb-2" />
                             <p className="text-gray-700 dark:text-gray-300 font-medium">
                               {pendingFiles.eng.name}
                             </p>
@@ -779,9 +771,7 @@ export default function EditStepPage() {
                           </>
                         ) : audioExists.eng ? (
                           <>
-                            <span className="material-symbols-rounded text-2xl text-green-500 mb-2">
-                              check_circle
-                            </span>
+                            <CheckCircle className="w-6 h-6 text-green-500 mb-2" />
                             <p className="text-gray-700 dark:text-gray-300 font-medium">
                               Audio exists
                             </p>
@@ -791,9 +781,7 @@ export default function EditStepPage() {
                           </>
                         ) : (
                           <>
-                            <span className="material-symbols-rounded text-2xl text-gray-400 mb-2">
-                              upload_file
-                            </span>
+                            <Upload className="w-6 h-6 text-gray-400 mb-2" />
                             <p className="text-gray-600 dark:text-gray-400">
                               Drag & drop MP3 here
                             </p>
@@ -819,9 +807,7 @@ export default function EditStepPage() {
                             hover:from-blue-600 hover:to-indigo-700 cursor-pointer transition-all
                             shadow-md shadow-blue-500/20"
                         >
-                          <span className="material-symbols-rounded text-sm">
-                            folder_open
-                          </span>
+                          <FolderOpen className="w-3 h-3" />
                           Choose File
                         </label>
                       </div>
@@ -887,9 +873,7 @@ export default function EditStepPage() {
                       >
                         {pendingFiles.arb ? (
                           <>
-                            <span className="material-symbols-rounded text-2xl text-green-500 mb-2">
-                              audio_file
-                            </span>
+                            <FileAudio className="w-6 h-6 text-green-500 mb-2" />
                             <p className="text-gray-700 dark:text-gray-300 font-medium">
                               {pendingFiles.arb.name}
                             </p>
@@ -899,9 +883,7 @@ export default function EditStepPage() {
                           </>
                         ) : audioExists.arb ? (
                           <>
-                            <span className="material-symbols-rounded text-2xl text-green-500 mb-2">
-                              check_circle
-                            </span>
+                            <CheckCircle className="w-6 h-6 text-green-500 mb-2" />
                             <p className="text-gray-700 dark:text-gray-300 font-medium">
                               Audio exists
                             </p>
@@ -911,9 +893,7 @@ export default function EditStepPage() {
                           </>
                         ) : (
                           <>
-                            <span className="material-symbols-rounded text-2xl text-gray-400 mb-2">
-                              upload_file
-                            </span>
+                            <Upload className="w-6 h-6 text-gray-400 mb-2" />
                             <p className="text-gray-600 dark:text-gray-400">
                               Drag & drop MP3 here
                             </p>
@@ -939,9 +919,7 @@ export default function EditStepPage() {
                             hover:from-emerald-600 hover:to-teal-700 cursor-pointer transition-all
                             shadow-md shadow-emerald-500/20"
                         >
-                          <span className="material-symbols-rounded text-sm">
-                            folder_open
-                          </span>
+                          <FolderOpen className="w-3 h-3" />
                           Choose File
                         </label>
                       </div>

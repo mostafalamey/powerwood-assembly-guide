@@ -7,6 +7,19 @@ import SceneViewer from "@/components/3d/SceneViewer";
 import StepNavigation from "@/components/StepNavigation";
 import AudioPlayer from "@/components/AudioPlayer";
 import { Cabinet, Step } from "@/types/cabinet";
+import {
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  RotateCcw,
+  Maximize2,
+  Minimize2,
+  ChevronDown,
+  Box,
+  Wrench,
+  Clock,
+} from "lucide-react";
 
 export default function StepPage() {
   const router = useRouter();
@@ -326,9 +339,7 @@ export default function StepPage() {
                     className="w-11 h-11 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center transition-colors"
                     aria-label={t("exitFullscreen") || "Exit fullscreen"}
                   >
-                    <span className="material-symbols-rounded text-xl text-white">
-                      fullscreen_exit
-                    </span>
+                    <Minimize2 className="w-5 h-5 text-white" />
                   </button>
                   <div className="text-center flex-1 mx-3">
                     <p className="text-white/70 text-xs">{cabinetName}</p>
@@ -387,9 +398,7 @@ export default function StepPage() {
                       }`}
                       aria-label={t("navigation.previous") || "Previous step"}
                     >
-                      <span className="material-symbols-rounded text-2xl rtl:rotate-180">
-                        skip_previous
-                      </span>
+                      <SkipBack className="w-6 h-6 rtl:rotate-180" />
                     </button>
 
                     {/* Restart Button */}
@@ -398,9 +407,7 @@ export default function StepPage() {
                       className="w-11 h-11 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-colors"
                       aria-label={t("restart") || "Restart"}
                     >
-                      <span className="material-symbols-rounded text-xl text-white">
-                        restart_alt
-                      </span>
+                      <RotateCcw className="w-5 h-5 text-white" />
                     </button>
 
                     {/* Play/Pause Button */}
@@ -411,9 +418,11 @@ export default function StepPage() {
                         isPlaying ? t("pause") || "Pause" : t("play") || "Play"
                       }
                     >
-                      <span className="material-symbols-rounded text-3xl text-white">
-                        {isPlaying ? "pause" : "play_arrow"}
-                      </span>
+                      {isPlaying ? (
+                        <Pause className="w-8 h-8 text-white" />
+                      ) : (
+                        <Play className="w-8 h-8 text-white" />
+                      )}
                     </button>
 
                     {/* Next Button */}
@@ -433,9 +442,7 @@ export default function StepPage() {
                       }`}
                       aria-label={t("navigation.next") || "Next step"}
                     >
-                      <span className="material-symbols-rounded text-2xl rtl:rotate-180">
-                        skip_next
-                      </span>
+                      <SkipForward className="w-6 h-6 rtl:rotate-180" />
                     </button>
 
                     {/* Spacer for alignment */}
@@ -469,9 +476,7 @@ export default function StepPage() {
               ) : (
                 <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 h-full">
                   <div className="text-center p-6">
-                    <span className="material-symbols-rounded text-5xl text-gray-400 dark:text-gray-600 mx-auto mb-4 block">
-                      view_in_ar
-                    </span>
+                    <Box className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                     <p className="text-gray-600 dark:text-gray-400 font-medium">
                       3D Model Not Available
                     </p>
@@ -487,9 +492,7 @@ export default function StepPage() {
                     className="w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
                     aria-label={t("fullscreen") || "Fullscreen"}
                   >
-                    <span className="material-symbols-rounded text-lg text-gray-700 dark:text-gray-300">
-                      fullscreen
-                    </span>
+                    <Maximize2 className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   </button>
                   {/* Restart Button */}
                   <button
@@ -497,9 +500,7 @@ export default function StepPage() {
                     className="w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
                     aria-label="Restart animation"
                   >
-                    <span className="material-symbols-rounded text-lg text-gray-700 dark:text-gray-300">
-                      restart_alt
-                    </span>
+                    <RotateCcw className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   </button>
                 </div>
               )}
@@ -519,11 +520,9 @@ export default function StepPage() {
                     {stepTitle}
                   </h1>
                 </div>
-                <span
-                  className={`material-symbols-rounded text-lg text-gray-500 dark:text-gray-400 transition-transform ${isDescriptionExpanded ? "rotate-180" : ""}`}
-                >
-                  expand_more
-                </span>
+                <ChevronDown
+                  className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform ${isDescriptionExpanded ? "rotate-180" : ""}`}
+                />
               </button>
 
               <div
@@ -638,9 +637,7 @@ export default function StepPage() {
                 ) : (
                   <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 h-full">
                     <div className="text-center p-6">
-                      <span className="material-symbols-rounded text-6xl text-gray-400 dark:text-gray-600 mx-auto mb-4 block">
-                        view_in_ar
-                      </span>
+                      <Box className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                       <p className="text-gray-600 dark:text-gray-400 font-medium text-lg">
                         3D Model Not Available
                       </p>
@@ -657,9 +654,7 @@ export default function StepPage() {
                     className="absolute top-3 end-3 w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors z-10 min-h-[44px] min-w-[44px]"
                     aria-label="Restart animation"
                   >
-                    <span className="material-symbols-rounded text-lg text-gray-700 dark:text-gray-300">
-                      restart_alt
-                    </span>
+                    <RotateCcw className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   </button>
                 )}
               </div>
@@ -705,9 +700,7 @@ export default function StepPage() {
                   currentStep.toolsRequired.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                       <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
-                        <span className="material-symbols-rounded text-sm text-purple-500">
-                          handyman
-                        </span>
+                        <Wrench className="w-4 h-4 text-purple-500" />
                         {t("toolsRequired")}
                       </h3>
                       <div className="flex flex-wrap gap-1.5">
@@ -726,9 +719,7 @@ export default function StepPage() {
                 {/* Duration */}
                 {currentStep.duration && (
                   <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <span className="material-symbols-rounded text-base text-blue-500">
-                      schedule
-                    </span>
+                    <Clock className="w-4 h-4 text-blue-500" />
                     <span>{currentStep.duration}</span>
                   </div>
                 )}

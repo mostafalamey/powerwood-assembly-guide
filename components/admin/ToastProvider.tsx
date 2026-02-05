@@ -6,6 +6,14 @@ import React, {
   useState,
   useEffect,
 } from "react";
+import {
+  CheckCircle,
+  AlertCircle,
+  AlertTriangle,
+  Info,
+  HelpCircle,
+  X,
+} from "lucide-react";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
@@ -47,17 +55,18 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 
-const getToastIcon = (type: ToastType) => {
+const getToastIcon = (type: ToastType, className: string) => {
+  const iconProps = { className };
   switch (type) {
     case "success":
-      return "check_circle";
+      return <CheckCircle {...iconProps} />;
     case "error":
-      return "error";
+      return <AlertCircle {...iconProps} />;
     case "warning":
-      return "warning";
+      return <AlertTriangle {...iconProps} />;
     case "info":
     default:
-      return "info";
+      return <Info {...iconProps} />;
   }
 };
 
@@ -103,7 +112,7 @@ const getConfirmStyles = (type: ConfirmOptions["type"]) => {
   switch (type) {
     case "danger":
       return {
-        icon: "warning",
+        icon: <AlertTriangle className="w-8 h-8" />,
         iconColor: "text-red-500",
         iconBg: "bg-red-100 dark:bg-red-900/50",
         confirmBtn:
@@ -111,7 +120,7 @@ const getConfirmStyles = (type: ConfirmOptions["type"]) => {
       };
     case "warning":
       return {
-        icon: "help",
+        icon: <HelpCircle className="w-8 h-8" />,
         iconColor: "text-amber-500",
         iconBg: "bg-amber-100 dark:bg-amber-900/50",
         confirmBtn:
@@ -120,7 +129,7 @@ const getConfirmStyles = (type: ConfirmOptions["type"]) => {
     case "info":
     default:
       return {
-        icon: "help",
+        icon: <HelpCircle className="w-8 h-8" />,
         iconColor: "text-blue-500",
         iconBg: "bg-blue-100 dark:bg-blue-900/50",
         confirmBtn:
@@ -175,9 +184,7 @@ const ToastItemComponent: React.FC<{
       `}
     >
       <div className="flex items-start gap-3 px-4 py-3">
-        <span className={`material-symbols-rounded text-xl ${styles.icon}`}>
-          {getToastIcon(toast.type)}
-        </span>
+        {getToastIcon(toast.type, `w-5 h-5 ${styles.icon}`)}
         <div
           className={`flex-1 text-sm leading-snug font-medium ${styles.text}`}
         >
@@ -192,7 +199,7 @@ const ToastItemComponent: React.FC<{
           `}
           aria-label="Dismiss toast"
         >
-          <span className="material-symbols-rounded text-lg">close</span>
+          <X className="w-[18px] h-[18px]" />
         </button>
       </div>
       {/* Progress bar */}
@@ -261,11 +268,7 @@ const ConfirmDialog: React.FC<{
         {/* Icon */}
         <div className="flex justify-center pt-6">
           <div className={`p-3 rounded-full ${styles.iconBg}`}>
-            <span
-              className={`material-symbols-rounded text-3xl ${styles.iconColor}`}
-            >
-              {styles.icon}
-            </span>
+            <div className={styles.iconColor}>{styles.icon}</div>
           </div>
         </div>
 

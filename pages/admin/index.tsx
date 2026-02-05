@@ -4,6 +4,25 @@ import Link from "next/link";
 import { useAuth } from "../../contexts/AuthContext";
 import AdminLayout from "../../components/admin/AdminLayout";
 import AuthGuard from "../../components/admin/AuthGuard";
+import {
+  AlertTriangle,
+  Info,
+  Plus,
+  Package,
+  ArrowRight,
+  ListOrdered,
+  Box,
+  FolderOpen,
+  PieChart,
+  CheckCircle,
+  Zap,
+  List,
+  QrCode,
+  ExternalLink,
+  Clock,
+  Folder,
+  ChevronRight,
+} from "lucide-react";
 
 interface CabinetIndex {
   id: string;
@@ -109,9 +128,7 @@ export default function AdminDashboard() {
           <div className="max-w-2xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-amber-200 dark:border-amber-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 overflow-hidden">
             <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
               <div className="flex items-center gap-3">
-                <span className="material-symbols-rounded text-white text-3xl">
-                  warning
-                </span>
+                <AlertTriangle className="text-white w-8 h-8" />
                 <h2 className="text-xl font-bold text-white">
                   Admin Panel Unavailable in Production
                 </h2>
@@ -149,7 +166,7 @@ export default function AdminDashboard() {
                 </ol>
               </div>
               <div className="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400">
-                <span className="material-symbols-rounded text-base">info</span>
+                <Info className="w-4 h-4" />
                 <p>
                   <strong>Note:</strong> For production content management,
                   consider migrating to a database-backed CMS (Vercel KV,
@@ -187,7 +204,7 @@ export default function AdminDashboard() {
                 href="/admin/cabinets/new"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl text-sm font-medium transition-all duration-200"
               >
-                <span className="material-symbols-rounded text-lg">add</span>
+                <Plus className="w-5 h-5" />
                 Add New Cabinet
               </Link>
             </div>
@@ -221,9 +238,7 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                      <span className="material-symbols-rounded text-white text-2xl">
-                        kitchen
-                      </span>
+                      <Package className="text-white w-6 h-6" />
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
@@ -232,9 +247,7 @@ export default function AdminDashboard() {
                       className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
                     >
                       View all cabinets
-                      <span className="material-symbols-rounded text-sm">
-                        arrow_forward
-                      </span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
                 </div>
@@ -251,9 +264,7 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                      <span className="material-symbols-rounded text-white text-2xl">
-                        format_list_numbered
-                      </span>
+                      <ListOrdered className="text-white w-6 h-6" />
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
@@ -282,9 +293,7 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                      <span className="material-symbols-rounded text-white text-2xl">
-                        view_in_ar
-                      </span>
+                      <Box className="text-white w-6 h-6" />
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
@@ -311,9 +320,7 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                      <span className="material-symbols-rounded text-white text-2xl">
-                        category
-                      </span>
+                      <FolderOpen className="text-white w-6 h-6" />
                     </div>
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
@@ -330,9 +337,7 @@ export default function AdminDashboard() {
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
                   <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
                     <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <span className="material-symbols-rounded text-amber-500">
-                        pie_chart
-                      </span>
+                      <PieChart className="text-amber-500 w-5 h-5" />
                       Cabinets by Category
                     </h2>
                   </div>
@@ -376,9 +381,7 @@ export default function AdminDashboard() {
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
                   <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
                     <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <span className="material-symbols-rounded text-amber-500">
-                        warning
-                      </span>
+                      <AlertTriangle className="text-amber-500 w-5 h-5" />
                       Needs Attention
                     </h2>
                   </div>
@@ -391,11 +394,11 @@ export default function AdminDashboard() {
                           className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                         >
                           <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                            <span className="material-symbols-rounded text-amber-600 dark:text-amber-400">
-                              {!cabinet.model
-                                ? "view_in_ar"
-                                : "format_list_numbered"}
-                            </span>
+                            {!cabinet.model ? (
+                              <Box className="text-amber-600 dark:text-amber-400 w-5 h-5" />
+                            ) : (
+                              <ListOrdered className="text-amber-600 dark:text-amber-400 w-5 h-5" />
+                            )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
@@ -412,17 +415,13 @@ export default function AdminDashboard() {
                                 "No steps"}
                             </p>
                           </div>
-                          <span className="material-symbols-rounded text-gray-400">
-                            chevron_right
-                          </span>
+                          <ChevronRight className="text-gray-400 w-5 h-5" />
                         </Link>
                       ))
                     ) : (
                       <div className="px-5 py-8 text-center">
                         <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-3">
-                          <span className="material-symbols-rounded text-green-600 dark:text-green-400 text-2xl">
-                            check_circle
-                          </span>
+                          <CheckCircle className="text-green-600 dark:text-green-400 w-6 h-6" />
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           All cabinets are complete!
@@ -437,9 +436,7 @@ export default function AdminDashboard() {
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
                 <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
                   <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <span className="material-symbols-rounded text-blue-500">
-                      bolt
-                    </span>
+                    <Zap className="text-blue-500 w-5 h-5" />
                     Quick Actions
                   </h2>
                 </div>
@@ -449,9 +446,7 @@ export default function AdminDashboard() {
                     className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200/50 dark:border-blue-700/30 hover:shadow-md transition-all group"
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-rounded text-white">
-                        add
-                      </span>
+                      <Plus className="text-white w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -468,9 +463,7 @@ export default function AdminDashboard() {
                     className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-700/30 hover:shadow-md transition-all group"
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-rounded text-white">
-                        list
-                      </span>
+                      <List className="text-white w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -487,9 +480,7 @@ export default function AdminDashboard() {
                     className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-200/50 dark:border-violet-700/30 hover:shadow-md transition-all group"
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-rounded text-white">
-                        qr_code
-                      </span>
+                      <QrCode className="text-white w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -508,9 +499,7 @@ export default function AdminDashboard() {
                     className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200/50 dark:border-amber-700/30 hover:shadow-md transition-all group"
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
-                      <span className="material-symbols-rounded text-white">
-                        open_in_new
-                      </span>
+                      <ExternalLink className="text-white w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
@@ -528,9 +517,7 @@ export default function AdminDashboard() {
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
                 <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <span className="material-symbols-rounded text-blue-500">
-                      history
-                    </span>
+                    <Clock className="text-blue-500 w-5 h-5" />
                     Recent Cabinets
                   </h2>
                   <Link
@@ -555,9 +542,7 @@ export default function AdminDashboard() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="material-symbols-rounded text-gray-400">
-                            kitchen
-                          </span>
+                          <Package className="text-gray-400 w-5 h-5" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -566,22 +551,16 @@ export default function AdminDashboard() {
                         </p>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                            <span className="material-symbols-rounded text-xs">
-                              folder
-                            </span>
+                            <Folder className="w-3 h-3" />
                             {getCategoryName(cabinet.category)}
                           </span>
                           <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                            <span className="material-symbols-rounded text-xs">
-                              format_list_numbered
-                            </span>
+                            <ListOrdered className="w-3 h-3" />
                             {cabinet.stepCount || 0} steps
                           </span>
                         </div>
                       </div>
-                      <span className="material-symbols-rounded text-gray-400">
-                        chevron_right
-                      </span>
+                      <ChevronRight className="text-gray-400 w-5 h-5" />
                     </Link>
                   ))}
                   {stats.recentCabinets.length === 0 && (

@@ -9,6 +9,29 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import * as THREE from "three";
+import {
+  ArrowLeft,
+  Move,
+  RotateCw,
+  Maximize2,
+  SlidersHorizontal,
+  Undo,
+  Redo,
+  MessageSquarePlus,
+  Save,
+  Box,
+  CheckCircle2,
+  Loader2,
+  Code2,
+  Upload,
+  AlertCircle,
+  Hand,
+  Copy,
+  ClipboardPaste,
+  Grid3x3,
+  Trash2,
+  Clock,
+} from "lucide-react";
 import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
 import AuthoringSceneViewer, {
@@ -1725,9 +1748,7 @@ export default function StepAuthoringPage() {
               href={`/admin/cabinets/${id}/steps`}
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              <span className="material-symbols-rounded text-sm sm:text-base">
-                arrow_back
-              </span>
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden sm:inline">Back to Steps</span>
               <span className="sm:hidden">Back</span>
             </Link>
@@ -1783,9 +1804,7 @@ export default function StepAuthoringPage() {
                       : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  <span className="material-symbols-rounded text-sm sm:text-base">
-                    open_with
-                  </span>
+                  <Move className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
                 <button
                   onClick={() => setTransformMode("rotate")}
@@ -1797,9 +1816,7 @@ export default function StepAuthoringPage() {
                       : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  <span className="material-symbols-rounded text-sm sm:text-base">
-                    rotate_right
-                  </span>
+                  <RotateCw className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
                 <button
                   onClick={() => setTransformMode("scale")}
@@ -1811,9 +1828,7 @@ export default function StepAuthoringPage() {
                       : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  <span className="material-symbols-rounded text-sm sm:text-base">
-                    open_in_full
-                  </span>
+                  <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
 
@@ -1824,18 +1839,14 @@ export default function StepAuthoringPage() {
                   className="px-3 py-1.5 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-xl hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 border border-gray-200/50 dark:border-gray-600/50"
                   title="Snap Settings"
                 >
-                  <span className="material-symbols-rounded text-base">
-                    tune
-                  </span>
+                  <SlidersHorizontal className="w-5 h-5" />
                 </button>
 
                 {/* Dropdown panel */}
                 {snapDropdownOpen && (
                   <div className="absolute right-0 top-full mt-2 w-72 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-xl shadow-xl border border-white/50 dark:border-gray-700/50 p-4 z-50">
                     <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <span className="material-symbols-rounded text-blue-500">
-                        tune
-                      </span>
+                      <SlidersHorizontal className="w-5 h-5 text-blue-500" />
                       Snap Settings
                     </h4>
 
@@ -1951,9 +1962,7 @@ export default function StepAuthoringPage() {
                   className="p-2 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed border border-gray-200/50 dark:border-gray-600/50"
                   title="Undo (Ctrl+Z / ⌘Z)"
                 >
-                  <span className="material-symbols-rounded text-base">
-                    undo
-                  </span>
+                  <Undo className="w-5 h-5" />
                 </button>
                 <button
                   onClick={handleRedo}
@@ -1961,9 +1970,7 @@ export default function StepAuthoringPage() {
                   className="p-2 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-lg hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed border border-gray-200/50 dark:border-gray-600/50"
                   title="Redo (Ctrl+Y / ⌘Shift+Z)"
                 >
-                  <span className="material-symbols-rounded text-base">
-                    redo
-                  </span>
+                  <Redo className="w-5 h-5" />
                 </button>
               </div>
 
@@ -1978,9 +1985,7 @@ export default function StepAuthoringPage() {
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
                 title="Add annotations (arrows, text, shapes)"
               >
-                <span className="material-symbols-rounded text-sm sm:text-base">
-                  add_comment
-                </span>
+                <MessageSquarePlus className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline">Annotate</span>
               </button>
 
@@ -1996,9 +2001,7 @@ export default function StepAuthoringPage() {
                 className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-2 font-medium shadow-lg shadow-green-500/30"
                 title="Save animation to step"
               >
-                <span className="material-symbols-rounded text-sm sm:text-base">
-                  save
-                </span>
+                <Save className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline">Save Animation</span>
                 <span className="sm:hidden">Save</span>
               </button>
@@ -2011,32 +2014,24 @@ export default function StepAuthoringPage() {
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/50 dark:border-gray-700/50 flex flex-col min-h-[30vh] md:min-h-0">
               <div className="p-3 sm:p-4 border-b border-gray-200/50 dark:border-gray-700/50">
                 <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3 flex items-center gap-2">
-                  <span className="material-symbols-rounded text-blue-500">
-                    view_in_ar
-                  </span>
+                  <Box className="w-5 h-5 text-blue-500" />
                   Scene Status
                 </h3>
                 <div className="text-xs sm:text-sm flex items-center gap-2 flex-wrap">
                   {sceneReady ? (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
-                      <span className="material-symbols-rounded text-xs">
-                        check_circle
-                      </span>
+                      <CheckCircle2 className="w-3 h-3" />
                       Ready
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-medium">
-                      <span className="material-symbols-rounded text-xs animate-spin">
-                        progress_activity
-                      </span>
+                      <Loader2 className="w-3 h-3 animate-spin" />
                       Initializing...
                     </span>
                   )}
                   {modelLoaded && (
                     <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium">
-                      <span className="material-symbols-rounded text-xs">
-                        deployed_code
-                      </span>
+                      <Code2 className="w-3 h-3" />
                       Model loaded
                     </span>
                   )}
@@ -2073,9 +2068,7 @@ export default function StepAuthoringPage() {
                 <div className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-4 sm:space-y-6">
                   <div>
                     <h4 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3 flex items-center gap-2">
-                      <span className="material-symbols-rounded text-purple-500">
-                        upload_file
-                      </span>
+                      <Upload className="w-5 h-5 text-purple-500" />
                       Load 3D Model
                     </h4>
                     <div className="space-y-2 sm:space-y-3">
@@ -2103,9 +2096,7 @@ export default function StepAuthoringPage() {
 
                       {loadError && (
                         <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                          <span className="material-symbols-rounded text-base text-red-500 mt-0.5 flex-shrink-0">
-                            error
-                          </span>
+                          <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                           <span className="text-sm text-red-700 dark:text-red-400">
                             {loadError}
                           </span>
@@ -2214,9 +2205,7 @@ export default function StepAuthoringPage() {
                   <div className="flex flex-col gap-3">
                     {!hasSelection && (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
-                        <span className="material-symbols-rounded text-4xl text-gray-300 dark:text-gray-600 mb-2">
-                          touch_app
-                        </span>
+                        <Hand className="w-10 h-10 text-gray-300 dark:text-gray-600 mb-2" />
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           No keyframe selected
                         </p>
@@ -2285,9 +2274,7 @@ export default function StepAuthoringPage() {
                               className="flex-1 px-2.5 py-1.5 text-xs font-medium bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
                               title="Copy keyframe values"
                             >
-                              <span className="material-symbols-rounded text-xs">
-                                content_copy
-                              </span>
+                              <Copy className="w-3 h-3" />
                               Copy
                             </button>
                             <button
@@ -2301,9 +2288,7 @@ export default function StepAuthoringPage() {
                               className="flex-1 px-2.5 py-1.5 text-xs font-medium bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700 transition-colors border-l border-gray-200 dark:border-gray-700 flex items-center justify-center gap-1"
                               title="Paste keyframe values"
                             >
-                              <span className="material-symbols-rounded text-xs">
-                                content_paste
-                              </span>
+                              <ClipboardPaste className="w-3 h-3" />
                               Paste
                             </button>
                           </div>
@@ -2512,9 +2497,7 @@ export default function StepAuthoringPage() {
                       <div className="flex flex-col gap-2 rounded-xl border border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm px-3 py-2">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                            <span className="material-symbols-rounded text-xs">
-                              apps
-                            </span>
+                            <Grid3x3 className="w-3 h-3" />
                             Bulk:
                           </span>
                         </div>
@@ -2531,9 +2514,7 @@ export default function StepAuthoringPage() {
                                 : "Delete all camera keyframes"
                             }
                           >
-                            <span className="material-symbols-rounded text-xs">
-                              delete
-                            </span>
+                            <Trash2 className="w-3 h-3" />
                             {selectedObject
                               ? "Delete All Object KF"
                               : "Delete All Camera KF"}
@@ -2548,9 +2529,7 @@ export default function StepAuthoringPage() {
                             className="px-2.5 py-1.5 text-xs font-medium bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                             title="Shift all keyframes by delta"
                           >
-                            <span className="material-symbols-rounded text-xs">
-                              schedule
-                            </span>
+                            <Clock className="w-3 h-3" />
                             Shift All
                           </button>
                           <div className="flex items-center gap-1">

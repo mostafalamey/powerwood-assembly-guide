@@ -14,6 +14,7 @@ import {
   applyAnnotationColor,
   createTextAnnotation,
 } from "@/lib/annotations";
+import { AlertCircle } from "lucide-react";
 
 interface SceneViewerProps {
   modelUrl: string;
@@ -1127,9 +1128,7 @@ export default function SceneViewer({
       {error && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
           <div className="text-center">
-            <span className="material-symbols-rounded text-5xl text-red-500 mx-auto mb-4 block">
-              error
-            </span>
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <p className="text-red-600 font-medium">{error}</p>
           </div>
         </div>

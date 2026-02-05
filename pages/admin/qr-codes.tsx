@@ -4,6 +4,15 @@ import Link from "next/link";
 import AdminLayout from "../../components/admin/AdminLayout";
 import AuthGuard from "../../components/admin/AuthGuard";
 import QRCode from "qrcode.react";
+import {
+  QrCode,
+  CheckSquare,
+  Printer,
+  Check,
+  Download,
+  ExternalLink,
+  ArrowRight,
+} from "lucide-react";
 
 interface Cabinet {
   id: string;
@@ -142,9 +151,7 @@ export default function QRCodesPage() {
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 mb-6">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <span className="material-symbols-rounded text-2xl text-white">
-                    qr_code_2
-                  </span>
+                  <QrCode className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -198,9 +205,7 @@ export default function QRCodesPage() {
                         : "Select All"}
                     </button>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-700/50">
-                      <span className="material-symbols-rounded text-lg text-gray-500 dark:text-gray-400">
-                        check_box
-                      </span>
+                      <CheckSquare className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {selectedCabinets.size} of {cabinets.length} selected
                       </span>
@@ -215,9 +220,7 @@ export default function QRCodesPage() {
                       shadow-lg shadow-blue-500/30 hover:shadow-xl
                       transition-all duration-200 flex items-center gap-2"
                   >
-                    <span className="material-symbols-rounded text-lg">
-                      print
-                    </span>
+                    <Printer className="w-4 h-4" />
                     Print Selected
                   </button>
                 </div>
@@ -248,9 +251,7 @@ export default function QRCodesPage() {
                               }`}
                             >
                               {isSelected && (
-                                <span className="material-symbols-rounded text-sm text-white">
-                                  check
-                                </span>
+                                <Check className="w-3 h-3 text-white" />
                               )}
                             </div>
                             <input
@@ -298,9 +299,7 @@ export default function QRCodesPage() {
                                 hover:bg-gray-200 dark:hover:bg-gray-600 
                                 transition-colors flex items-center justify-center gap-2"
                             >
-                              <span className="material-symbols-rounded text-lg">
-                                download
-                              </span>
+                              <Download className="w-4 h-4" />
                               PNG
                             </button>
                             <Link
@@ -311,9 +310,7 @@ export default function QRCodesPage() {
                                 hover:bg-blue-100 dark:hover:bg-blue-900/50 
                                 transition-colors flex items-center justify-center gap-2"
                             >
-                              <span className="material-symbols-rounded text-lg">
-                                open_in_new
-                              </span>
+                              <ExternalLink className="w-4 h-4" />
                               Test
                             </Link>
                           </div>
@@ -326,9 +323,7 @@ export default function QRCodesPage() {
                 {cabinets.length === 0 && (
                   <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-12 text-center">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center mx-auto mb-4">
-                      <span className="material-symbols-rounded text-3xl text-gray-400 dark:text-gray-500">
-                        qr_code
-                      </span>
+                      <QrCode className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       No cabinets yet
@@ -344,9 +339,7 @@ export default function QRCodesPage() {
                         shadow-lg shadow-blue-500/30 hover:shadow-xl
                         transition-all duration-200"
                     >
-                      <span className="material-symbols-rounded">
-                        arrow_forward
-                      </span>
+                      <ArrowRight className="w-5 h-5" />
                       Go to Cabinets
                     </Link>
                   </div>

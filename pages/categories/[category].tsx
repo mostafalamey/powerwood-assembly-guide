@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import categoriesData from "@/data/categories.json";
 import { Cabinet } from "@/types/cabinet";
+import { FolderOpen, Home, Package, Clock, ListOrdered } from "lucide-react";
 
 export default function CategoryPage() {
   const { t, locale } = useTranslation();
@@ -59,9 +60,7 @@ export default function CategoryPage() {
           <Header showBackButton />
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="text-center">
-              <span className="material-symbols-rounded text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
-                category
-              </span>
+              <FolderOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4 mx-auto" />
               <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                 {t("errors.notFound")}
               </h1>
@@ -72,7 +71,7 @@ export default function CategoryPage() {
                 href="/"
                 className="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors font-medium"
               >
-                <span className="material-symbols-rounded text-lg">home</span>
+                <Home className="w-5 h-5" />
                 {t("errors.goHome")}
               </Link>
             </div>
@@ -172,9 +171,7 @@ export default function CategoryPage() {
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                           />
                         ) : (
-                          <span className="material-symbols-rounded text-5xl text-primary-300 dark:text-primary-700">
-                            inventory_2
-                          </span>
+                          <Package className="w-12 h-12 text-primary-300 dark:text-primary-700" />
                         )}
                       </div>
 
@@ -190,17 +187,13 @@ export default function CategoryPage() {
                         {/* Stats */}
                         <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                           <div className="flex items-center gap-1">
-                            <span className="material-symbols-rounded text-sm text-blue-500">
-                              schedule
-                            </span>
+                            <Clock className="w-4 h-4 text-blue-500" />
                             <span>
                               {cabinet.estimatedTime} {t("cabinet.minutes")}
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <span className="material-symbols-rounded text-sm text-green-500">
-                              format_list_numbered
-                            </span>
+                            <ListOrdered className="w-4 h-4 text-green-500" />
                             <span>
                               {(cabinet as any).stepCount || 0}{" "}
                               {t("cabinet.steps")}
@@ -214,9 +207,7 @@ export default function CategoryPage() {
               </div>
             ) : (
               <div className="text-center py-16">
-                <span className="material-symbols-rounded text-6xl text-gray-300 dark:text-gray-600 mx-auto mb-4 block">
-                  inventory_2
-                </span>
+                <Package className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   No cabinets in this category yet
                 </h3>
@@ -227,7 +218,7 @@ export default function CategoryPage() {
                   href="/"
                   className="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors font-medium"
                 >
-                  <span className="material-symbols-rounded text-lg">home</span>
+                  <Home className="w-5 h-5" />
                   {t("errors.goHome")}
                 </Link>
               </div>

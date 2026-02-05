@@ -4,6 +4,14 @@ import TransitionLink from "@/components/TransitionLink";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
 import Image from "next/image";
+import {
+  Box,
+  ScanLine,
+  Info,
+  Languages,
+  Volume2,
+  ArrowRight,
+} from "lucide-react";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -45,9 +53,7 @@ export default function Home() {
         <header className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-800/50 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
-              <span className="material-symbols-rounded text-xl text-white">
-                view_in_ar
-              </span>
+              <Box className="w-5 h-5 text-white" />
             </div>
             <div>
               <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight">
@@ -76,9 +82,7 @@ export default function Home() {
                   <div className="relative w-12 h-12 md:w-20 md:h-20 flex-shrink-0 md:mx-auto md:mb-4">
                     <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl md:rounded-2xl opacity-20 animate-pulse" />
                     <div className="absolute inset-1 bg-white dark:bg-gray-800 rounded-lg md:rounded-xl flex items-center justify-center">
-                      <span className="material-symbols-rounded text-2xl md:text-4xl text-primary-500">
-                        qr_code_scanner
-                      </span>
+                      <ScanLine className="w-6 h-6 md:w-10 md:h-10 text-primary-500" />
                     </div>
                   </div>
 
@@ -95,9 +99,7 @@ export default function Home() {
                 {/* Info Badge - Hidden on mobile */}
                 <div className="hidden md:block mt-auto bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800/50">
                   <div className="flex items-start gap-3">
-                    <span className="material-symbols-rounded text-blue-500 text-lg flex-shrink-0 mt-0.5">
-                      info
-                    </span>
+                    <Info className="w-[18px] h-[18px] text-blue-500 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
                       {t("qrCodeLocation")}
                     </p>
@@ -107,25 +109,19 @@ export default function Home() {
                 {/* Features - Hidden on mobile */}
                 <div className="hidden md:grid mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid-cols-3 gap-2">
                   <div className="text-center p-2">
-                    <span className="material-symbols-rounded text-lg text-primary-500 mb-1 block">
-                      view_in_ar
-                    </span>
+                    <Box className="w-[18px] h-[18px] text-primary-500 mb-1 mx-auto" />
                     <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
                       3D View
                     </span>
                   </div>
                   <div className="text-center p-2">
-                    <span className="material-symbols-rounded text-lg text-primary-500 mb-1 block">
-                      language
-                    </span>
+                    <Languages className="w-[18px] h-[18px] text-primary-500 mb-1 mx-auto" />
                     <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
                       Bilingual
                     </span>
                   </div>
                   <div className="text-center p-2">
-                    <span className="material-symbols-rounded text-lg text-primary-500 mb-1 block">
-                      volume_up
-                    </span>
+                    <Volume2 className="w-[18px] h-[18px] text-primary-500 mb-1 mx-auto" />
                     <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
                       Audio
                     </span>
@@ -175,9 +171,7 @@ export default function Home() {
 
                       {/* Arrow indicator */}
                       <span className="absolute top-2 end-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/80 dark:bg-gray-700/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                        <span className="material-symbols-rounded text-xs md:text-sm text-primary-500 rtl:rotate-180">
-                          arrow_forward
-                        </span>
+                        <ArrowRight className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary-500 rtl:rotate-180" />
                       </span>
                     </TransitionLink>
                   ))}

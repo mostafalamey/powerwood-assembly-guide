@@ -684,6 +684,7 @@ Before contacting support, verify:
 
 ## Changelog
 
+**2026-02-06:** Icon library migrated from Material Symbols to Lucide React (performance improvement)  
 **2026-01-28:** Initial documentation created  
 **2026-01-27:** Hostinger deployment completed, PHP API implemented  
 **2026-01-27:** Vercel deployment abandoned due to filesystem limitations

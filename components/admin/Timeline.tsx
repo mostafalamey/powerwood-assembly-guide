@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { Play, Pause, Camera, Trash2, Circle, Info } from "lucide-react";
 
 interface TimelineProps {
   duration: number; // Total duration in seconds
@@ -245,9 +246,11 @@ export default function Timeline({
             className="p-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg shadow-blue-500/30"
             title={isPlaying ? "Pause" : "Play"}
           >
-            <span className="material-symbols-rounded text-lg">
-              {isPlaying ? "pause" : "play_arrow"}
-            </span>
+            {isPlaying ? (
+              <Pause className="w-5 h-5" />
+            ) : (
+              <Play className="w-5 h-5" />
+            )}
           </button>
 
           {/* Time display */}
@@ -264,9 +267,7 @@ export default function Timeline({
             className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-sm"
             title="Record Camera Keyframe"
           >
-            <span className="material-symbols-rounded text-lg">
-              photo_camera
-            </span>
+            <Camera className="w-5 h-5" />
           </button>
 
           {/* Camera Delete button */}
@@ -276,7 +277,7 @@ export default function Timeline({
             className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             title="Delete Camera Keyframe"
           >
-            <span className="material-symbols-rounded text-lg">delete</span>
+            <Trash2 className="w-5 h-5" />
           </button>
 
           <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
@@ -288,9 +289,7 @@ export default function Timeline({
             className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700 transition-all duration-200 shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
             title="Record Object Keyframe"
           >
-            <span className="material-symbols-rounded text-lg">
-              fiber_manual_record
-            </span>
+            <Circle className="w-5 h-5" />
           </button>
 
           {/* Object Delete button */}
@@ -300,7 +299,7 @@ export default function Timeline({
             className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
             title="Delete Object Keyframe"
           >
-            <span className="material-symbols-rounded text-lg">delete</span>
+            <Trash2 className="w-5 h-5" />
           </button>
         </div>
 
@@ -335,9 +334,7 @@ export default function Timeline({
       >
         {sortedKeyframes.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center text-xs text-gray-400 dark:text-gray-500 pointer-events-none">
-            <span className="material-symbols-rounded text-base mr-1">
-              info
-            </span>
+            <Info className="w-4 h-4 mr-1" />
             No keyframes yet
           </div>
         )}

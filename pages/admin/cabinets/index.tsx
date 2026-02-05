@@ -7,6 +7,21 @@ import AdminLayout from "../../../components/admin/AdminLayout";
 import AuthGuard from "../../../components/admin/AuthGuard";
 import Image from "next/image";
 import { useToast } from "../../../components/admin/ToastProvider";
+import {
+  Search,
+  QrCode,
+  Plus,
+  AlertCircle,
+  Image as ImageIcon,
+  ListOrdered,
+  Clock,
+  MoreVertical,
+  Eye,
+  Edit,
+  List,
+  Trash2,
+  Package,
+} from "lucide-react";
 
 interface Cabinet {
   id: string;
@@ -170,9 +185,7 @@ export default function CabinetsListPage() {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div className="flex-1 max-w-md">
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500">
-                  search
-                </span>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
                   placeholder="Search cabinets..."
@@ -195,9 +208,7 @@ export default function CabinetsListPage() {
                   shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40
                   transition-all duration-300 inline-flex items-center gap-2"
               >
-                <span className="material-symbols-rounded text-lg">
-                  qr_code_scanner
-                </span>
+                <QrCode className="w-5 h-5" />
                 <span className="hidden sm:inline">QR Codes</span>
               </Link>
               <button
@@ -208,7 +219,7 @@ export default function CabinetsListPage() {
                   shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
                   transition-all duration-300 inline-flex items-center gap-2"
               >
-                <span className="material-symbols-rounded text-lg">add</span>
+                <Plus className="w-5 h-5" />
                 Add Cabinet
               </button>
             </div>
@@ -248,9 +259,7 @@ export default function CabinetsListPage() {
           {error && (
             <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 mb-6">
               <div className="flex items-center gap-3">
-                <span className="material-symbols-rounded text-red-500 dark:text-red-400">
-                  error
-                </span>
+                <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                 <p className="text-red-700 dark:text-red-300">{error}</p>
               </div>
             </div>
@@ -298,9 +307,7 @@ export default function CabinetsListPage() {
                           colSpan={7}
                           className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                         >
-                          <span className="material-symbols-rounded text-4xl mb-2 block">
-                            inventory_2
-                          </span>
+                          <Package className="w-10 h-10 mx-auto mb-2" />
                           {searchTerm
                             ? "No cabinets match your search"
                             : "No cabinets yet"}
@@ -329,9 +336,7 @@ export default function CabinetsListPage() {
                                   }}
                                 />
                               ) : (
-                                <span className="material-symbols-rounded text-2xl text-gray-400 dark:text-gray-500">
-                                  image
-                                </span>
+                                <ImageIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                               )}
                             </div>
                           </td>
@@ -352,9 +357,7 @@ export default function CabinetsListPage() {
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                              <span className="material-symbols-rounded text-base">
-                                format_list_numbered
-                              </span>
+                              <ListOrdered className="w-4 h-4" />
                               {cabinet.stepCount !== undefined
                                 ? cabinet.stepCount
                                 : cabinet.steps?.length || 0}
@@ -362,9 +365,7 @@ export default function CabinetsListPage() {
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
-                              <span className="material-symbols-rounded text-base">
-                                schedule
-                              </span>
+                              <Clock className="w-4 h-4" />
                               {cabinet.estimatedTime}m
                             </span>
                           </td>
@@ -375,9 +376,7 @@ export default function CabinetsListPage() {
                                 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                               aria-label="Open actions menu"
                             >
-                              <span className="material-symbols-rounded text-xl">
-                                more_vert
-                              </span>
+                              <MoreVertical className="w-5 h-5" />
                             </button>
                           </td>
                         </tr>
@@ -391,9 +390,7 @@ export default function CabinetsListPage() {
               <div className="lg:hidden grid gap-4">
                 {filteredCabinets.length === 0 ? (
                   <div className="px-4 py-12 text-center text-gray-500 dark:text-gray-400">
-                    <span className="material-symbols-rounded text-4xl mb-2 block">
-                      inventory_2
-                    </span>
+                    <Package className="w-10 h-10 mx-auto mb-2" />
                     {searchTerm
                       ? "No cabinets match your search"
                       : "No cabinets yet"}
@@ -421,9 +418,7 @@ export default function CabinetsListPage() {
                               }}
                             />
                           ) : (
-                            <span className="material-symbols-rounded text-2xl text-gray-400 dark:text-gray-500">
-                              image
-                            </span>
+                            <ImageIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                           )}
                         </div>
 
@@ -445,9 +440,7 @@ export default function CabinetsListPage() {
                                   hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                                 aria-label="Open actions menu"
                               >
-                                <span className="material-symbols-rounded text-xl">
-                                  more_vert
-                                </span>
+                                <MoreVertical className="w-5 h-5" />
                               </button>
 
                               {/* Dropdown Menu for Mobile Cards */}
@@ -462,27 +455,21 @@ export default function CabinetsListPage() {
                                       target="_blank"
                                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
-                                      <span className="material-symbols-rounded text-lg">
-                                        visibility
-                                      </span>
+                                      <Eye className="w-4 h-4" />
                                       View
                                     </Link>
                                     <button
                                       onClick={() => handleEdit(cabinet)}
                                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
-                                      <span className="material-symbols-rounded text-lg">
-                                        edit
-                                      </span>
+                                      <Edit className="w-4 h-4" />
                                       Edit
                                     </button>
                                     <button
                                       onClick={() => handleManageSteps(cabinet)}
                                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
-                                      <span className="material-symbols-rounded text-lg">
-                                        list_alt
-                                      </span>
+                                      <List className="w-4 h-4" />
                                       Manage Steps
                                     </button>
                                     <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
@@ -490,9 +477,7 @@ export default function CabinetsListPage() {
                                       onClick={() => handleDelete(cabinet.id)}
                                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                     >
-                                      <span className="material-symbols-rounded text-lg">
-                                        delete
-                                      </span>
+                                      <Trash2 className="w-4 h-4" />
                                       Delete
                                     </button>
                                   </div>
@@ -508,18 +493,14 @@ export default function CabinetsListPage() {
                               {cabinet.category}
                             </span>
                             <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                              <span className="material-symbols-rounded text-sm">
-                                format_list_numbered
-                              </span>
+                              <ListOrdered className="w-3.5 h-3.5" />
                               {cabinet.stepCount !== undefined
                                 ? cabinet.stepCount
                                 : cabinet.steps?.length || 0}{" "}
                               steps
                             </span>
                             <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                              <span className="material-symbols-rounded text-sm">
-                                schedule
-                              </span>
+                              <Clock className="w-3.5 h-3.5" />
                               {cabinet.estimatedTime}m
                             </span>
                           </div>
@@ -552,9 +533,7 @@ export default function CabinetsListPage() {
                   target="_blank"
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
-                  <span className="material-symbols-rounded text-lg">
-                    visibility
-                  </span>
+                  <Eye className="w-4 h-4" />
                   View
                 </Link>
                 <button
@@ -564,16 +543,14 @@ export default function CabinetsListPage() {
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
-                  <span className="material-symbols-rounded text-lg">edit</span>
+                  <Edit className="w-4 h-4" />
                   Edit
                 </button>
                 <Link
                   href={`/admin/cabinets/${activeDropdown}/steps`}
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
-                  <span className="material-symbols-rounded text-lg">
-                    list_alt
-                  </span>
+                  <List className="w-4 h-4" />
                   Manage Steps
                 </Link>
                 <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
@@ -584,9 +561,7 @@ export default function CabinetsListPage() {
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                 >
-                  <span className="material-symbols-rounded text-lg">
-                    delete
-                  </span>
+                  <Trash2 className="w-4 h-4" />
                   Delete
                 </button>
               </div>

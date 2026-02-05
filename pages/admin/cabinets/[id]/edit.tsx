@@ -5,6 +5,15 @@ import AdminLayout from "../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../components/admin/AuthGuard";
 import Link from "next/link";
 import FileUploadField from "../../../../components/admin/FileUploadField";
+import {
+  ArrowLeft,
+  AlertCircle,
+  Clock,
+  ListOrdered,
+  FileEdit,
+  Upload,
+  Save,
+} from "lucide-react";
 
 interface CabinetFormData {
   id: string;
@@ -172,9 +181,7 @@ export default function EditCabinetPage() {
               href="/admin/cabinets"
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
-              <span className="material-symbols-rounded text-lg">
-                arrow_back
-              </span>
+              <ArrowLeft className="w-5 h-5" />
               Back to Cabinets
             </Link>
           </div>
@@ -184,9 +191,7 @@ export default function EditCabinetPage() {
             {error && (
               <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 mb-6">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-rounded text-red-500 dark:text-red-400">
-                    error
-                  </span>
+                  <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                   <p className="text-red-700 dark:text-red-300">{error}</p>
                 </div>
               </div>
@@ -292,9 +297,7 @@ export default function EditCabinetPage() {
                       Estimated Time (minutes)
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 dark:text-gray-500">
-                        schedule
-                      </span>
+                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                       <input
                         type="number"
                         value={formData.estimatedTime}
@@ -370,9 +373,7 @@ export default function EditCabinetPage() {
                   <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                        <span className="material-symbols-rounded text-purple-600 dark:text-purple-400">
-                          format_list_numbered
-                        </span>
+                        <ListOrdered className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                       </div>
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {formData.steps?.length || 0} step(s) configured
@@ -386,9 +387,7 @@ export default function EditCabinetPage() {
                         shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40
                         transition-all duration-300 inline-flex items-center gap-2"
                     >
-                      <span className="material-symbols-rounded text-lg">
-                        edit_note
-                      </span>
+                      <FileEdit className="w-5 h-5" />
                       Manage Steps
                     </Link>
                   </div>
@@ -400,9 +399,7 @@ export default function EditCabinetPage() {
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6">
                   <div className="flex items-center gap-3 mb-5">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                      <span className="material-symbols-rounded text-xl text-white">
-                        upload_file
-                      </span>
+                      <Upload className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -486,9 +483,7 @@ export default function EditCabinetPage() {
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-rounded text-lg">
-                      save
-                    </span>
+                    <Save className="w-5 h-5" />
                     Update Cabinet
                   </>
                 )}

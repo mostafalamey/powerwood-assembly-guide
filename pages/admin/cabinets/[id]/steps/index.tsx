@@ -2,6 +2,24 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ChevronRight,
+  Plus,
+  Copy,
+  Film,
+  List,
+  GripVertical,
+  Clock,
+  CheckCircle,
+  Edit,
+  Trash2,
+  Lightbulb,
+  X,
+  Search,
+  Check,
+} from "lucide-react";
 import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
 import { useToast } from "../../../../../components/admin/ToastProvider";
@@ -347,9 +365,7 @@ export default function StepManagementPage() {
           <div className="p-6">
             <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 mb-4">
               <div className="flex items-center gap-3">
-                <span className="material-symbols-rounded text-red-500 dark:text-red-400">
-                  error
-                </span>
+                <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                 <p className="text-red-700 dark:text-red-300">
                   {error || "Cabinet not found"}
                 </p>
@@ -359,9 +375,7 @@ export default function StepManagementPage() {
               href="/admin/cabinets"
               className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
-              <span className="material-symbols-rounded text-lg">
-                arrow_back
-              </span>
+              <ArrowLeft className="w-4 h-4" />
               Back to Cabinets
             </Link>
           </div>
@@ -385,18 +399,14 @@ export default function StepManagementPage() {
             >
               Cabinets
             </Link>
-            <span className="material-symbols-rounded text-gray-400 text-base">
-              chevron_right
-            </span>
+            <ChevronRight className="w-4 h-4 text-gray-400" />
             <Link
               href={`/admin/cabinets/${id}/edit`}
               className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap font-mono"
             >
               {cabinet.id}
             </Link>
-            <span className="material-symbols-rounded text-gray-400 text-base">
-              chevron_right
-            </span>
+            <ChevronRight className="w-4 h-4 text-gray-400" />
             <span className="text-gray-900 dark:text-white font-medium">
               Steps
             </span>
@@ -421,7 +431,7 @@ export default function StepManagementPage() {
                   shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
                   transition-all duration-300 inline-flex items-center gap-2"
               >
-                <span className="material-symbols-rounded text-lg">add</span>
+                <Plus className="w-4 h-4" />
                 Add Step
               </button>
               <button
@@ -432,9 +442,7 @@ export default function StepManagementPage() {
                   shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40
                   transition-all duration-300 inline-flex items-center gap-2"
               >
-                <span className="material-symbols-rounded text-lg">
-                  content_copy
-                </span>
+                <Copy className="w-4 h-4" />
                 <span className="hidden sm:inline">Copy Step</span>
               </button>
               <button
@@ -447,7 +455,7 @@ export default function StepManagementPage() {
                   shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40
                   transition-all duration-300 inline-flex items-center gap-2"
               >
-                <span className="material-symbols-rounded text-lg">movie</span>
+                <Film className="w-4 h-4" />
                 <span className="hidden sm:inline">Visual Editor</span>
               </button>
             </div>
@@ -457,9 +465,7 @@ export default function StepManagementPage() {
           {steps.length === 0 ? (
             <div className="rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-12 text-center bg-gray-50/50 dark:bg-gray-800/50">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4">
-                <span className="material-symbols-rounded text-3xl text-gray-400 dark:text-gray-500">
-                  list_alt
-                </span>
+                <List className="w-8 h-8 text-gray-400 dark:text-gray-500" />
               </div>
               <h3 className="text-base font-medium text-gray-900 dark:text-white">
                 No steps yet
@@ -476,7 +482,7 @@ export default function StepManagementPage() {
                     shadow-lg shadow-blue-500/30 hover:shadow-xl
                     transition-all duration-300 inline-flex items-center gap-2"
                 >
-                  <span className="material-symbols-rounded text-lg">add</span>
+                  <Plus className="w-4 h-4" />
                   Add Your First Step
                 </button>
               </div>
@@ -500,9 +506,7 @@ export default function StepManagementPage() {
                     <div className="flex items-start gap-4">
                       {/* Drag Handle */}
                       <div className="flex-shrink-0 mt-1">
-                        <span className="material-symbols-rounded text-lg text-gray-400 dark:text-gray-500">
-                          drag_indicator
-                        </span>
+                        <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       </div>
 
                       {/* Step Number Badge */}
@@ -525,25 +529,19 @@ export default function StepManagementPage() {
                             <div className="flex flex-wrap items-center gap-3 mt-3">
                               {step.duration && (
                                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                                  <span className="material-symbols-rounded text-sm">
-                                    schedule
-                                  </span>
+                                  <Clock className="w-3 h-3" />
                                   {step.duration}m
                                 </span>
                               )}
                               {step.animation && (
                                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                                  <span className="material-symbols-rounded text-sm">
-                                    check_circle
-                                  </span>
+                                  <CheckCircle className="w-3 h-3" />
                                   Animation
                                 </span>
                               )}
                               {(step.audioUrl?.en || step.audioUrl?.ar) && (
                                 <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-                                  <span className="material-symbols-rounded text-sm">
-                                    check_circle
-                                  </span>
+                                  <CheckCircle className="w-3 h-3" />
                                   Audio
                                 </span>
                               )}
@@ -564,9 +562,7 @@ export default function StepManagementPage() {
                                 transition-all duration-200"
                               title="Open Visual Editor"
                             >
-                              <span className="material-symbols-rounded text-xl">
-                                movie
-                              </span>
+                              <Film className="w-5 h-5" />
                             </button>
                             <button
                               onClick={() =>
@@ -580,9 +576,7 @@ export default function StepManagementPage() {
                                 transition-all duration-200"
                               title="Edit step"
                             >
-                              <span className="material-symbols-rounded text-xl">
-                                edit
-                              </span>
+                              <Edit className="w-5 h-5" />
                             </button>
                             <button
                               onClick={() => handleDeleteStep(step.id)}
@@ -592,9 +586,7 @@ export default function StepManagementPage() {
                                 transition-all duration-200"
                               title="Delete step"
                             >
-                              <span className="material-symbols-rounded text-xl">
-                                delete
-                              </span>
+                              <Trash2 className="w-5 h-5" />
                             </button>
                           </div>
                         </div>
@@ -609,9 +601,7 @@ export default function StepManagementPage() {
           {/* Help Text */}
           {steps.length > 0 && (
             <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <span className="material-symbols-rounded text-lg">
-                lightbulb
-              </span>
+              <Lightbulb className="w-4 h-4" />
               <span>Drag and drop steps to reorder them</span>
             </div>
           )}
@@ -631,7 +621,7 @@ export default function StepManagementPage() {
                     hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   title="Close"
                 >
-                  <span className="material-symbols-rounded">close</span>
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
@@ -664,9 +654,7 @@ export default function StepManagementPage() {
                       Search Steps
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-400 text-lg">
-                        search
-                      </span>
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
                         type="text"
                         value={copySearch}
@@ -777,25 +765,19 @@ export default function StepManagementPage() {
                               <div className="flex flex-wrap gap-2 mt-2 ml-9">
                                 {step.duration && (
                                   <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                    <span className="material-symbols-rounded text-sm">
-                                      schedule
-                                    </span>
+                                    <Clock className="w-3 h-3" />
                                     {step.duration}m
                                   </span>
                                 )}
                                 {step.animation && (
                                   <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-                                    <span className="material-symbols-rounded text-sm">
-                                      check
-                                    </span>
+                                    <Check className="w-3 h-3" />
                                     Animation
                                   </span>
                                 )}
                                 {(step.audioUrl?.en || step.audioUrl?.ar) && (
                                   <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
-                                    <span className="material-symbols-rounded text-sm">
-                                      check
-                                    </span>
+                                    <Check className="w-3 h-3" />
                                     Audio
                                   </span>
                                 )}

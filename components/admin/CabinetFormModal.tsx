@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import FileUploadField from "./FileUploadField";
+import { X, List } from "lucide-react";
 
 interface CabinetFormData {
   id: string;
@@ -153,9 +154,7 @@ export default function CabinetFormModal({
                   title="Close modal"
                   aria-label="Close modal"
                 >
-                  <span className="material-symbols-rounded text-2xl">
-                    close
-                  </span>
+                  <X className="w-6 h-6" />
                 </button>
               </div>
             </div>
@@ -334,9 +333,7 @@ export default function CabinetFormModal({
                     className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
                     onClick={onClose}
                   >
-                    <span className="material-symbols-rounded text-base">
-                      list_alt
-                    </span>
+                    <List className="w-4 h-4" />
                     Manage Steps ({formData.stepCount || 0})
                   </Link>
                 )}

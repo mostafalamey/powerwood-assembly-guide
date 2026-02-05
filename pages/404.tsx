@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import TransitionLink from "@/components/TransitionLink";
 import { useTranslation } from "@/lib/i18n";
+import { Home } from "lucide-react";
 
 export default function Custom404() {
   const { t } = useTranslation();
@@ -42,7 +43,7 @@ export default function Custom404() {
             href="/"
             className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 hover:-translate-y-0.5"
           >
-            <span className="material-symbols-rounded text-lg">home</span>
+            <Home className="w-[18px] h-[18px]" />
             {t("errors.goHome") || "Go Back Home"}
           </TransitionLink>
         </div>
