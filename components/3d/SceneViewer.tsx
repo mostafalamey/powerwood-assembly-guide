@@ -19,6 +19,7 @@ interface SceneViewerProps {
   onLoad?: () => void;
   onError?: (error: Error) => void;
   onAnimationComplete?: () => void;
+  onAnimationProgress?: (time: number, duration: number) => void;
 }
 
 export default function SceneViewer({
@@ -31,6 +32,7 @@ export default function SceneViewer({
   onLoad,
   onError,
   onAnimationComplete,
+  onAnimationProgress,
 }: SceneViewerProps) {
   const applyEasing = useCallback((t: number, easing?: string) => {
     const clamped = Math.max(0, Math.min(1, t));
@@ -286,8 +288,27 @@ export default function SceneViewer({
 
       const normalized = normalizeAnimationToOffsets(animation);
 
-      // Store animation and set time to 0 (initial state)
+      // Store animation data for later playback
       currentAnimationRef.current = normalized;
+
+      // Populate the keyframe lookup maps (same as applyStepAnimation)
+      const keyframesByObject = new Map<string, ObjectKeyframe[]>();
+      (normalized.objectKeyframes || []).forEach((kf) => {
+        const list = keyframesByObject.get(kf.objectId);
+        if (list) {
+          list.push(kf);
+        } else {
+          keyframesByObject.set(kf.objectId, [kf]);
+        }
+      });
+      keyframesByObject.forEach((list) => list.sort((a, b) => a.time - b.time));
+      animationObjectKeyframesRef.current = keyframesByObject;
+      animationObjectIdsRef.current = Array.from(keyframesByObject.keys());
+      sortedCameraKeyframesRef.current = [
+        ...(normalized.cameraKeyframes || []),
+      ].sort((a, b) => a.time - b.time);
+
+      // Set time to 0 (initial state) without starting playback
       setAnimationTime(0);
       animationTimeRef.current = 0;
       setIsAnimationPlaying(false);
@@ -597,6 +618,9 @@ export default function SceneViewer({
       animationTimeRef.current = clampedTime;
       setAnimationTime(clampedTime);
 
+      // Emit progress callback
+      onAnimationProgress?.(clampedTime, duration);
+
       if (clampedTime >= duration && !hasCompletedRef.current) {
         hasCompletedRef.current = true;
         setIsAnimationPlaying(false);
@@ -607,7 +631,7 @@ export default function SceneViewer({
     const intervalId = setInterval(animate, 1000 / 60); // 60 FPS
 
     return () => clearInterval(intervalId);
-  }, [isAnimationPlaying, onAnimationComplete]);
+  }, [isAnimationPlaying, onAnimationComplete, onAnimationProgress]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -618,11 +642,33 @@ export default function SceneViewer({
     scene.fog = new THREE.Fog(0xf0f0f0, 10, 50);
     sceneRef.current = scene;
 
+    // Calculate optimal vertical FOV to maintain consistent horizontal field of view
+    // Three.js uses VERTICAL FOV, but we need to ensure adequate HORIZONTAL coverage
+    const calculateFOV = (aspect: number): number => {
+      // Target horizontal FOV in degrees - this is what we want to see horizontally
+      const targetHorizontalFOV = 14;
+      // Convert to radians
+      const targetHFOVRad = (targetHorizontalFOV * Math.PI) / 180;
+
+      // Calculate required vertical FOV to achieve target horizontal FOV
+      // Formula: tan(hFOV/2) = aspect * tan(vFOV/2)
+      // Rearranged: vFOV = 2 * atan(tan(hFOV/2) / aspect)
+      const requiredVFOVRad =
+        2 * Math.atan(Math.tan(targetHFOVRad / 2) / aspect);
+      const requiredVFOV = (requiredVFOVRad * 180) / Math.PI;
+
+      // Clamp to reasonable range (avoid extreme distortion)
+      // Min 10° for very wide screens, max 50° for very narrow screens
+      return Math.max(10, Math.min(requiredVFOV, 50));
+    };
+
     // Camera setup
     const defaultCameraPos = cameraPosition || { x: 4, y: 1, z: 4 };
+    const initialAspect =
+      containerRef.current.clientWidth / containerRef.current.clientHeight;
     const camera = new THREE.PerspectiveCamera(
-      12,
-      containerRef.current.clientWidth / containerRef.current.clientHeight,
+      calculateFOV(initialAspect),
+      initialAspect,
       0.1,
       1000,
     );
@@ -808,22 +854,33 @@ export default function SceneViewer({
     };
     animate();
 
-    // Handle window resize
+    // Handle resize (window or container)
     const handleResize = () => {
       if (!containerRef.current || !camera || !renderer) return;
 
       const width = containerRef.current.clientWidth;
       const height = containerRef.current.clientHeight;
+      const aspect = width / height;
 
-      camera.aspect = width / height;
+      camera.aspect = aspect;
+      // Adjust FOV based on aspect ratio for better framing
+      camera.fov = calculateFOV(aspect);
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
     };
+
+    // Use ResizeObserver to detect container size changes (e.g., fullscreen toggle)
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    resizeObserver.observe(containerRef.current);
+
     window.addEventListener("resize", handleResize);
 
     // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
+      resizeObserver.disconnect();
       controls.dispose();
       renderer.dispose();
       if (containerRef.current && renderer.domElement) {
@@ -883,14 +940,88 @@ export default function SceneViewer({
     shouldAutoStart,
   ]);
 
-  // Expose restart function via callback
+  // Expose animation control functions via window object
   useEffect(() => {
     if (typeof window !== "undefined") {
+      // Restart animation from beginning
       (window as any).restartStepAnimation = () => {
         setAnimationTrigger((prev) => prev + 1);
       };
+
+      // Play animation (resume from current position)
+      (window as any).playStepAnimation = () => {
+        if (currentAnimationRef.current && !isAnimationPlaying) {
+          setIsAnimationPlaying(true);
+          hasCompletedRef.current = false;
+        }
+      };
+
+      // Pause animation
+      (window as any).pauseStepAnimation = () => {
+        setIsAnimationPlaying(false);
+      };
+
+      // Seek to specific time
+      (window as any).seekStepAnimation = (time: number) => {
+        if (currentAnimationRef.current) {
+          const duration = currentAnimationRef.current.duration || 5;
+          const clampedTime = Math.max(0, Math.min(time, duration));
+          animationTimeRef.current = clampedTime;
+          setAnimationTime(clampedTime);
+          hasCompletedRef.current = clampedTime >= duration;
+        }
+      };
+
+      // Reset to start: seek to time 0 and reset camera without auto-playing
+      (window as any).resetToStart = () => {
+        // Seek animation to time 0
+        animationTimeRef.current = 0;
+        setAnimationTime(0);
+        hasCompletedRef.current = false;
+
+        // Reset camera to initial position if we have camera keyframes
+        if (
+          sortedCameraKeyframesRef.current.length > 0 &&
+          cameraRef.current &&
+          controlsRef.current
+        ) {
+          const firstCameraKf = sortedCameraKeyframesRef.current[0];
+          if (firstCameraKf) {
+            cameraRef.current.position.set(
+              firstCameraKf.position.x,
+              firstCameraKf.position.y,
+              firstCameraKf.position.z,
+            );
+            controlsRef.current.target.set(
+              firstCameraKf.target.x,
+              firstCameraKf.target.y,
+              firstCameraKf.target.z,
+            );
+            controlsRef.current.update();
+          }
+        }
+      };
+
+      // Get current animation time
+      (window as any).getStepAnimationTime = () => animationTimeRef.current;
+
+      // Get animation duration
+      (window as any).getStepAnimationDuration = () =>
+        currentAnimationRef.current?.duration || 5;
     }
-  }, []);
+
+    return () => {
+      if (typeof window !== "undefined") {
+        delete (window as any).restartStepAnimation;
+        delete (window as any).playStepAnimation;
+        delete (window as any).pauseStepAnimation;
+        delete (window as any).seekStepAnimation;
+        delete (window as any).resetToStart;
+        delete (window as any).getStepAnimationTime;
+        delete (window as any).getStepAnimationDuration;
+      }
+    };
+  }, [isAnimationPlaying]);
 
   return (
     <div className="relative w-full" style={{ height }}>

@@ -80,5 +80,11 @@
     "cabinet": "Loading cabinet...",
     "model": "Loading 3D model...",
     "audio": "Loading audio..."
-  }
+  },
+  "fullscreen": "Fullscreen",
+  "exitFullscreen": "Exit Fullscreen",
+  "play": "Play",
+  "pause": "Pause",
+  "restart": "Restart",
+  "animationProgress": "Animation Progress"
 }
