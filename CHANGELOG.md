@@ -17,6 +17,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.15.0] - 2026-02-05
+
+### ✨ Added - Annotation System
+
+Complete annotation system for adding visual aids (arrows, callouts, text) to assembly animations.
+
+**Core Features:**
+
+- **GLB-based annotations** - Load custom arrow and indicator models from `/models/annotations/`
+- **Text annotations** - Canvas-based 3D text sprites with bilingual support (EN/AR)
+- **Color customization** - Predefined color swatches + custom hex color picker
+- **Per-step annotations** - Annotations are saved with each step's animation data
+- **Full animation support** - Animate position, rotation, scale, and visibility like regular objects
+
+**Authoring Tool:**
+
+- **Floating toolbar** (`AnnotationToolbar.tsx`) - Grid of annotation types with thumbnails
+- **Thumbnail support** - PNG previews for annotation GLBs displayed in toolbar
+- **Object hierarchy integration** - Annotations section with color editing and delete buttons
+- **Timeline integration** - Annotations appear in object tracks with keyframe recording
+
+**Assembly Viewer:**
+
+- **Annotation playback** - Annotations load and animate in the public viewer
+- **Initial state fix** - Fixed issue where hidden objects/annotations showed until play button was pressed
+
+**New Files:**
+
+- `types/animation.ts` - Added `AnnotationInstance`, `AnnotationCatalogItem` interfaces
+- `lib/annotations.ts` - Annotation loader, color utilities, text sprite creation
+- `components/admin/AnnotationToolbar.tsx` - Floating UI for adding annotations
+- `pages/api/annotations.ts` - API endpoint listing available annotation GLBs
+
+**Modified Files:**
+
+- `components/admin/AuthoringSceneViewer.tsx` - forwardRef with annotation management methods
+- `components/admin/ObjectHierarchyTree.tsx` - Annotations section with color picker
+- `pages/admin/cabinets/[id]/steps/authoring.tsx` - Annotation state, handlers, save/load
+- `components/3d/SceneViewer.tsx` - Annotation loading for playback, initial state fix
+
+### 🔧 Fixed
+
+- **Initial frame rendering** - Scene now correctly applies keyframes at time=0 on page load
+- **Annotation validation** - Filter out malformed annotations (missing type/id) during load
+- **Duplicate loading prevention** - Removed redundant animation loading useEffect
+
+---
+
 ## [0.14.2] - 2026-01-30
 
 ### ✨ Added - View Transitions & 404 Page

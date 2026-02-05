@@ -4,7 +4,7 @@
 
 ![Status](https://img.shields.io/badge/status-in%20development-yellow)
 ![Phase](https://img.shields.io/badge/phase-8.5%20of%2010-blue)
-![Progress](https://img.shields.io/badge/progress-80%25-green)
+![Progress](https://img.shields.io/badge/progress-82%25-green)
 
 ---
 
@@ -24,6 +24,7 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 - 📋 **QR Generation** - Print-ready codes for packaging ✅
 - 🎬 **Animation Authoring** - Visual keyframe editor for step animations ✅
 - 📊 **Admin Dashboard** - Statistics, alerts, and quick actions ✅
+- 🏷️ **Annotation System** - Add arrows, callouts, and text to animations ✅
 - ⚡ **Fast & Offline** - Static hosting, PWA support (V2)
 
 ---
@@ -44,13 +45,12 @@ PWAssemblyGuide is a revolutionary web-based 3D assembly guide that helps custom
 
 ### Latest Updates
 
+- **Feb 5, 2026:** Annotation System - GLB-based arrows/indicators, text annotations, color picker, thumbnail previews, per-step storage, playback support
 - **Jan 30, 2026:** View Transitions API - Smooth page transitions, custom 404 page with cabinet-themed design
 - **Jan 29, 2026:** Admin Dashboard - Real-time stats, category breakdown, needs attention alerts, quick actions, recent cabinets widget
 - **Jan 29, 2026:** Dark mode polish - ThemeToggle component, CSS transitions, scrollbar styling, home page redesign, PHP path resolution improvements
 - **Jan 28, 2026:** Hostinger deployment - PHP API backend, dynamic data loading, .htaccess routing
 - **Jan 27, 2026:** Phase 8 completed - Toast notifications, collapsible sidebar, 3-column authoring layout, Material Symbols icons, performance optimizations
-- **Jan 27, 2026:** Phase 6 completed - offset keyframes, undo/redo, easing curves, bulk ops, step copy/reuse
-- **Jan 26, 2026:** Audio workflow unified (JSON `audioUrl`), admin uploads deferred to Save, visual editor audio sync
 
 ### Tech Stack
 

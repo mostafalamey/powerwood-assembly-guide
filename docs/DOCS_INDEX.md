@@ -2,7 +2,7 @@
 
 ## **PWAssemblyGuide - Complete Documentation Directory**
 
-Last Updated: January 28, 2026
+Last Updated: February 5, 2026
 
 ---
 
@@ -22,7 +22,8 @@ Last Updated: January 28, 2026
 - 🔧 [**Phase 3 Guide**](./PHASE3_GUIDE.md) - Detailed implementation guide
 - ⚡ [**Phase 3 Quick Reference**](./PHASE3_QUICKREF.md) - Quick reference card
 - 🎬 [**Keyframe Animation System**](./KEYFRAME_ANIMATION_SYSTEM.md) - Animation architecture
-- 🌐 [**Hostinger Deployment**](./HOSTINGER_DEPLOYMENT.md) - Production deployment guide (NEW)
+- 🏷️ [**Annotation System**](./ANNOTATION_SYSTEM_PLAN.md) - Arrows, callouts, and text annotations (NEW)
+- 🌐 [**Hostinger Deployment**](./HOSTINGER_DEPLOYMENT.md) - Production deployment guide
 - 📜 [**Changelog**](../CHANGELOG.md) - Version history
 
 ---
@@ -39,18 +40,35 @@ Last Updated: January 28, 2026
 | [PHASE3_QUICKREF.md](./PHASE3_QUICKREF.md)                     | Quick reference      | Developers   | 200 lines   | Jan 14  |
 | [GETTING_STARTED_PHASE3.md](./GETTING_STARTED_PHASE3.md)       | Setup guide          | Developers   | 500+ lines  | Jan 14  |
 | [KEYFRAME_ANIMATION_SYSTEM.md](./KEYFRAME_ANIMATION_SYSTEM.md) | Animation system     | Developers   | 400+ lines  | Jan 17  |
+| [ANNOTATION_SYSTEM_PLAN.md](./ANNOTATION_SYSTEM_PLAN.md)       | Annotation system    | Developers   | 180+ lines  | Feb 5   |
 | [HOSTINGER_DEPLOYMENT.md](./HOSTINGER_DEPLOYMENT.md)           | Deployment guide     | DevOps       | 700+ lines  | Jan 28  |
 | [IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)         | Implementation state | Developers   | 700+ lines  | Jan 28  |
-| [CHANGELOG.md](../CHANGELOG.md)                                | Version history      | All          | 600+ lines  | Jan 28  |
-| [README.md](../README.md)                                      | Project overview     | All          | 350 lines   | Jan 28  |
+| [CHANGELOG.md](../CHANGELOG.md)                                | Version history      | All          | 850+ lines  | Feb 5   |
+| [README.md](../README.md)                                      | Project overview     | All          | 360 lines   | Feb 5   |
 
-**Total Documentation:** 12 files, ~8,000+ lines
+**Total Documentation:** 13 files, ~8,500+ lines
 
 ---
 
 ## 📖 Document Details
 
-### 🌐 HOSTINGER_DEPLOYMENT.md (NEW)
+### 🏷️ ANNOTATION_SYSTEM_PLAN.md (NEW)
+
+**Purpose:** Documentation for the annotation system feature  
+**Audience:** Developers  
+**Last Updated:** February 5, 2026
+
+**Key Topics:**
+
+- GLB-based annotation models (arrows, indicators)
+- Text annotations with bilingual support
+- Color customization and material overrides
+- Integration with authoring tool and playback viewer
+- Usage guide and data structure
+
+---
+
+### 🌐 HOSTINGER_DEPLOYMENT.md
 
 **Purpose:** Complete deployment guide for Hostinger Premium hosting  
 **Audience:** Developers, DevOps  

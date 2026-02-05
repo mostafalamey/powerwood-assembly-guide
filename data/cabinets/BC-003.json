@@ -215,6 +215,99 @@
             "visible": false
           },
           {
+            "time": 0,
+            "objectId": "anno_instance_1",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.12,
+                "z": 5.24536636e-9
+              },
+              "rotation": {
+                "x": 1.5707963800073816,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "color": {
+              "r": 0.01568627450980392,
+              "g": 0,
+              "b": 1
+            }
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770323454153-ufzffqfra",
+            "transform": {
+              "position": {
+                "x": 0.41000000000000003,
+                "y": 0,
+                "z": -0.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": -3.141592653589793
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770327368624-tsm90e2m8",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": -0.30000000000000004,
+                "z": -0.30000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 4,
+            "objectId": "anno_instance_1",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.42000000000000004,
+                "z": 5.24536636e-9
+              },
+              "rotation": {
+                "x": 1.5707963800073816,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
             "time": 8,
             "objectId": "BasePanel",
             "transform": {
@@ -284,6 +377,28 @@
             "easing": "easeInCubic"
           },
           {
+            "time": 11.58,
+            "objectId": "annotation-1770323454153-ufzffqfra",
+            "transform": {
+              "position": {
+                "x": 0.41000000000000003,
+                "y": 0,
+                "z": -0.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": -3.141592653589793
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
             "time": 12,
             "objectId": "BasePanel/Leg_FR",
             "transform": {
@@ -304,6 +419,28 @@
               }
             },
             "visible": false
+          },
+          {
+            "time": 12.96,
+            "objectId": "annotation-1770323454153-ufzffqfra",
+            "transform": {
+              "position": {
+                "x": 0.41000000000000003,
+                "y": 0,
+                "z": -0.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": -3.141592653589793
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
           },
           {
             "time": 13,
@@ -328,6 +465,51 @@
             "visible": true
           },
           {
+            "time": 13.44,
+            "objectId": "anno_instance_1",
+            "transform": {
+              "position": {
+                "x": 0.4,
+                "y": 0.32000000000000006,
+                "z": -0.19999999475463365
+              },
+              "rotation": {
+                "x": -1.5707964682162592,
+                "y": -1.224646799147341e-16,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.4467091922230887,
+                "y": 0.4467091922230887,
+                "z": 0.4467091922230887
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 14.46,
+            "objectId": "annotation-1770323454153-ufzffqfra",
+            "transform": {
+              "position": {
+                "x": 0.41000000000000003,
+                "y": -0.15000000000000002,
+                "z": -0.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": -3.141592653589793
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "easing": "easeInCubic"
+          },
+          {
             "time": 14.5,
             "objectId": "BasePanel/Leg_FR",
             "transform": {
@@ -345,6 +527,28 @@
                 "x": 1,
                 "y": 1,
                 "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 14.57,
+            "objectId": "anno_instance_1",
+            "transform": {
+              "position": {
+                "x": 0.4,
+                "y": 0.32000000000000006,
+                "z": -0.19999999475463365
+              },
+              "rotation": {
+                "x": -1.5707964682162592,
+                "y": -1.224646799147341e-16,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.4467091922230887,
+                "y": 0.4467091922230887,
+                "z": 0.4467091922230887
               }
             },
             "visible": true
@@ -372,6 +576,28 @@
             "visible": true
           },
           {
+            "time": 15.59,
+            "objectId": "annotation-1770323454153-ufzffqfra",
+            "transform": {
+              "position": {
+                "x": 0.41000000000000003,
+                "y": -0.15000000000000002,
+                "z": -0.2
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": -3.141592653589793
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
             "time": 16.5,
             "objectId": "BasePanel/Leg_FR",
             "transform": {
@@ -392,6 +618,28 @@
               }
             },
             "visible": true
+          },
+          {
+            "time": 16.6,
+            "objectId": "annotation-1770327368624-tsm90e2m8",
+            "transform": {
+              "position": {
+                "x": 0.32000000000000006,
+                "y": -0.30000000000000004,
+                "z": -0.30000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.2,
+                "y": 0.2,
+                "z": 0.2
+              }
+            },
+            "visible": false
           },
           {
             "time": 16.7,
@@ -415,6 +663,73 @@
             },
             "visible": true,
             "easing": "easeInQuint"
+          },
+          {
+            "time": 16.74,
+            "objectId": "annotation-1770327368624-tsm90e2m8",
+            "transform": {
+              "position": {
+                "x": 0.32000000000000006,
+                "y": -0.30000000000000004,
+                "z": -0.30000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "easing": "easeInCubic"
+          },
+          {
+            "time": 17.45,
+            "objectId": "annotation-1770327368624-tsm90e2m8",
+            "transform": {
+              "position": {
+                "x": 0.32000000000000006,
+                "y": -0.30000000000000004,
+                "z": -0.30000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 17.47,
+            "objectId": "anno_instance_1",
+            "transform": {
+              "position": {
+                "x": 0.4,
+                "y": 0.22000000000000006,
+                "z": -0.19999999475463365
+              },
+              "rotation": {
+                "x": -1.5707964682162592,
+                "y": -1.224646799147341e-16,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.4467091922230887,
+                "y": 0.4467091922230887,
+                "z": 0.4467091922230887
+              }
+            },
+            "visible": true
           },
           {
             "time": 19.644063,
@@ -470,27 +785,27 @@
           {
             "time": 12,
             "position": {
-              "x": 2.4613100933810896,
-              "y": 1.204963938516004,
-              "z": 2.449640540483709
+              "x": 2.6050383542292783,
+              "y": 1.2151199441332727,
+              "z": 2.3013420771077473
             },
             "target": {
-              "x": 0.005834767071441748,
-              "y": 0.10000004167666204,
-              "z": -0.005834785825939621
+              "x": 0.1495630279196311,
+              "y": 0.1101560472939311,
+              "z": -0.15413324920190016
             }
           },
           {
             "time": 17.53,
             "position": {
-              "x": 2.4613100933810896,
-              "y": 1.204963938516004,
-              "z": 2.449640540483709
+              "x": 2.6050383542292783,
+              "y": 1.2151199441332727,
+              "z": 2.3013420771077473
             },
             "target": {
-              "x": 0.005834767071441748,
-              "y": 0.10000004167666204,
-              "z": -0.005834785825939621
+              "x": 0.1495630279196311,
+              "y": 0.1101560472939311,
+              "z": -0.15413324920190016
             }
           },
           {
@@ -506,6 +821,24 @@
               "z": 0
             },
             "easing": "easeOutCubic"
+          }
+        ],
+        "annotationInstances": [
+          {
+            "id": "annotation-1770323454153-ufzffqfra",
+            "type": "anno_arrow_move_single",
+            "color": "#ef4444",
+            "name": "Anno Arrow Move Single"
+          },
+          {
+            "id": "annotation-1770327368624-tsm90e2m8",
+            "type": "text",
+            "color": "#ef4444",
+            "name": "Text",
+            "text": {
+              "en": "Click",
+              "ar": "Click"
+            }
           }
         ]
       },

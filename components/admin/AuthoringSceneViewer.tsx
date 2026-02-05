@@ -1,8 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { AnnotationInstance } from "@/types/animation";
+import {
+  loadAnnotationModel,
+  applyAnnotationColor,
+  createTextAnnotation,
+  isAnnotationObjectId,
+} from "@/lib/annotations";
+
+export interface AuthoringSceneViewerRef {
+  addAnnotation: (
+    annotation: AnnotationInstance,
+  ) => Promise<THREE.Object3D | null>;
+  removeAnnotation: (annotationId: string) => void;
+  updateAnnotationColor: (annotationId: string, color: string) => void;
+  getAnnotationObject: (annotationId: string) => THREE.Object3D | null;
+}
 
 interface AuthoringSceneViewerProps {
   modelPath?: string;
@@ -11,31 +33,41 @@ interface AuthoringSceneViewerProps {
   translationSnap?: number | null;
   rotationSnap?: number | null;
   scaleSnap?: number | null;
+  annotationInstances?: AnnotationInstance[];
   onSceneReady?: (scene: THREE.Scene, camera: THREE.Camera) => void;
   onModelLoaded?: (model: THREE.Group) => void;
   onLoadProgress?: (progress: number) => void;
   onLoadError?: (error: Error) => void;
   onObjectSelected?: (object: THREE.Object3D | null) => void;
+  onAnnotationLoaded?: (annotationId: string, object: THREE.Object3D) => void;
   onGetCameraState?: () => {
     position: THREE.Vector3;
     target: THREE.Vector3;
   } | null;
 }
 
-export default function AuthoringSceneViewer({
-  modelPath,
-  selectedObject,
-  transformMode = "translate",
-  translationSnap = 0.1,
-  rotationSnap = THREE.MathUtils.degToRad(15),
-  scaleSnap = null,
-  onSceneReady,
-  onModelLoaded,
-  onLoadProgress,
-  onLoadError,
-  onObjectSelected,
-  onGetCameraState,
-}: AuthoringSceneViewerProps) {
+const AuthoringSceneViewer = forwardRef<
+  AuthoringSceneViewerRef,
+  AuthoringSceneViewerProps
+>(function AuthoringSceneViewer(
+  {
+    modelPath,
+    selectedObject,
+    transformMode = "translate",
+    translationSnap = 0.1,
+    rotationSnap = THREE.MathUtils.degToRad(15),
+    scaleSnap = null,
+    annotationInstances = [],
+    onSceneReady,
+    onModelLoaded,
+    onLoadProgress,
+    onLoadError,
+    onObjectSelected,
+    onAnnotationLoaded,
+    onGetCameraState,
+  },
+  ref,
+) {
   const mountRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
@@ -43,6 +75,8 @@ export default function AuthoringSceneViewer({
   const controlsRef = useRef<OrbitControls | null>(null);
   const transformControlsRef = useRef<TransformControls | null>(null);
   const loadedModelRef = useRef<THREE.Group | null>(null);
+  const annotationObjectsRef = useRef<Map<string, THREE.Object3D>>(new Map());
+  const annotationsGroupRef = useRef<THREE.Group | null>(null);
   const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
   const previousSelectedRef = useRef<THREE.Object3D | null | undefined>(null);
@@ -53,6 +87,101 @@ export default function AuthoringSceneViewer({
   const [isReady, setIsReady] = useState(false);
   const [loadingModel, setLoadingModel] = useState(false);
   const [modelLoadProgress, setModelLoadProgress] = useState(0);
+
+  // Expose annotation methods via ref
+  useImperativeHandle(
+    ref,
+    () => ({
+      addAnnotation: async (
+        annotation: AnnotationInstance,
+      ): Promise<THREE.Object3D | null> => {
+        if (!sceneRef.current || !annotationsGroupRef.current) return null;
+
+        // Validate annotation has required fields
+        if (!annotation || !annotation.type || !annotation.id) {
+          console.warn("Invalid annotation - missing type or id:", annotation);
+          return null;
+        }
+
+        try {
+          let object: THREE.Object3D;
+
+          if (annotation.type === "text") {
+            // Create text annotation
+            const text = annotation.text?.en || "Text";
+            object = createTextAnnotation(text, annotation.color, null);
+          } else {
+            // Load GLB annotation
+            object = await loadAnnotationModel(annotation.type);
+            applyAnnotationColor(object, annotation.color);
+          }
+
+          // Set name and user data for identification
+          object.name = annotation.id;
+          object.userData.isAnnotation = true;
+          object.userData.annotationType = annotation.type;
+          object.userData.annotationId = annotation.id;
+          object.userData.annotationColor = annotation.color;
+
+          // Position at scene center initially
+          object.position.set(0, 0.5, 0);
+
+          // Add to annotations group
+          annotationsGroupRef.current.add(object);
+          annotationObjectsRef.current.set(annotation.id, object);
+
+          // Notify parent
+          if (onAnnotationLoaded) {
+            onAnnotationLoaded(annotation.id, object);
+          }
+
+          return object;
+        } catch (error) {
+          console.error("Error adding annotation:", error);
+          return null;
+        }
+      },
+
+      removeAnnotation: (annotationId: string) => {
+        const object = annotationObjectsRef.current.get(annotationId);
+        if (object && annotationsGroupRef.current) {
+          // Dispose geometry and materials
+          object.traverse((child: any) => {
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+              if (Array.isArray(child.material)) {
+                child.material.forEach((m: any) => m.dispose());
+              } else {
+                child.material.dispose();
+              }
+            }
+          });
+
+          annotationsGroupRef.current.remove(object);
+          annotationObjectsRef.current.delete(annotationId);
+
+          // Deselect if this was selected
+          if (currentSelectionRef.current === object) {
+            currentSelectionRef.current = null;
+            if (onObjectSelected) onObjectSelected(null);
+          }
+        }
+      },
+
+      updateAnnotationColor: (annotationId: string, color: string) => {
+        const object = annotationObjectsRef.current.get(annotationId);
+        if (object) {
+          applyAnnotationColor(object, color);
+          object.userData.annotationColor = color;
+        }
+      },
+
+      getAnnotationObject: (annotationId: string): THREE.Object3D | null => {
+        return annotationObjectsRef.current.get(annotationId) || null;
+      },
+    }),
+    [onAnnotationLoaded, onObjectSelected],
+  );
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -139,6 +268,12 @@ export default function AuthoringSceneViewer({
     ground.position.y = 0;
     ground.receiveShadow = true;
     scene.add(ground);
+
+    // Annotations group - container for all annotation objects
+    const annotationsGroup = new THREE.Group();
+    annotationsGroup.name = "__annotations__";
+    scene.add(annotationsGroup);
+    annotationsGroupRef.current = annotationsGroup;
 
     // OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -285,8 +420,7 @@ export default function AuthoringSceneViewer({
 
     // Handle click for object selection
     const handleClick = (event: MouseEvent) => {
-      if (!mountRef.current || !cameraRef.current || !loadedModelRef.current)
-        return;
+      if (!mountRef.current || !cameraRef.current) return;
 
       // Don't select if we're currently dragging or just finished dragging (transform controls)
       // or if we dragged the camera (orbit/pan)
@@ -322,8 +456,19 @@ export default function AuthoringSceneViewer({
         }
       }
 
+      // Build list of raycastable objects (model + annotations)
+      const raycastTargets: THREE.Object3D[] = [];
+      if (loadedModelRef.current) {
+        raycastTargets.push(loadedModelRef.current);
+      }
+      if (annotationsGroupRef.current) {
+        raycastTargets.push(annotationsGroupRef.current);
+      }
+
+      if (raycastTargets.length === 0) return;
+
       const intersects = raycasterRef.current.intersectObjects(
-        [loadedModelRef.current],
+        raycastTargets,
         true,
       );
 
@@ -334,6 +479,34 @@ export default function AuthoringSceneViewer({
       if (firstVisibleHit) {
         const clickedMesh = firstVisibleHit.object;
         const currentlySelected = currentSelectionRef.current;
+
+        // Check if clicked on an annotation
+        let annotationRoot: THREE.Object3D | null = null;
+        let checkObj: THREE.Object3D | null = clickedMesh;
+        while (checkObj) {
+          if (checkObj.userData.isAnnotation) {
+            annotationRoot = checkObj;
+            break;
+          }
+          if (
+            checkObj.parent === annotationsGroupRef.current ||
+            checkObj.parent === null
+          )
+            break;
+          checkObj = checkObj.parent;
+        }
+
+        if (annotationRoot) {
+          // Clicked on annotation - select the annotation root
+          currentSelectionRef.current = annotationRoot;
+          if (onObjectSelected) {
+            onObjectSelected(annotationRoot);
+          }
+          return;
+        }
+
+        // Not an annotation - handle model selection
+        if (!loadedModelRef.current) return;
 
         // Dig-down functionality:
         // If clicking on a child of the currently selected object, select that child
@@ -438,6 +611,8 @@ export default function AuthoringSceneViewer({
       rendererRef.current = null;
       controlsRef.current = null;
       transformControlsRef.current = null;
+      annotationsGroupRef.current = null;
+      annotationObjectsRef.current.clear();
     };
   }, [onSceneReady]);
 
@@ -664,4 +839,6 @@ export default function AuthoringSceneViewer({
       )}
     </div>
   );
-}
+});
+
+export default AuthoringSceneViewer;

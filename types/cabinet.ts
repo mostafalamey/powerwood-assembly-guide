@@ -1,4 +1,5 @@
 // Animation data structures - Unified format for editor and viewer
+import { AnnotationInstance } from "./animation";
 export interface ObjectKeyframe {
   time: number; // Time in seconds from start
   objectId: string; // Object name or path in hierarchy
@@ -24,6 +25,7 @@ export interface StepAnimation {
   isOffset?: boolean;
   objectKeyframes: ObjectKeyframe[];
   cameraKeyframes: CameraKeyframe[];
+  annotationInstances?: AnnotationInstance[]; // Annotations in this step
 }
 
 export interface Step {

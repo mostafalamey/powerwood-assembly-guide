@@ -8,6 +8,12 @@ import {
   ObjectKeyframe,
   CameraKeyframe,
 } from "@/types/cabinet";
+import { AnnotationInstance } from "@/types/animation";
+import {
+  loadAnnotationModel,
+  applyAnnotationColor,
+  createTextAnnotation,
+} from "@/lib/annotations";
 
 interface SceneViewerProps {
   modelUrl: string;
@@ -214,6 +220,7 @@ export default function SceneViewer({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const modelRef = useRef<THREE.Group | null>(null);
+  const annotationsGroupRef = useRef<THREE.Group | null>(null);
   const currentAnimationRef = useRef<StepAnimation | null>(null);
   const objectLookupRef = useRef<Map<string, THREE.Object3D>>(new Map());
   const animationObjectKeyframesRef = useRef<Map<string, ObjectKeyframe[]>>(
@@ -226,6 +233,7 @@ export default function SceneViewer({
   const tempInterpolatedQuatRef = useRef(new THREE.Quaternion());
   const zeroVectorRef = useRef(new THREE.Vector3());
   const zeroEulerRef = useRef(new THREE.Euler());
+  const loadedAnnotationIdsRef = useRef<Set<string>>(new Set());
   const [animationTrigger, setAnimationTrigger] = useState(0);
   const hasAutoStartedRef = useRef(false);
   const [animationTime, setAnimationTime] = useState(0);
@@ -281,10 +289,296 @@ export default function SceneViewer({
     [],
   );
 
+  // Load annotations from animation data
+  const loadAnnotations = useCallback(
+    async (annotations: AnnotationInstance[] | undefined) => {
+      if (!annotationsGroupRef.current) return;
+
+      // Clear existing annotations
+      while (annotationsGroupRef.current.children.length > 0) {
+        const child = annotationsGroupRef.current.children[0];
+        annotationsGroupRef.current.remove(child);
+        // Dispose geometry and materials
+        child.traverse((obj: any) => {
+          if (obj.geometry) obj.geometry.dispose();
+          if (obj.material) {
+            if (Array.isArray(obj.material)) {
+              obj.material.forEach((m: any) => m.dispose());
+            } else {
+              obj.material.dispose();
+            }
+          }
+        });
+      }
+      loadedAnnotationIdsRef.current.clear();
+
+      if (!annotations || annotations.length === 0) return;
+
+      // Filter out invalid annotations and load each valid one
+      const validAnnotations = annotations.filter((a) => a && a.type && a.id);
+
+      for (const annotation of validAnnotations) {
+        try {
+          let object: THREE.Object3D;
+
+          if (annotation.type === "text") {
+            // Create text annotation
+            const text = annotation.text?.en || "Text";
+            object = createTextAnnotation(text, annotation.color);
+          } else {
+            // Load GLB annotation
+            object = await loadAnnotationModel(annotation.type);
+            applyAnnotationColor(object, annotation.color);
+          }
+
+          // Set name and user data for identification
+          object.name = annotation.id;
+          object.userData.isAnnotation = true;
+          object.userData.annotationType = annotation.type;
+          object.userData.annotationId = annotation.id;
+          object.userData.annotationColor = annotation.color;
+
+          // Position at origin (keyframes will position it)
+          object.position.set(0, 0.5, 0);
+
+          // Add to annotations group
+          annotationsGroupRef.current.add(object);
+
+          // Register in object lookup for animation
+          objectLookupRef.current.set(annotation.id, object);
+          originalTransformsRef.current.set(annotation.id, {
+            position: object.position.clone(),
+            rotation: object.rotation.clone(),
+            scale: object.scale.clone(),
+          });
+
+          loadedAnnotationIdsRef.current.add(annotation.id);
+        } catch (error) {
+          console.error("Error loading annotation:", annotation.id, error);
+        }
+      }
+    },
+    [],
+  );
+
+  // Apply keyframes at a specific time (used by both initial state and animation loop)
+  const applyKeyframesAtTime = useCallback(
+    (time: number) => {
+      if (!modelRef.current || !currentAnimationRef.current) return;
+
+      const uniqueObjectIds = animationObjectIdsRef.current;
+
+      // Apply object transforms for each unique object
+      uniqueObjectIds.forEach((objectId) => {
+        const targetObj = objectLookupRef.current.get(objectId);
+        if (!targetObj) return;
+
+        const original = originalTransformsRef.current.get(objectId);
+        const basePosition = original?.position ?? zeroVectorRef.current;
+        const baseRotation = original?.rotation ?? zeroEulerRef.current;
+
+        const objKeyframes =
+          animationObjectKeyframesRef.current.get(objectId) || [];
+
+        // Find the keyframes to interpolate between
+        let prevKf: ObjectKeyframe | null = null;
+        let nextKf: ObjectKeyframe | null = null;
+
+        for (let i = 0; i < objKeyframes.length; i++) {
+          if (objKeyframes[i].time <= time) {
+            prevKf = objKeyframes[i];
+          }
+          if (objKeyframes[i].time > time && !nextKf) {
+            nextKf = objKeyframes[i];
+          }
+        }
+
+        // Apply transform based on keyframes
+        if (prevKf && nextKf) {
+          // Interpolate between keyframes
+          const t = applyEasing(
+            (time - prevKf.time) / (nextKf.time - prevKf.time),
+            nextKf.easing,
+          );
+
+          const prevPosition = {
+            x: basePosition.x + prevKf.transform.position.x,
+            y: basePosition.y + prevKf.transform.position.y,
+            z: basePosition.z + prevKf.transform.position.z,
+          };
+          const nextPosition = {
+            x: basePosition.x + nextKf.transform.position.x,
+            y: basePosition.y + nextKf.transform.position.y,
+            z: basePosition.z + nextKf.transform.position.z,
+          };
+          const prevRotation = {
+            x: baseRotation.x + prevKf.transform.rotation.x,
+            y: baseRotation.y + prevKf.transform.rotation.y,
+            z: baseRotation.z + prevKf.transform.rotation.z,
+          };
+          const nextRotation = {
+            x: baseRotation.x + nextKf.transform.rotation.x,
+            y: baseRotation.y + nextKf.transform.rotation.y,
+            z: baseRotation.z + nextKf.transform.rotation.z,
+          };
+
+          // Lerp position
+          targetObj.position.set(
+            prevPosition.x + (nextPosition.x - prevPosition.x) * t,
+            prevPosition.y + (nextPosition.y - prevPosition.y) * t,
+            prevPosition.z + (nextPosition.z - prevPosition.z) * t,
+          );
+
+          // Slerp rotation (using quaternions)
+          const prevQuat = tempPrevQuatRef.current;
+          const nextQuat = tempNextQuatRef.current;
+          const interpolatedQuat = tempInterpolatedQuatRef.current;
+          prevQuat.setFromEuler(
+            new THREE.Euler(prevRotation.x, prevRotation.y, prevRotation.z),
+          );
+          nextQuat.setFromEuler(
+            new THREE.Euler(nextRotation.x, nextRotation.y, nextRotation.z),
+          );
+          interpolatedQuat.slerpQuaternions(prevQuat, nextQuat, t);
+          targetObj.quaternion.copy(interpolatedQuat);
+
+          // Lerp scale
+          targetObj.scale.set(
+            prevKf.transform.scale.x +
+              (nextKf.transform.scale.x - prevKf.transform.scale.x) * t,
+            prevKf.transform.scale.y +
+              (nextKf.transform.scale.y - prevKf.transform.scale.y) * t,
+            prevKf.transform.scale.z +
+              (nextKf.transform.scale.z - prevKf.transform.scale.z) * t,
+          );
+
+          // Handle visibility with gradual opacity fade
+          const prevVisible = prevKf.visible ?? true;
+          const nextVisible = nextKf.visible ?? true;
+
+          if (prevVisible !== nextVisible) {
+            targetObj.visible = true;
+            targetObj.traverse((child: any) => {
+              if (child.isMesh && child.material) {
+                if (!child.material.userData.isCloned) {
+                  child.material = child.material.clone();
+                  child.material.userData.isCloned = true;
+                }
+                child.material.transparent = true;
+                child.material.opacity = nextVisible ? t : 1 - t;
+              }
+            });
+          } else {
+            targetObj.visible = prevVisible;
+            if (prevVisible) {
+              targetObj.traverse((child: any) => {
+                if (child.isMesh && child.material) {
+                  if (!child.material.userData.isCloned) {
+                    child.material = child.material.clone();
+                    child.material.userData.isCloned = true;
+                  }
+                  child.material.transparent = true;
+                  child.material.opacity = 1;
+                }
+              });
+            }
+          }
+        } else if (prevKf) {
+          // Hold at last keyframe
+          targetObj.position.set(
+            basePosition.x + prevKf.transform.position.x,
+            basePosition.y + prevKf.transform.position.y,
+            basePosition.z + prevKf.transform.position.z,
+          );
+          targetObj.rotation.set(
+            baseRotation.x + prevKf.transform.rotation.x,
+            baseRotation.y + prevKf.transform.rotation.y,
+            baseRotation.z + prevKf.transform.rotation.z,
+          );
+          targetObj.scale.set(
+            prevKf.transform.scale.x,
+            prevKf.transform.scale.y,
+            prevKf.transform.scale.z,
+          );
+          const visible = prevKf.visible ?? true;
+          targetObj.visible = visible;
+          targetObj.traverse((child: any) => {
+            if (child.isMesh && child.material) {
+              if (!child.material.userData.isCloned) {
+                child.material = child.material.clone();
+                child.material.userData.isCloned = true;
+              }
+              child.material.transparent = true;
+              child.material.opacity = visible ? 1 : 0;
+            }
+          });
+        }
+      });
+
+      // Apply camera transforms
+      if (
+        sortedCameraKeyframesRef.current.length > 0 &&
+        cameraRef.current &&
+        controlsRef.current
+      ) {
+        const sortedCameraKfs = sortedCameraKeyframesRef.current;
+
+        let prevKf: CameraKeyframe | null = null;
+        let nextKf: CameraKeyframe | null = null;
+
+        for (let i = 0; i < sortedCameraKfs.length; i++) {
+          if (sortedCameraKfs[i].time <= time) {
+            prevKf = sortedCameraKfs[i];
+          }
+          if (sortedCameraKfs[i].time > time && !nextKf) {
+            nextKf = sortedCameraKfs[i];
+          }
+        }
+
+        if (prevKf && nextKf) {
+          const t = applyEasing(
+            (time - prevKf.time) / (nextKf.time - prevKf.time),
+            nextKf.easing,
+          );
+
+          cameraRef.current.position.set(
+            prevKf.position.x + (nextKf.position.x - prevKf.position.x) * t,
+            prevKf.position.y + (nextKf.position.y - prevKf.position.y) * t,
+            prevKf.position.z + (nextKf.position.z - prevKf.position.z) * t,
+          );
+
+          controlsRef.current.target.set(
+            prevKf.target.x + (nextKf.target.x - prevKf.target.x) * t,
+            prevKf.target.y + (nextKf.target.y - prevKf.target.y) * t,
+            prevKf.target.z + (nextKf.target.z - prevKf.target.z) * t,
+          );
+
+          controlsRef.current.update();
+        } else if (prevKf) {
+          cameraRef.current.position.set(
+            prevKf.position.x,
+            prevKf.position.y,
+            prevKf.position.z,
+          );
+          controlsRef.current.target.set(
+            prevKf.target.x,
+            prevKf.target.y,
+            prevKf.target.z,
+          );
+          controlsRef.current.update();
+        }
+      }
+    },
+    [applyEasing],
+  );
+
   // Apply initial state without animation (for step load) - sets animation at time 0
   const applyInitialState = useCallback(
-    (animation: StepAnimation) => {
+    async (animation: StepAnimation) => {
       if (!modelRef.current || !animation) return;
+
+      // Load annotations first
+      await loadAnnotations(animation.annotationInstances);
 
       const normalized = normalizeAnimationToOffsets(animation);
 
@@ -309,20 +603,26 @@ export default function SceneViewer({
       ].sort((a, b) => a.time - b.time);
 
       // Set time to 0 (initial state) without starting playback
-      setAnimationTime(0);
       animationTimeRef.current = 0;
+      setAnimationTime(0);
       setIsAnimationPlaying(false);
       hasCompletedRef.current = false;
+
+      // Immediately apply keyframes at time 0 (don't wait for useEffect)
+      applyKeyframesAtTime(0);
     },
-    [normalizeAnimationToOffsets],
+    [loadAnnotations, normalizeAnimationToOffsets, applyKeyframesAtTime],
   );
 
   // Apply step animation using lerp/slerp interpolation (matches editor system)
   const applyStepAnimation = useCallback(
-    (animation: StepAnimation) => {
+    async (animation: StepAnimation) => {
       if (!modelRef.current || !animation) {
         return;
       }
+
+      // Load annotations for this step
+      await loadAnnotations(animation.annotationInstances);
 
       const normalized = normalizeAnimationToOffsets(animation);
 
@@ -359,7 +659,7 @@ export default function SceneViewer({
       setIsAnimationPlaying(true);
       hasCompletedRef.current = false;
     },
-    [normalizeAnimationToOffsets],
+    [loadAnnotations, normalizeAnimationToOffsets],
   );
 
   useEffect(() => {
@@ -379,226 +679,8 @@ export default function SceneViewer({
 
   // Apply animation at current time using lerp/slerp
   useEffect(() => {
-    if (!modelRef.current || !currentAnimationRef.current) return;
-
-    const animation = currentAnimationRef.current;
-    const uniqueObjectIds = animationObjectIdsRef.current;
-
-    // Apply object transforms for each unique object
-    uniqueObjectIds.forEach((objectId) => {
-      const targetObj = objectLookupRef.current.get(objectId);
-      if (!targetObj) return;
-
-      const original = originalTransformsRef.current.get(objectId);
-      const basePosition = original?.position ?? zeroVectorRef.current;
-      const baseRotation = original?.rotation ?? zeroEulerRef.current;
-
-      const objKeyframes =
-        animationObjectKeyframesRef.current.get(objectId) || [];
-
-      // Find the keyframes to interpolate between
-      let prevKf: ObjectKeyframe | null = null;
-      let nextKf: ObjectKeyframe | null = null;
-
-      for (let i = 0; i < objKeyframes.length; i++) {
-        if (objKeyframes[i].time <= animationTime) {
-          prevKf = objKeyframes[i];
-        }
-        if (objKeyframes[i].time > animationTime && !nextKf) {
-          nextKf = objKeyframes[i];
-        }
-      }
-
-      // Apply transform based on keyframes
-      if (prevKf && nextKf) {
-        // Interpolate between keyframes
-        const t = applyEasing(
-          (animationTime - prevKf.time) / (nextKf.time - prevKf.time),
-          nextKf.easing,
-        );
-
-        const prevPosition = {
-          x: basePosition.x + prevKf.transform.position.x,
-          y: basePosition.y + prevKf.transform.position.y,
-          z: basePosition.z + prevKf.transform.position.z,
-        };
-        const nextPosition = {
-          x: basePosition.x + nextKf.transform.position.x,
-          y: basePosition.y + nextKf.transform.position.y,
-          z: basePosition.z + nextKf.transform.position.z,
-        };
-        const prevRotation = {
-          x: baseRotation.x + prevKf.transform.rotation.x,
-          y: baseRotation.y + prevKf.transform.rotation.y,
-          z: baseRotation.z + prevKf.transform.rotation.z,
-        };
-        const nextRotation = {
-          x: baseRotation.x + nextKf.transform.rotation.x,
-          y: baseRotation.y + nextKf.transform.rotation.y,
-          z: baseRotation.z + nextKf.transform.rotation.z,
-        };
-
-        // Lerp position
-        targetObj.position.set(
-          prevPosition.x + (nextPosition.x - prevPosition.x) * t,
-          prevPosition.y + (nextPosition.y - prevPosition.y) * t,
-          prevPosition.z + (nextPosition.z - prevPosition.z) * t,
-        );
-
-        // Slerp rotation (using quaternions)
-        const prevQuat = tempPrevQuatRef.current;
-        const nextQuat = tempNextQuatRef.current;
-        const interpolatedQuat = tempInterpolatedQuatRef.current;
-        prevQuat.setFromEuler(
-          new THREE.Euler(prevRotation.x, prevRotation.y, prevRotation.z),
-        );
-        nextQuat.setFromEuler(
-          new THREE.Euler(nextRotation.x, nextRotation.y, nextRotation.z),
-        );
-        interpolatedQuat.slerpQuaternions(prevQuat, nextQuat, t);
-        targetObj.quaternion.copy(interpolatedQuat);
-
-        // Lerp scale
-        targetObj.scale.set(
-          prevKf.transform.scale.x +
-            (nextKf.transform.scale.x - prevKf.transform.scale.x) * t,
-          prevKf.transform.scale.y +
-            (nextKf.transform.scale.y - prevKf.transform.scale.y) * t,
-          prevKf.transform.scale.z +
-            (nextKf.transform.scale.z - prevKf.transform.scale.z) * t,
-        );
-
-        // Handle visibility with gradual opacity fade
-        const prevVisible = prevKf.visible ?? true;
-        const nextVisible = nextKf.visible ?? true;
-
-        if (prevVisible !== nextVisible) {
-          // Visibility is changing
-          targetObj.visible = true; // Keep visible during fade
-          targetObj.traverse((child: any) => {
-            if (child.isMesh && child.material) {
-              // Clone material if not already cloned to avoid affecting other objects
-              if (!child.material.userData.isCloned) {
-                child.material = child.material.clone();
-                child.material.userData.isCloned = true;
-              }
-              // Ensure material supports transparency
-              child.material.transparent = true;
-              // Fade in: 0 -> 1, Fade out: 1 -> 0
-              child.material.opacity = nextVisible ? t : 1 - t;
-            }
-          });
-        } else {
-          // Visibility not changing
-          targetObj.visible = prevVisible;
-          if (prevVisible) {
-            // Ensure full opacity when visible
-            targetObj.traverse((child: any) => {
-              if (child.isMesh && child.material) {
-                // Clone material if not already cloned
-                if (!child.material.userData.isCloned) {
-                  child.material = child.material.clone();
-                  child.material.userData.isCloned = true;
-                }
-                child.material.transparent = true;
-                child.material.opacity = 1;
-              }
-            });
-          }
-        }
-      } else if (prevKf) {
-        // Hold at last keyframe
-        targetObj.position.set(
-          basePosition.x + prevKf.transform.position.x,
-          basePosition.y + prevKf.transform.position.y,
-          basePosition.z + prevKf.transform.position.z,
-        );
-        targetObj.rotation.set(
-          baseRotation.x + prevKf.transform.rotation.x,
-          baseRotation.y + prevKf.transform.rotation.y,
-          baseRotation.z + prevKf.transform.rotation.z,
-        );
-        targetObj.scale.set(
-          prevKf.transform.scale.x,
-          prevKf.transform.scale.y,
-          prevKf.transform.scale.z,
-        );
-        const visible = prevKf.visible ?? true;
-        targetObj.visible = visible;
-        // Set full opacity when visible, hide when not
-        targetObj.traverse((child: any) => {
-          if (child.isMesh && child.material) {
-            // Clone material if not already cloned
-            if (!child.material.userData.isCloned) {
-              child.material = child.material.clone();
-              child.material.userData.isCloned = true;
-            }
-            child.material.transparent = true;
-            child.material.opacity = visible ? 1 : 0;
-          }
-        });
-      }
-    });
-
-    // Apply camera transforms
-    if (
-      sortedCameraKeyframesRef.current.length > 0 &&
-      cameraRef.current &&
-      controlsRef.current
-    ) {
-      const sortedCameraKfs = sortedCameraKeyframesRef.current;
-
-      // Find the keyframes to interpolate between
-      let prevKf: CameraKeyframe | null = null;
-      let nextKf: CameraKeyframe | null = null;
-
-      for (let i = 0; i < sortedCameraKfs.length; i++) {
-        if (sortedCameraKfs[i].time <= animationTime) {
-          prevKf = sortedCameraKfs[i];
-        }
-        if (sortedCameraKfs[i].time > animationTime && !nextKf) {
-          nextKf = sortedCameraKfs[i];
-        }
-      }
-
-      // Apply camera transform based on keyframes
-      if (prevKf && nextKf) {
-        // Interpolate between keyframes
-        const t = applyEasing(
-          (animationTime - prevKf.time) / (nextKf.time - prevKf.time),
-          nextKf.easing,
-        );
-
-        // Lerp camera position and target
-        cameraRef.current.position.set(
-          prevKf.position.x + (nextKf.position.x - prevKf.position.x) * t,
-          prevKf.position.y + (nextKf.position.y - prevKf.position.y) * t,
-          prevKf.position.z + (nextKf.position.z - prevKf.position.z) * t,
-        );
-
-        controlsRef.current.target.set(
-          prevKf.target.x + (nextKf.target.x - prevKf.target.x) * t,
-          prevKf.target.y + (nextKf.target.y - prevKf.target.y) * t,
-          prevKf.target.z + (nextKf.target.z - prevKf.target.z) * t,
-        );
-
-        controlsRef.current.update();
-      } else if (prevKf) {
-        // Hold at last keyframe
-        cameraRef.current.position.set(
-          prevKf.position.x,
-          prevKf.position.y,
-          prevKf.position.z,
-        );
-        controlsRef.current.target.set(
-          prevKf.target.x,
-          prevKf.target.y,
-          prevKf.target.z,
-        );
-        controlsRef.current.update();
-      }
-    }
-  }, [animationTime]);
+    applyKeyframesAtTime(animationTime);
+  }, [animationTime, applyKeyframesAtTime]);
 
   // Animation playback loop
   useEffect(() => {
@@ -739,6 +821,12 @@ export default function SceneViewer({
     ground.position.y = 0;
     ground.receiveShadow = true;
     scene.add(ground);
+
+    // Annotations group - container for all annotation objects
+    const annotationsGroup = new THREE.Group();
+    annotationsGroup.name = "__annotations__";
+    scene.add(annotationsGroup);
+    annotationsGroupRef.current = annotationsGroup;
 
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement);

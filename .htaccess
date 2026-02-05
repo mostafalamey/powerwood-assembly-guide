@@ -10,6 +10,7 @@ RewriteRule ^api/auth/login/?$ php-api/auth.php [L]
 RewriteRule ^api/auth/validate/?$ php-api/auth.php [L]
 RewriteRule ^api/cabinets/?$ php-api/cabinets.php [L,QSA]
 RewriteRule ^api/categories/?$ php-api/categories.php [L]
+RewriteRule ^api/annotations/?$ php-api/annotations.php [L]
 RewriteRule ^api/upload/?$ php-api/upload.php [L]
 RewriteRule ^api/admin/cabinets/([^/]+)/steps/([^/]+)/animation/?$ php-api/admin/animation.php?cabinetId=$1&stepId=$2 [L,QSA]
 

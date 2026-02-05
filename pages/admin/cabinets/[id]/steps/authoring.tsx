@@ -11,15 +11,23 @@ import Link from "next/link";
 import * as THREE from "three";
 import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
-import AuthoringSceneViewer from "../../../../../components/admin/AuthoringSceneViewer";
+import AuthoringSceneViewer, {
+  AuthoringSceneViewerRef,
+} from "../../../../../components/admin/AuthoringSceneViewer";
 import ObjectHierarchyTree from "../../../../../components/admin/ObjectHierarchyTree";
 import Timeline from "../../../../../components/admin/Timeline";
+import { AnnotationToolbar } from "../../../../../components/admin/AnnotationToolbar";
 import { useToast } from "../../../../../components/admin/ToastProvider";
 import {
   ObjectKeyframe,
   CameraKeyframe,
   StepAnimation,
+  AnnotationInstance,
 } from "../../../../../types/animation";
+import {
+  isAnnotationObjectId,
+  ANNOTATION_COLORS,
+} from "../../../../../lib/annotations";
 
 export default function StepAuthoringPage() {
   const toast = useToast();
@@ -100,6 +108,13 @@ export default function StepAuthoringPage() {
     "object" | "camera" | null
   >(null);
 
+  // Annotation state
+  const [annotationInstances, setAnnotationInstances] = useState<
+    AnnotationInstance[]
+  >([]);
+  const [showAnnotationToolbar, setShowAnnotationToolbar] = useState(false);
+  const sceneViewerRef = useRef<AuthoringSceneViewerRef>(null);
+
   const objectKeyframesById = useMemo(() => {
     const map = new Map<string, ObjectKeyframe[]>();
     for (const kf of objectKeyframes) {
@@ -160,24 +175,6 @@ export default function StepAuthoringPage() {
 
     fetchCabinet();
   }, [id]);
-
-  useEffect(() => {
-    if (!step || !cabinet?.steps) return;
-    const stepData = cabinet.steps.find((s: any) => s.id === step);
-    const nextAudioUrl =
-      stepData?.audioUrl?.en || stepData?.audioUrl?.ar || null;
-    setAudioUrl(nextAudioUrl);
-
-    // Load existing animation if present
-    if (stepData?.animation) {
-      const anim = stepData.animation;
-      if (anim.duration) setDuration(anim.duration);
-      if (anim.objectKeyframes) setObjectKeyframes(anim.objectKeyframes);
-      if (anim.cameraKeyframes) setCameraKeyframes(anim.cameraKeyframes);
-      if (typeof anim.isOffset === "boolean")
-        setIsOffsetAnimation(anim.isOffset);
-    }
-  }, [step, cabinet]);
 
   const handleSceneReady = useCallback((scene: any, camera: any) => {
     setSceneReady(true);
@@ -285,6 +282,8 @@ export default function StepAuthoringPage() {
         isOffset: true,
         objectKeyframes,
         cameraKeyframes,
+        annotationInstances:
+          annotationInstances.length > 0 ? annotationInstances : undefined,
       };
 
       // Save to the step in the cabinet JSON
@@ -307,10 +306,18 @@ export default function StepAuthoringPage() {
       console.error("Error saving animation:", error);
       toast.error("Failed to save animation. Please try again.");
     }
-  }, [id, step, duration, objectKeyframes, cameraKeyframes, toast]);
+  }, [
+    id,
+    step,
+    duration,
+    objectKeyframes,
+    cameraKeyframes,
+    annotationInstances,
+    toast,
+  ]);
 
   // Load animation from cabinet JSON
-  const loadAnimation = useCallback((animationData: StepAnimation) => {
+  const loadAnimation = useCallback(async (animationData: StepAnimation) => {
     if (!animationData) return;
 
     try {
@@ -321,19 +328,55 @@ export default function StepAuthoringPage() {
       setCameraKeyframes(animationData.cameraKeyframes || []);
       setCurrentTime(0);
       setIsPlaying(false);
+
+      // Load annotations
+      const annotations = (animationData.annotationInstances || []).filter(
+        (a) => a && a.type && a.id,
+      );
+      setAnnotationInstances(annotations);
+
+      // Add annotation objects to scene (after a short delay to ensure scene is ready)
+      if (annotations.length > 0 && sceneViewerRef.current) {
+        for (const annotation of annotations) {
+          const obj = await sceneViewerRef.current.addAnnotation(annotation);
+          if (obj) {
+            // Register in object lookup for keyframe recording
+            objectLookupRef.current.set(annotation.id, obj);
+            originalTransformsRef.current.set(annotation.id, {
+              position: obj.position.clone(),
+              rotation: obj.rotation.clone(),
+              scale: obj.scale.clone(),
+            });
+          }
+        }
+      }
     } catch (error) {
       console.error("Failed to load animation:", error);
     }
   }, []);
 
+  // Load animation when step/cabinet/model changes
+  useEffect(() => {
+    if (!step || !cabinet?.steps || !modelLoaded) return;
+    const stepData = cabinet.steps.find((s: any) => s.id === step);
+    const nextAudioUrl =
+      stepData?.audioUrl?.en || stepData?.audioUrl?.ar || null;
+    setAudioUrl(nextAudioUrl);
+
+    // Load existing animation if present (using loadAnimation to include annotations)
+    if (stepData?.animation) {
+      loadAnimation(stepData.animation);
+    }
+  }, [step, cabinet, modelLoaded, loadAnimation]);
+
   // Load animation from JSON
   const handleLoadAnimation = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         try {
           const json = e.target?.result as string;
           const animation: StepAnimation = JSON.parse(json);
@@ -345,6 +388,28 @@ export default function StepAuthoringPage() {
           setCameraKeyframes(animation.cameraKeyframes);
           setCurrentTime(0);
           setIsPlaying(false);
+
+          // Load annotations (filter out invalid ones)
+          const annotations = (animation.annotationInstances || []).filter(
+            (a) => a && a.type && a.id,
+          );
+          setAnnotationInstances(annotations);
+
+          // Add annotation objects to scene
+          if (annotations.length > 0 && sceneViewerRef.current) {
+            for (const annotation of annotations) {
+              const obj =
+                await sceneViewerRef.current.addAnnotation(annotation);
+              if (obj) {
+                objectLookupRef.current.set(annotation.id, obj);
+                originalTransformsRef.current.set(annotation.id, {
+                  position: obj.position.clone(),
+                  rotation: obj.rotation.clone(),
+                  scale: obj.scale.clone(),
+                });
+              }
+            }
+          }
         } catch (error) {
           console.error("Failed to load animation:", error);
           toast.error(
@@ -359,6 +424,10 @@ export default function StepAuthoringPage() {
 
   // Helper to get object path/ID
   const getObjectId = (obj: any): string => {
+    // Check if this is an annotation
+    if (obj.userData?.isAnnotation) {
+      return obj.userData.annotationId || obj.name;
+    }
     const parts: string[] = [];
     let current = obj;
     while (current && current !== loadedModelRef.current) {
@@ -367,6 +436,80 @@ export default function StepAuthoringPage() {
     }
     return parts.join("/") || obj.uuid;
   };
+
+  // Handle adding annotation
+  const handleAddAnnotation = useCallback(
+    async (annotation: AnnotationInstance) => {
+      if (!sceneViewerRef.current) {
+        toast.error("Scene not ready");
+        return;
+      }
+
+      try {
+        const obj = await sceneViewerRef.current.addAnnotation(annotation);
+        if (obj) {
+          // Add to state
+          setAnnotationInstances((prev) => [...prev, annotation]);
+
+          // Register in object lookup for keyframe recording
+          objectLookupRef.current.set(annotation.id, obj);
+          originalTransformsRef.current.set(annotation.id, {
+            position: obj.position.clone(),
+            rotation: obj.rotation.clone(),
+            scale: obj.scale.clone(),
+          });
+
+          // Select the new annotation
+          setSelectedObject(obj);
+
+          toast.success(
+            `Added ${annotation.name || annotation.type} annotation`,
+          );
+        }
+      } catch (error) {
+        console.error("Failed to add annotation:", error);
+        toast.error("Failed to add annotation");
+      }
+    },
+    [toast],
+  );
+
+  // Handle removing annotation
+  const handleRemoveAnnotation = useCallback(
+    (annotationId: string) => {
+      if (!sceneViewerRef.current) return;
+
+      sceneViewerRef.current.removeAnnotation(annotationId);
+      setAnnotationInstances((prev) =>
+        prev.filter((a) => a.id !== annotationId),
+      );
+
+      // Remove from lookup
+      objectLookupRef.current.delete(annotationId);
+      originalTransformsRef.current.delete(annotationId);
+
+      // Remove keyframes for this annotation
+      setObjectKeyframes((prev) =>
+        prev.filter((kf) => kf.objectId !== annotationId),
+      );
+
+      toast.success("Annotation removed");
+    },
+    [toast],
+  );
+
+  // Handle updating annotation color
+  const handleUpdateAnnotationColor = useCallback(
+    (annotationId: string, color: string) => {
+      if (!sceneViewerRef.current) return;
+
+      sceneViewerRef.current.updateAnnotationColor(annotationId, color);
+      setAnnotationInstances((prev) =>
+        prev.map((a) => (a.id === annotationId ? { ...a, color } : a)),
+      );
+    },
+    [],
+  );
 
   const easingOptions = [
     { value: "linear", label: "Linear" },
@@ -1549,26 +1692,8 @@ export default function StepAuthoringPage() {
     setUseAudioSync(false);
   }, [isPlaying]);
 
-  // Load cabinet step animation on mount
-  useEffect(() => {
-    if (!id || !step) return;
-
-    const loadStepAnimation = () => {
-      try {
-        // Import cabinet data directly from source (same as viewer)
-        const cabinetData = require(`../../../../../data/cabinets/${id}.json`);
-        const stepData = cabinetData.steps?.find((s: any) => s.id === step);
-
-        if (stepData?.animation) {
-          loadAnimation(stepData.animation);
-        }
-      } catch (error) {
-        console.error("Error loading step animation:", error);
-      }
-    };
-
-    loadStepAnimation();
-  }, [id, step, loadAnimation]);
+  // Note: Animation loading is handled by the useEffect that watches
+  // [step, cabinet, modelLoaded, loadAnimation] - don't duplicate here
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1842,12 +1967,31 @@ export default function StepAuthoringPage() {
                 </button>
               </div>
 
+              {/* Add Annotation button */}
+              <button
+                onClick={() => setShowAnnotationToolbar(!showAnnotationToolbar)}
+                disabled={!sceneReady}
+                className={`px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-xl transition-all duration-200 flex items-center gap-1 sm:gap-2 font-medium border ${
+                  showAnnotationToolbar
+                    ? "bg-purple-600 text-white border-purple-600 shadow-lg shadow-purple-500/30"
+                    : "bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-600 border-gray-200/50 dark:border-gray-600/50"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                title="Add annotations (arrows, text, shapes)"
+              >
+                <span className="material-symbols-rounded text-sm sm:text-base">
+                  add_comment
+                </span>
+                <span className="hidden sm:inline">Annotate</span>
+              </button>
+
               {/* Save button - always visible */}
               <button
                 onClick={handleSaveAnimation}
                 disabled={
                   !sceneReady ||
-                  (objectKeyframes.length === 0 && cameraKeyframes.length === 0)
+                  (objectKeyframes.length === 0 &&
+                    cameraKeyframes.length === 0 &&
+                    annotationInstances.length === 0)
                 }
                 className="px-3 sm:px-4 py-2 text-xs sm:text-sm bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl hover:from-emerald-600 hover:to-green-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 sm:gap-2 font-medium shadow-lg shadow-green-500/30"
                 title="Save animation to step"
@@ -1905,6 +2049,24 @@ export default function StepAuthoringPage() {
                     model={loadedModelRef.current}
                     selectedObject={selectedObject}
                     onSelectObject={handleSelectObject}
+                    annotations={annotationInstances}
+                    annotationObjects={
+                      new Map(
+                        annotationInstances
+                          .map((a) => {
+                            const obj = objectLookupRef.current.get(a.id);
+                            return obj
+                              ? ([a.id, obj] as [string, THREE.Object3D])
+                              : null;
+                          })
+                          .filter(
+                            (entry): entry is [string, THREE.Object3D] =>
+                              entry !== null,
+                          ),
+                      )
+                    }
+                    onRemoveAnnotation={handleRemoveAnnotation}
+                    onUpdateAnnotationColor={handleUpdateAnnotationColor}
                   />
                 </div>
               ) : (
@@ -1963,8 +2125,9 @@ export default function StepAuthoringPage() {
 
             {/* Middle column: 3D Viewport + Timeline */}
             <div className="flex flex-col bg-gradient-to-br from-slate-100 to-gray-200 dark:from-gray-900 dark:to-slate-900 min-h-[50vh] md:min-h-0">
-              <div className="flex-1 min-h-[50vh]">
+              <div className="flex-1 min-h-[50vh] relative">
                 <AuthoringSceneViewer
+                  ref={sceneViewerRef}
                   modelPath={modelPath}
                   selectedObject={selectedObject}
                   transformMode={transformMode}
@@ -1977,11 +2140,19 @@ export default function StepAuthoringPage() {
                       : null
                   }
                   scaleSnap={null}
+                  annotationInstances={annotationInstances}
                   onSceneReady={handleSceneReady}
                   onModelLoaded={handleModelLoaded}
                   onLoadError={handleLoadError}
                   onObjectSelected={handleSelectObject}
                   onGetCameraState={() => null}
+                />
+
+                {/* Annotation Toolbar (floating) */}
+                <AnnotationToolbar
+                  isOpen={showAnnotationToolbar}
+                  onClose={() => setShowAnnotationToolbar(false)}
+                  onAddAnnotation={handleAddAnnotation}
                 />
               </div>
               <div className="border-t border-white/50 dark:border-gray-700/50">
