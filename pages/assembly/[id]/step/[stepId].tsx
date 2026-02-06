@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import SceneViewer from "@/components/3d/SceneViewer";
 import StepNavigation from "@/components/StepNavigation";
 import AudioPlayer from "@/components/AudioPlayer";
-import { Cabinet, Step } from "@/types/assembly";
+import { Assembly, Step } from "@/types/assembly";
 import {
   Play,
   Pause,
@@ -26,7 +26,7 @@ export default function StepPage() {
   const { id, stepId } = router.query;
   const { t, locale } = useTranslation();
 
-  const [assembly, setCabinet] = useState<Assembly | null>(null);
+  const [assembly, setAssembly] = useState<Assembly | null>(null);
   const [currentStep, setCurrentStep] = useState<Step | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -72,26 +72,26 @@ export default function StepPage() {
           return;
         }
 
-        const foundCabinet = await response.json();
+        const foundAssembly = await response.json();
 
-        setCabinet(foundCabinet);
+        setAssembly(foundAssembly);
 
-        if (stepId && foundCabinet.steps) {
-          const stepIndex = foundCabinet.steps.findIndex(
+        if (stepId && foundAssembly.steps) {
+          const stepIndex = foundAssembly.steps.findIndex(
             (s: any) => s.id === stepId,
           );
           if (stepIndex !== -1) {
-            setCurrentStep(foundCabinet.steps[stepIndex] as Step);
+            setCurrentStep(foundAssembly.steps[stepIndex] as Step);
             setCurrentStepIndex(stepIndex);
           } else {
             router.push(`/assembly/${id}`);
           }
-        } else if (foundCabinet.steps && foundCabinet.steps.length > 0) {
-          const firstStep = foundCabinet.steps[0] as Step;
+        } else if (foundAssembly.steps && foundAssembly.steps.length > 0) {
+          const firstStep = foundAssembly.steps[0] as Step;
           router.push(`/assembly/${id}/step/${firstStep.id}`);
         }
       } catch (error) {
-        console.error("Error fetching cabinet:", error);
+        console.error("Error fetching assembly:", error);
         router.push("/");
       }
     };
@@ -229,14 +229,14 @@ export default function StepPage() {
 
   // Navigation handlers for fullscreen mode
   const handlePrevStep = useCallback(() => {
-    if (cabinet?.steps && currentStepIndex > 0) {
+    if (assembly?.steps && currentStepIndex > 0) {
       const prevStep = assembly.steps[currentStepIndex - 1] as Step;
       router.push(`/assembly/${id}/step/${prevStep.id}`);
     }
   }, [assembly, currentStepIndex, id, router]);
 
   const handleNextStep = useCallback(() => {
-    if (cabinet?.steps && currentStepIndex < assembly.steps.length - 1) {
+    if (assembly?.steps && currentStepIndex < assembly.steps.length - 1) {
       const nextStep = assembly.steps[currentStepIndex + 1] as Step;
       router.push(`/assembly/${id}/step/${nextStep.id}`);
     }
@@ -249,7 +249,7 @@ export default function StepPage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  if (!cabinet || !currentStep) {
+  if (!assembly || !currentStep) {
     return (
       <>
         <Head>
@@ -271,10 +271,10 @@ export default function StepPage() {
   }
 
   // Handle both old and new data formats
-  const cabinetName =
+  const assemblyName =
     typeof assembly.name === "string"
       ? locale === "ar"
-        ? (cabinet as any).nameAr
+        ? (assembly as any).nameAr
         : assembly.name
       : locale === "ar"
         ? assembly.name.ar
@@ -298,12 +298,12 @@ export default function StepPage() {
         ? currentStep.description.ar
         : currentStep.description.en;
 
-  const modelUrl = (currentStep as any).model || (cabinet as any).model || null;
+  const modelUrl = (currentStep as any).model || (assembly as any).model || null;
 
   return (
     <>
       <Head>
-        <title>{`${stepTitle} - ${cabinetName}`}</title>
+        <title>{`${stepTitle} - ${assemblyName}`}</title>
       </Head>
 
       <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
@@ -342,7 +342,7 @@ export default function StepPage() {
                     <Minimize2 className="w-5 h-5 text-white" />
                   </button>
                   <div className="text-center flex-1 mx-3">
-                    <p className="text-white/70 text-xs">{cabinetName}</p>
+                    <p className="text-white/70 text-xs">{assemblyName}</p>
                     <h2 className="text-white font-semibold text-sm truncate">
                       {stepTitle}
                     </h2>
@@ -514,7 +514,7 @@ export default function StepPage() {
               >
                 <div className="flex-1 text-start">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {cabinetName}
+                    {assemblyName}
                   </span>
                   <h1 className="text-lg font-bold text-gray-900 dark:text-white">
                     {stepTitle}
@@ -584,15 +584,15 @@ export default function StepPage() {
           <div className="hidden lg:flex h-full p-4 gap-4">
             {/* Left Sidebar - Steps Navigation */}
             <div className="w-72 xl:w-80 flex-shrink-0 flex flex-col gap-3">
-              {/* Cabinet Info */}
+              {/* Assembly Info */}
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 p-4">
                 <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">
-                  {cabinetName}
+                  {assemblyName}
                 </h2>
                 <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
                   {typeof assembly.description === "string"
                     ? locale === "ar"
-                      ? (cabinet as any).descriptionAr
+                      ? (assembly as any).descriptionAr
                       : assembly.description
                     : locale === "ar"
                       ? assembly.description?.ar
