@@ -41,7 +41,13 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchBranding = async () => {
       try {
-        const response = await fetch("/api/tenant/branding/");
+        // Add cache-busting to prevent stale cached responses
+        const response = await fetch(`/api/tenant/branding/?_=${Date.now()}`, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setBranding(data);

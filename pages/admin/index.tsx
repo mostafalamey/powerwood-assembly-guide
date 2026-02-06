@@ -64,8 +64,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Add cache-busting to prevent stale cached responses
+        const cacheBuster = `_=${Date.now()}`;
+
         // Fetch assemblies index
-        const assembliesRes = await fetch("/api/assemblies");
+        const assembliesRes = await fetch(`/api/assemblies?${cacheBuster}`, {
+          cache: "no-store",
+        });
         const assembliesData = await assembliesRes.json();
         // API returns array directly, not wrapped in object
         const assemblies: AssemblyIndex[] = Array.isArray(assembliesData)
@@ -73,7 +78,9 @@ export default function AdminDashboard() {
           : assembliesData.assemblies || [];
 
         // Fetch categories
-        const categoriesRes = await fetch("/api/categories");
+        const categoriesRes = await fetch(`/api/categories?${cacheBuster}`, {
+          cache: "no-store",
+        });
         const categoriesData = await categoriesRes.json();
         // Categories API also returns array directly
         const categoriesList = Array.isArray(categoriesData)
