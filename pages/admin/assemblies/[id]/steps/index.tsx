@@ -161,11 +161,11 @@ export default function StepManagementPage() {
         setSteps(updatedSteps);
         return true;
       } else {
-        alert("Failed to save steps");
+        toast.error("Failed to save steps");
         return false;
       }
     } catch (err) {
-      alert("Error saving steps");
+      toast.error("Error saving steps");
       console.error(err);
       return false;
     }
