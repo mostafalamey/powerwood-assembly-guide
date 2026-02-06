@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, FolderTree } from "lucide-react";
 import FileUploadField from "./FileUploadField";
 
@@ -36,6 +37,11 @@ export function CategoryFormModal({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (category && mode === "edit") {
@@ -91,9 +97,13 @@ export function CategoryFormModal({
   };
 
   if (!isOpen) return null;
+  if (!mounted) return null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+  const modalContent = (
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4"
+      onClick={onClose}
+    >
       <div
         className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -271,4 +281,6 @@ export function CategoryFormModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
