@@ -140,7 +140,7 @@ export default function CategoryPage() {
                   const cabinetName =
                     typeof assembly.name === "string"
                       ? locale === "ar"
-                        ? (cabinet as any).nameAr
+                        ? (assembly as any).nameAr
                         : assembly.name
                       : locale === "ar"
                         ? assembly.name.ar
@@ -148,7 +148,7 @@ export default function CategoryPage() {
                   const cabinetDesc =
                     typeof assembly.description === "string"
                       ? locale === "ar"
-                        ? (cabinet as any).descriptionAr
+                        ? (assembly as any).descriptionAr
                         : assembly.description
                       : locale === "ar"
                         ? assembly.description?.ar
@@ -195,7 +195,7 @@ export default function CategoryPage() {
                           <div className="flex items-center gap-1">
                             <ListOrdered className="w-4 h-4 text-green-500" />
                             <span>
-                              {(cabinet as any).stepCount || 0}{" "}
+                              {(assembly as any).stepCount || 0}{" "}
                               {t("assembly.steps")}
                             </span>
                           </div>
