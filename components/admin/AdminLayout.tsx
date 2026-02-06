@@ -13,6 +13,7 @@ import {
   Package,
   FolderOpen,
   QrCode,
+  Palette,
   ExternalLink,
   Moon,
   Sun,
@@ -129,7 +130,7 @@ export default function AdminLayout({
                 </div>
                 <div className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   <h1 className="text-sm font-bold text-gray-900 dark:text-white">
-                    PW Assembly
+                    ML Assemble
                   </h1>
                   <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
                     Admin Panel
@@ -162,27 +163,6 @@ export default function AdminLayout({
               </TransitionLink>
 
               <TransitionLink
-                href="/admin/assemblies"
-                title="Assemblies"
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
-                  ${
-                    isActivePrefix("/admin/assemblies")
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
-                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <Package
-                  className={
-                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
-                  }
-                />
-                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
-                  Assemblies
-                </span>
-              </TransitionLink>
-
-              <TransitionLink
                 href="/admin/categories"
                 title="Categories"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
@@ -204,6 +184,27 @@ export default function AdminLayout({
               </TransitionLink>
 
               <TransitionLink
+                href="/admin/assemblies"
+                title="Assemblies"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActivePrefix("/admin/assemblies")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <Package
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
+                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
+                  Assemblies
+                </span>
+              </TransitionLink>
+
+              <TransitionLink
                 href="/admin/qr-codes"
                 title="QR Codes"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
@@ -221,6 +222,27 @@ export default function AdminLayout({
                 />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   QR Codes
+                </span>
+              </TransitionLink>
+
+              <TransitionLink
+                href="/admin/branding"
+                title="Branding"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActive("/admin/branding")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <Palette
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
+                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
+                  Branding
                 </span>
               </TransitionLink>
             </nav>
