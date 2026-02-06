@@ -15,7 +15,7 @@ import {
   Save,
 } from "lucide-react";
 
-interface CabinetFormData {
+interface AssemblyFormData {
   id: string;
   name: {
     en: string;
@@ -32,13 +32,13 @@ interface CabinetFormData {
   steps?: any[];
 }
 
-export default function EditCabinetPage() {
+export default function EditAssemblyPage() {
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState<CabinetFormData>({
+  const [formData, setFormData] = useState<AssemblyFormData>({
     id: "",
     name: { en: "", ar: "" },
     category: "base",
@@ -66,10 +66,10 @@ export default function EditCabinetPage() {
         const data = await response.json();
         setFormData(data);
       } else {
-        setError("Failed to fetch cabinet");
+        setError("Failed to fetch assembly");
       }
     } catch (err) {
-      setError("Error loading cabinet");
+      setError("Error loading assembly");
       console.error(err);
     } finally {
       setLoading(false);
@@ -100,14 +100,14 @@ export default function EditCabinetPage() {
       });
 
       if (response.ok) {
-        router.push("/admin/cabinets");
+        router.push("/admin/assemblies");
       } else {
         const data = await response.json();
-        setError(data.message || "Failed to update cabinet");
+        setError(data.message || "Failed to update assembly");
         setSaving(false);
       }
     } catch (err) {
-      setError("Error updating cabinet");
+      setError("Error updating assembly");
       setSaving(false);
       console.error(err);
     }
@@ -134,9 +134,9 @@ export default function EditCabinetPage() {
     return (
       <AuthGuard>
         <Head>
-          <title>Edit Cabinet - Admin Panel</title>
+          <title>Edit Assembly - Admin Panel</title>
         </Head>
-        <AdminLayout title="Edit Cabinet">
+        <AdminLayout title="Edit Assembly">
           <div className="p-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
               <svg
@@ -171,18 +171,18 @@ export default function EditCabinetPage() {
   return (
     <AuthGuard>
       <Head>
-        <title>Edit Cabinet {formData.id} - Admin Panel</title>
+        <title>Edit Assembly {formData.id} - Admin Panel</title>
       </Head>
-      <AdminLayout title={`Edit Cabinet: ${formData.id}`}>
+      <AdminLayout title={`Edit Assembly: ${formData.id}`}>
         <div className="p-4 sm:p-6">
           {/* Back button */}
           <div className="mb-6">
             <Link
-              href="/admin/cabinets"
+              href="/admin/assemblies"
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              Back to Cabinets
+              Back to Assemblies
             </Link>
           </div>
 

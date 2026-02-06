@@ -7,7 +7,7 @@ import AuthGuard from "../../../components/admin/AuthGuard";
 import FileUploadField from "../../../components/admin/FileUploadField";
 import { ArrowLeft, AlertCircle, Clock, Plus } from "lucide-react";
 
-interface CabinetFormData {
+interface AssemblyFormData {
   id: string;
   name: {
     en: string;
@@ -24,11 +24,11 @@ interface CabinetFormData {
   steps?: any[];
 }
 
-export default function NewCabinetPage() {
+export default function NewAssemblyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [formData, setFormData] = useState<CabinetFormData>({
+  const [formData, setFormData] = useState<AssemblyFormData>({
     id: "",
     name: { en: "", ar: "" },
     category: "base",
@@ -61,14 +61,14 @@ export default function NewCabinetPage() {
       });
 
       if (response.ok) {
-        router.push("/admin/cabinets");
+        router.push("/admin/assemblies");
       } else {
         const data = await response.json();
-        setError(data.message || "Failed to create cabinet");
+        setError(data.message || "Failed to create assembly");
         setLoading(false);
       }
     } catch (err) {
-      setError("Error creating cabinet");
+      setError("Error creating assembly");
       setLoading(false);
       console.error(err);
     }
@@ -94,18 +94,18 @@ export default function NewCabinetPage() {
   return (
     <AuthGuard>
       <Head>
-        <title>Add Cabinet - Admin Panel</title>
+        <title>Add Assembly - Admin Panel</title>
       </Head>
-      <AdminLayout title="Add New Cabinet">
+      <AdminLayout title="Add New Assembly">
         <div className="p-4 sm:p-6">
           {/* Back button */}
           <div className="mb-6">
             <Link
-              href="/admin/cabinets"
+              href="/admin/assemblies"
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
-              Back to Cabinets
+              Back to Assemblies
             </Link>
           </div>
 
@@ -120,10 +120,10 @@ export default function NewCabinetPage() {
               </div>
             )}
 
-            {/* Cabinet ID */}
+            {/* Assembly ID */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Cabinet ID <span className="text-red-500">*</span>
+                Assembly ID <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -147,7 +147,7 @@ export default function NewCabinetPage() {
             {/* Name (English & Arabic) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Cabinet Name <span className="text-red-500">*</span>
+                Assembly Name <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
