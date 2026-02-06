@@ -30,9 +30,12 @@ export default function AssemblyPage() {
 
     const fetchAssembly = async () => {
       try {
-        const response = await fetch(`/api/assemblies?id=${id}&_=${Date.now()}`, {
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `/api/assemblies?id=${id}&_=${Date.now()}`,
+          {
+            cache: "no-store",
+          },
+        );
 
         if (response.ok) {
           const data = await response.json();
