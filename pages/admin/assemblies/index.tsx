@@ -12,6 +12,10 @@ import {
   CategoryFormData,
 } from "../../../components/admin/CategoryFormModal";
 import {
+  AssemblyFormModal,
+  AssemblyFormData,
+} from "../../../components/admin/AssemblyFormModal";
+import {
   Search,
   QrCode,
   Plus,
@@ -73,9 +77,16 @@ export default function AssembliesListPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
   );
-  const [categoryModalMode, setCategoryModalMode] = useState<
-    "create" | "edit"
-  >("create");
+  const [categoryModalMode, setCategoryModalMode] = useState<"create" | "edit">(
+    "create",
+  );
+  const [isAssemblyModalOpen, setIsAssemblyModalOpen] = useState(false);
+  const [selectedAssembly, setSelectedAssembly] = useState<AssemblyFormData | null>(
+    null,
+  );
+  const [assemblyModalMode, setAssemblyModalMode] = useState<"create" | "edit">(
+    "create",
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -219,6 +230,73 @@ export default function AssembliesListPage() {
     setIsCategoryModalOpen(true);
   };
 
+  const handleCreateAssembly = async (formData: AssemblyFormData) => {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch("/api/assemblies", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.error || error.message || "Failed to create assembly",
+      );
+    }
+
+    toast.success("Assembly created successfully");
+    fetchAssemblys();
+  };
+
+  const handleUpdateAssembly = async (formData: AssemblyFormData) => {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch("/api/assemblies", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.error || error.message || "Failed to update assembly",
+      );
+    }
+
+    toast.success("Assembly updated successfully");
+    fetchAssemblys();
+  };
+
+  const openCreateAssemblyModal = () => {
+    setSelectedAssembly(null);
+    setAssemblyModalMode("create");
+    setIsAssemblyModalOpen(true);
+  };
+
+  const openEditAssemblyModal = (assembly: Assembly) => {
+    // Convert Assembly to AssemblyFormData format
+    const assemblyFormData: AssemblyFormData = {
+      id: assembly.id,
+      name: assembly.name,
+      category: assembly.category,
+      estimatedTime: assembly.estimatedTime,
+      description: assembly.description || { en: "", ar: "" },
+      model: assembly.model,
+      image: assembly.image,
+    };
+    setSelectedAssembly(assemblyFormData);
+    setAssemblyModalMode("edit");
+    setIsAssemblyModalOpen(true);
+    setActiveDropdown(null);
+  };
+
   const handleDelete = async (id: string) => {
     const confirmed = await toast.confirm({
       title: "Delete Assembly",
@@ -252,8 +330,7 @@ export default function AssembliesListPage() {
   };
 
   const handleEdit = (assembly: Assembly) => {
-    router.push(`/admin/assemblies/${assembly.id}/edit`);
-    setActiveDropdown(null);
+    openEditAssemblyModal(assembly);
   };
 
   const handleManageSteps = (assembly: Assembly) => {
@@ -262,7 +339,7 @@ export default function AssembliesListPage() {
   };
 
   const handleAddNew = () => {
-    router.push("/admin/assemblies/new");
+    openCreateAssemblyModal();
   };
 
   const toggleDropdown = (id: string, e: React.MouseEvent) => {
@@ -410,9 +487,15 @@ export default function AssembliesListPage() {
                 const assembliesInCategory = assemblyGroups[category.id] || [];
                 const filteredInCategory = assembliesInCategory.filter(
                   (assembly) =>
-                    assembly.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    assembly.name.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    assembly.name.ar.toLowerCase().includes(searchTerm.toLowerCase())
+                    assembly.id
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                    assembly.name.en
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()) ||
+                    assembly.name.ar
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase()),
                 );
 
                 return (
@@ -428,7 +511,10 @@ export default function AssembliesListPage() {
                             {category.name}
                           </h2>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {assembliesInCategory.length} {assembliesInCategory.length === 1 ? 'assembly' : 'assemblies'}
+                            {assembliesInCategory.length}{" "}
+                            {assembliesInCategory.length === 1
+                              ? "assembly"
+                              : "assemblies"}
                           </p>
                         </div>
                       </div>
@@ -449,7 +535,11 @@ export default function AssembliesListPage() {
                             text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20
                             disabled:hover:bg-transparent"
                           aria-label="Delete category"
-                          title={assembliesInCategory.length > 0 ? 'Cannot delete category with assemblies' : 'Delete category'}
+                          title={
+                            assembliesInCategory.length > 0
+                              ? "Cannot delete category with assemblies"
+                              : "Delete category"
+                          }
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -499,7 +589,9 @@ export default function AssembliesListPage() {
                                           height={56}
                                           className="object-cover"
                                           onError={(e) => {
-                                            (e.target as HTMLImageElement).style.display = "none";
+                                            (
+                                              e.target as HTMLImageElement
+                                            ).style.display = "none";
                                           }}
                                         />
                                       ) : (
@@ -531,7 +623,9 @@ export default function AssembliesListPage() {
                                   </td>
                                   <td className="px-4 py-4 whitespace-nowrap text-right">
                                     <button
-                                      onClick={(e) => toggleDropdown(assembly.id, e)}
+                                      onClick={(e) =>
+                                        toggleDropdown(assembly.id, e)
+                                      }
                                       className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 
                                         hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                                       aria-label="Open actions menu"
@@ -563,7 +657,9 @@ export default function AssembliesListPage() {
                                       height={64}
                                       className="object-cover"
                                       onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = "none";
+                                        (
+                                          e.target as HTMLImageElement
+                                        ).style.display = "none";
                                       }}
                                     />
                                   ) : (
@@ -582,7 +678,9 @@ export default function AssembliesListPage() {
                                     </div>
                                     <div className="relative flex-shrink-0">
                                       <button
-                                        onClick={(e) => toggleDropdown(assembly.id, e)}
+                                        onClick={(e) =>
+                                          toggleDropdown(assembly.id, e)
+                                        }
                                         className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 
                                           hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                                         aria-label="Open actions menu"
@@ -590,8 +688,10 @@ export default function AssembliesListPage() {
                                         <MoreVertical className="w-5 h-5" />
                                       </button>
                                       {activeDropdown === assembly.id && (
-                                        <div className="absolute top-full right-0 mt-1 w-48 rounded-xl shadow-xl bg-white dark:bg-gray-800 z-50 
-                                          border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                        <div
+                                          className="absolute top-full right-0 mt-1 w-48 rounded-xl shadow-xl bg-white dark:bg-gray-800 z-50 
+                                          border border-gray-200 dark:border-gray-700 overflow-hidden"
+                                        >
                                           <div className="py-1">
                                             <Link
                                               href={`/assembly/${assembly.id}`}
@@ -602,14 +702,18 @@ export default function AssembliesListPage() {
                                               View
                                             </Link>
                                             <button
-                                              onClick={() => handleEdit(assembly)}
+                                              onClick={() =>
+                                                handleEdit(assembly)
+                                              }
                                               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                             >
                                               <Edit className="w-4 h-4" />
                                               Edit
                                             </button>
                                             <button
-                                              onClick={() => handleManageSteps(assembly)}
+                                              onClick={() =>
+                                                handleManageSteps(assembly)
+                                              }
                                               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                             >
                                               <List className="w-4 h-4" />
@@ -617,7 +721,9 @@ export default function AssembliesListPage() {
                                             </button>
                                             <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
                                             <button
-                                              onClick={() => handleDelete(assembly.id)}
+                                              onClick={() =>
+                                                handleDelete(assembly.id)
+                                              }
                                               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                             >
                                               <Trash2 className="w-4 h-4" />
@@ -666,7 +772,9 @@ export default function AssembliesListPage() {
                 <div className="px-4 py-16 text-center text-gray-500 dark:text-gray-400">
                   <FolderTree className="w-12 h-12 mx-auto mb-3 opacity-50" />
                   <p className="text-lg font-medium mb-1">No categories yet</p>
-                  <p className="text-sm">Create your first category to organize your assemblies</p>
+                  <p className="text-sm">
+                    Create your first category to organize your assemblies
+                  </p>
                 </div>
               )}
             </div>
@@ -679,11 +787,35 @@ export default function AssembliesListPage() {
               onClose={() => {
                 setIsCategoryModalOpen(false);
                 setSelectedCategory(null);
-                setCategoryModalMode('create');
+                setCategoryModalMode("create");
               }}
-              onSubmit={categoryModalMode === 'create' ? handleCreateCategory : handleUpdateCategory}
+              onSubmit={
+                categoryModalMode === "create"
+                  ? handleCreateCategory
+                  : handleUpdateCategory
+              }
               category={selectedCategory || undefined}
               mode={categoryModalMode}
+            />
+          )}
+
+          {/* Assembly Form Modal */}
+          {isAssemblyModalOpen && (
+            <AssemblyFormModal
+              isOpen={isAssemblyModalOpen}
+              onClose={() => {
+                setIsAssemblyModalOpen(false);
+                setSelectedAssembly(null);
+                setAssemblyModalMode("create");
+              }}
+              onSubmit={
+                assemblyModalMode === "create"
+                  ? handleCreateAssembly
+                  : handleUpdateAssembly
+              }
+              assembly={selectedAssembly || undefined}
+              categories={categories}
+              mode={assemblyModalMode}
             />
           )}
         </div>
