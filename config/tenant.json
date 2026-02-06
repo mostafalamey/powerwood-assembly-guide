@@ -1,0 +1,36 @@
+{
+  "branding": {
+    "appName": {
+      "en": "PW Assembly Guide",
+      "ar": "دليل تجميع باور وود"
+    },
+    "companyName": "PowerWood",
+    "tagline": {
+      "en": "Step-by-step 3D assembly instructions",
+      "ar": "تعليمات التجميع ثلاثية الأبعاد خطوة بخطوة"
+    },
+    "primaryColor": "#0ea5e9",
+    "logoUrl": "/images/logo.png"
+  },
+  "terminology": {
+    "itemSingular": {
+      "en": "Assembly",
+      "ar": "تجميع"
+    },
+    "itemPlural": {
+      "en": "Assemblies",
+      "ar": "تجميعات"
+    },
+    "urlSlug": "assembly"
+  },
+  "features": {
+    "enableQRCodes": true,
+    "enableAudio": true,
+    "enableAnnotations": true,
+    "enableDarkMode": true
+  },
+  "contact": {
+    "email": "support@powerwood.com",
+    "website": "https://powerwood.com"
+  }
+}
