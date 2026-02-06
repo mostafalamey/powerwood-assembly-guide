@@ -27,7 +27,8 @@ export default function AssemblyPage() {
   const [assembly, setAssembly] = useState<Assembly | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const companyName = locale === 'en' ? branding.companyName : branding.companyNameAr;
+  const companyName =
+    locale === "en" ? branding.companyName : branding.companyNameAr;
 
   useEffect(() => {
     if (!id) return;
@@ -60,8 +61,10 @@ export default function AssemblyPage() {
       <>
         <Head>
           <title>{`${t("loading")} - ${companyName}`}</title>
-          {branding.favicon && <link rel="icon" href={branding.favicon} />}
-          {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
+          <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+          {branding.primaryColor && (
+            <meta name="theme-color" content={branding.primaryColor} />
+          )}
         </Head>
         <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
           <Header showBackButton />
@@ -83,8 +86,10 @@ export default function AssemblyPage() {
       <>
         <Head>
           <title>{`${t("errors.notFound")} - ${companyName}`}</title>
-          {branding.favicon && <link rel="icon" href={branding.favicon} />}
-          {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
+          <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+          {branding.primaryColor && (
+            <meta name="theme-color" content={branding.primaryColor} />
+          )}
         </Head>
         <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
           <Header showBackButton />
@@ -150,8 +155,10 @@ export default function AssemblyPage() {
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
-        {branding.favicon && <link rel="icon" href={branding.favicon} />}
-        {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
+        <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+        {branding.primaryColor && (
+          <meta name="theme-color" content={branding.primaryColor} />
+        )}
       </Head>
 
       <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">

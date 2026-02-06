@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
+import { validateToken } from "@/lib/auth";
 
 const TENANT_CONFIG_PATH = path.join(process.cwd(), "config", "tenant.json");
 
@@ -44,18 +45,38 @@ const writeTenantConfig = (config: any) => {
   fs.writeFileSync(TENANT_CONFIG_PATH, JSON.stringify(config, null, 2));
 };
 
+// Normalize branding data from old structure to new structure
+const normalizeBranding = (config: any) => {
+  const branding = config.branding || {};
+
+  // Handle old structure with appName.en/ar
+  let companyName = branding.companyName;
+  let companyNameAr = branding.companyNameAr;
+
+  // If old structure with appName object exists, migrate it
+  if (branding.appName && typeof branding.appName === "object") {
+    companyName = companyName || branding.appName.en || "PW Assembly Guide";
+    companyNameAr = companyNameAr || branding.appName.ar || "دليل التجميع";
+  }
+
+  // Only use logo field - don't fallback to logoUrl which may be an invalid placeholder
+  const logo = branding.logo || "";
+
+  return {
+    companyName: companyName || "PW Assembly Guide",
+    companyNameAr: companyNameAr || "دليل التجميع",
+    logo,
+    primaryColor: branding.primaryColor || "#3b82f6",
+    secondaryColor: branding.secondaryColor || "#6366f1",
+    favicon: branding.favicon || "",
+  };
+};
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     try {
       const config = readTenantConfig();
-      const branding = config.branding || {
-        companyName: "PW Assembly",
-        companyNameAr: "دليل التجميع",
-        logo: "",
-        primaryColor: "#3b82f6",
-        secondaryColor: "#6366f1",
-        favicon: "",
-      };
+      const branding = normalizeBranding(config);
       res.status(200).json(branding);
     } catch (error) {
       console.error("Error reading branding:", error);
@@ -69,10 +90,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const token = authHeader.substring(7);
-    const adminToken = process.env.ADMIN_TOKEN || "admin123";
 
-    if (token !== adminToken) {
-      return res.status(401).json({ error: "Invalid token" });
+    if (!validateToken(token)) {
+      return res.status(401).json({ error: "Invalid or expired token" });
     }
 
     try {
@@ -88,7 +108,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       // Read current config
       const config = readTenantConfig();
 
-      // Update branding
+      // Update branding with new structure (this will replace old structure)
       config.branding = {
         companyName: branding.companyName,
         companyNameAr: branding.companyNameAr,
@@ -101,6 +121,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       // Write updated config
       writeTenantConfig(config);
 
+      // Return the saved branding
       res.status(200).json(config.branding);
     } catch (error) {
       console.error("Error updating branding:", error);

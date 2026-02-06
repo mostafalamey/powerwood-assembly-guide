@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import Head from "next/head";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useBranding } from "../../contexts/BrandingContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import TransitionLink from "../TransitionLink";
@@ -32,6 +34,7 @@ export default function AdminLayout({
 }: AdminLayoutProps) {
   const { logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { branding } = useBranding();
   const router = useRouter();
   const toast = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);

@@ -317,6 +317,70 @@ Edit `public/locales/en/common.json` and `public/locales/ar/common.json` for any
 
 ---
 
+## ✅ Branding Customization System
+
+**Date:** February 6, 2026
+
+Added comprehensive branding settings allowing tenants to customize their deployment without code changes:
+
+### Admin Branding Page (`/admin/branding`)
+
+- **Company Name** - English and Arabic versions
+- **Logo Upload** - Custom logo with preview
+- **Favicon Upload** - Custom browser tab icon
+- **Color Customization** - Primary and secondary brand colors
+- **Live Preview** - See changes before saving
+
+### Technical Implementation
+
+**New Files:**
+
+- `contexts/BrandingContext.tsx` - Global branding state provider
+- `pages/admin/branding.tsx` - Admin branding configuration page
+- `pages/api/tenant/branding.ts` - Dev API endpoint  
+- `php-api/tenant/branding.php` - Production PHP API
+
+**Modified Files:**
+
+- `pages/_app.tsx` - Added BrandingProvider
+- `pages/_document.tsx` - Removed hardcoded favicon (now dynamic)
+- `components/Header.tsx` - Dynamic logo/colors from branding
+- `pages/index.tsx` - Homepage branding integration
+- `pages/categories/[category].tsx` - Dynamic title/favicon
+- `pages/assembly/[id].tsx` - Dynamic title/favicon
+- `pages/assembly/[id]/step/[stepId].tsx` - Dynamic title/favicon
+- `pages/404.tsx` - Dynamic title/favicon
+- `components/admin/AdminLayout.tsx` - Branding sidebar link
+
+**Features:**
+
+- Logo with customizable background color
+- Dynamic page titles using company name
+- Dynamic favicon across all pages
+- Theme color meta tag for mobile browsers
+- CSS variables for primary/secondary colors
+- Fallback to default values if branding not set
+- Token-based authentication for API writes
+
+### Data Storage
+
+Branding settings are stored in `config/tenant.json`:
+
+```json
+{
+  "branding": {
+    "companyName": "PowerWood AG",
+    "companyNameAr": "دليل تجميع باور وود",
+    "logo": "/logos/company-logo.png",
+    "favicon": "/favicons/favicon.png",
+    "primaryColor": "#0ea5e9",
+    "secondaryColor": "#6366f1"
+  }
+}
+```
+
+---
+
 ## 📊 Migration Statistics
 
 - **Total commits:** 8
@@ -351,4 +415,4 @@ Edit `public/locales/en/common.json` and `public/locales/ar/common.json` for any
 ---
 
 **Generated:** February 6, 2026  
-**Status:** 🟡 In Progress (90% complete)
+**Status:** ✅ Complete (Ready for merge)

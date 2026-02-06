@@ -55,18 +55,38 @@ function writeTenantConfig($config) {
     file_put_contents($TENANT_CONFIG_PATH, json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
+// Normalize branding data from old structure to new structure
+function normalizeBranding($config) {
+    $branding = $config['branding'] ?? [];
+    
+    // Handle old structure with appName.en/ar
+    $companyName = $branding['companyName'] ?? null;
+    $companyNameAr = $branding['companyNameAr'] ?? null;
+    
+    // If old structure with appName object exists, migrate it
+    if (isset($branding['appName']) && is_array($branding['appName'])) {
+        $companyName = $companyName ?? ($branding['appName']['en'] ?? 'PW Assembly Guide');
+        $companyNameAr = $companyNameAr ?? ($branding['appName']['ar'] ?? 'دليل التجميع');
+    }
+    
+    // Only use logo field - don't fallback to logoUrl which may be an invalid placeholder
+    $logo = $branding['logo'] ?? '';
+    
+    return [
+        'companyName' => $companyName ?? 'PW Assembly Guide',
+        'companyNameAr' => $companyNameAr ?? 'دليل التجميع',
+        'logo' => $logo,
+        'primaryColor' => $branding['primaryColor'] ?? '#3b82f6',
+        'secondaryColor' => $branding['secondaryColor'] ?? '#6366f1',
+        'favicon' => $branding['favicon'] ?? ''
+    ];
+}
+
 // GET - Read branding settings
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
         $config = readTenantConfig();
-        $branding = $config['branding'] ?? [
-            'companyName' => 'PW Assembly',
-            'companyNameAr' => 'دليل التجميع',
-            'logo' => '',
-            'primaryColor' => '#3b82f6',
-            'secondaryColor' => '#6366f1',
-            'favicon' => ''
-        ];
+        $branding = normalizeBranding($config);
         
         http_response_code(200);
         echo json_encode($branding);
@@ -74,6 +94,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(['error' => 'Failed to read branding settings']);
+    }
+}
+
+// Simple token validation (same logic as lib/auth.ts)
+function validateToken($token) {
+    if (empty($token)) return false;
+    
+    try {
+        $decoded = base64_decode($token);
+        $parts = explode('-', $decoded);
+        if (count($parts) < 1) return false;
+        
+        $timestamp = intval($parts[0]);
+        $age = (time() * 1000) - $timestamp; // Convert to milliseconds
+        
+        // Token expires after 24 hours
+        return $age < (24 * 60 * 60 * 1000);
+    } catch (Exception $e) {
+        return false;
     }
 }
 
@@ -90,11 +129,10 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     }
     
     $token = substr($authHeader, 7);
-    $adminToken = getenv('ADMIN_TOKEN') ?: 'admin123';
     
-    if ($token !== $adminToken) {
+    if (!validateToken($token)) {
         http_response_code(401);
-        echo json_encode(['error' => 'Invalid token']);
+        echo json_encode(['error' => 'Invalid or expired token']);
         exit;
     }
     

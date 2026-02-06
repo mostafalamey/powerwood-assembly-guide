@@ -42,7 +42,7 @@ export default function BrandingPage() {
 
   const fetchBranding = async () => {
     try {
-      const response = await fetch("/api/tenant/branding");
+      const response = await fetch("/api/tenant/branding/");
       if (response.ok) {
         const data = await response.json();
         setFormData(data);
@@ -65,7 +65,7 @@ export default function BrandingPage() {
     setSaving(true);
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch("/api/tenant/branding", {
+      const response = await fetch("/api/tenant/branding/", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -42,14 +42,18 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>{locale === 'en' ? branding.companyName : branding.companyNameAr}</title>
+        <title>
+          {locale === "en" ? branding.companyName : branding.companyNameAr}
+        </title>
         <meta name="description" content={t("appDescription")} />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
-        {branding.favicon && <link rel="icon" href={branding.favicon} />}
-        {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
+        <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+        {branding.secondaryColor && (
+          <meta name="theme-color" content={branding.secondaryColor} />
+        )}
       </Head>
 
       <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
@@ -57,23 +61,32 @@ export default function Home() {
         <header className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-800/50 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30">
           <div className="flex items-center gap-3">
             {branding.logo ? (
-              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-primary-500/25 relative">
+              <div
+                className="w-16 h-14 rounded-xl overflow-hidden relative p-1.5"
+                style={{ backgroundColor: branding.secondaryColor }}
+              >
                 <Image
                   src={branding.logo}
-                  alt={locale === 'en' ? branding.companyName : branding.companyNameAr}
+                  alt={
+                    locale === "en"
+                      ? branding.companyName
+                      : branding.companyNameAr
+                  }
                   fill
-                  className="object-contain"
+                  className="object-contain p-2"
                   unoptimized
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
-                <Box className="w-5 h-5 text-white" />
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
+                <Box className="w-7 h-7 text-white" />
               </div>
             )}
             <div>
               <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight">
-                {locale === 'en' ? branding.companyName : branding.companyNameAr}
+                {locale === "en"
+                  ? branding.companyName
+                  : branding.companyNameAr}
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                 {t("homeDescription")}

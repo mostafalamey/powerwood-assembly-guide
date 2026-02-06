@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 
 interface BrandingData {
   companyName: string;
@@ -35,15 +41,21 @@ export function BrandingProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchBranding = async () => {
       try {
-        const response = await fetch("/api/tenant/branding");
+        const response = await fetch("/api/tenant/branding/");
         if (response.ok) {
           const data = await response.json();
           setBranding(data);
-          
+
           // Update CSS variables for colors
           if (typeof document !== "undefined") {
-            document.documentElement.style.setProperty("--color-primary", data.primaryColor);
-            document.documentElement.style.setProperty("--color-secondary", data.secondaryColor);
+            document.documentElement.style.setProperty(
+              "--color-primary",
+              data.primaryColor,
+            );
+            document.documentElement.style.setProperty(
+              "--color-secondary",
+              data.secondaryColor,
+            );
           }
         }
       } catch (error) {
