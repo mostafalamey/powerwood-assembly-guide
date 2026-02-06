@@ -337,7 +337,7 @@ Added comprehensive branding settings allowing tenants to customize their deploy
 
 - `contexts/BrandingContext.tsx` - Global branding state provider
 - `pages/admin/branding.tsx` - Admin branding configuration page
-- `pages/api/tenant/branding.ts` - Dev API endpoint  
+- `pages/api/tenant/branding.ts` - Dev API endpoint
 - `php-api/tenant/branding.php` - Production PHP API
 
 **Modified Files:**

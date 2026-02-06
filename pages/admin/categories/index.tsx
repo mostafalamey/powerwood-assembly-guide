@@ -5,7 +5,6 @@ import {
   CategoryFormModal,
   CategoryFormData,
 } from "@/components/admin/CategoryFormModal";
-import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/admin/ToastProvider";
 import { Plus, Edit2, Trash2, FolderOpen } from "lucide-react";
 
@@ -19,7 +18,6 @@ interface Category {
 }
 
 export default function CategoriesPage() {
-  const { token } = useAuth();
   const toast = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +49,7 @@ export default function CategoriesPage() {
   }, []);
 
   const handleCreateCategory = async (formData: CategoryFormData) => {
+    const token = localStorage.getItem("admin_token");
     const response = await fetch("/api/categories", {
       method: "POST",
       headers: {
@@ -72,6 +71,7 @@ export default function CategoriesPage() {
   };
 
   const handleUpdateCategory = async (formData: CategoryFormData) => {
+    const token = localStorage.getItem("admin_token");
     const response = await fetch("/api/categories", {
       method: "PUT",
       headers: {
@@ -107,6 +107,7 @@ export default function CategoriesPage() {
     }
 
     try {
+      const token = localStorage.getItem("admin_token");
       const response = await fetch(`/api/categories?id=${id}`, {
         method: "DELETE",
         headers: {

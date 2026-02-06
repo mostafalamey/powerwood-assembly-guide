@@ -54,8 +54,9 @@ export async function loadTenantConfig(): Promise<TenantConfig> {
         console.warn("Failed to load tenant config, using defaults");
         return DEFAULT_CONFIG;
       }
-      cachedConfig = await response.json();
-      return cachedConfig;
+      const data = await response.json();
+      cachedConfig = data;
+      return data as TenantConfig;
     }
 
     // Server-side: read from file system
@@ -63,8 +64,9 @@ export async function loadTenantConfig(): Promise<TenantConfig> {
     const path = await import("path");
     const configPath = path.join(process.cwd(), "config", "tenant.json");
     const configData = await fs.readFile(configPath, "utf-8");
-    cachedConfig = JSON.parse(configData);
-    return cachedConfig;
+    const data = JSON.parse(configData);
+    cachedConfig = data;
+    return data as TenantConfig;
   } catch (error) {
     console.error("Error loading tenant config:", error);
     return DEFAULT_CONFIG;

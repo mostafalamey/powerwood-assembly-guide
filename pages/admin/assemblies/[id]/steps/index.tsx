@@ -59,7 +59,7 @@ export default function StepManagementPage() {
   const router = useRouter();
   const toast = useToast();
   const { id } = router.query;
-  const [assembly, setCabinet] = useState<Assembly | null>(null);
+  const [assembly, setCabinet] = useState<Cabinet | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");

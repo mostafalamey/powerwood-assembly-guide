@@ -33,7 +33,7 @@ interface Cabinet {
 export default function NewStepPage() {
   const router = useRouter();
   const { id } = router.query; // cabinet ID
-  const [assembly, setCabinet] = useState<Assembly | null>(null);
+  const [assembly, setCabinet] = useState<Cabinet | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -142,7 +142,7 @@ export default function NewStepPage() {
 
     try {
       const token = localStorage.getItem("admin_token");
-      const updatedSteps = [...(cabinet?.steps || []), formData];
+      const updatedSteps = [...(assembly?.steps || []), formData];
 
       const response = await fetch("/api/assemblies", {
         method: "PUT",

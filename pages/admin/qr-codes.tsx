@@ -26,7 +26,7 @@ interface Cabinet {
 }
 
 export default function QRCodesPage() {
-  const [assemblies, setCabinets] = useState<Assembly[]>([]);
+  const [assemblies, setCabinets] = useState<Cabinet[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCabinets, setSelectedCabinets] = useState<Set<string>>(
     new Set(),
@@ -54,7 +54,7 @@ export default function QRCodesPage() {
         const data = await response.json();
         setCabinets(data);
         // Select all by default
-        setSelectedCabinets(new Set(data.map((c: Assembly) => c.id)));
+        setSelectedCabinets(new Set(data.map((c: Cabinet) => c.id)));
       }
     } catch (err) {
       console.error(err);

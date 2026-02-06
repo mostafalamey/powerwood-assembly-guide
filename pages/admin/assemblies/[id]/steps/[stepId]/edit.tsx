@@ -44,7 +44,7 @@ interface Cabinet {
 export default function EditStepPage() {
   const router = useRouter();
   const { id, stepId } = router.query; // cabinet ID and step ID
-  const [assembly, setCabinet] = useState<Assembly | null>(null);
+  const [assembly, setCabinet] = useState<Cabinet | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -144,7 +144,7 @@ export default function EditStepPage() {
 
       // Update the step in the steps array
       const updatedSteps =
-        cabinet?.steps?.map((step) =>
+        assembly?.steps?.map((step) =>
           step.id === stepId ? updatedStep : step,
         ) || [];
 
@@ -397,7 +397,7 @@ export default function EditStepPage() {
     );
   }
 
-  if (!cabinet || error) {
+  if (!assembly || error) {
     return (
       <AuthGuard>
         <Head>
