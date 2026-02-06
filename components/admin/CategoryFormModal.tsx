@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, FolderTree } from "lucide-react";
+import FileUploadField from "./FileUploadField";
 
 export interface CategoryFormData {
   id: string;
@@ -94,14 +95,26 @@ export function CategoryFormModal({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            {mode === "create" ? "Create New Category" : "Edit Category"}
-          </h2>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+              <FolderTree className="text-white w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                {mode === "create" ? "Create New Category" : "Edit Category"}
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {mode === "create"
+                  ? "Add a new category to organize your assemblies"
+                  : "Update category information and settings"}
+              </p>
+            </div>
+          </div>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
@@ -141,94 +154,94 @@ export function CategoryFormModal({
             </p>
           </div>
 
-          {/* English Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Name (English) *
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              placeholder="e.g., Base Cabinets"
-              required
-            />
+          {/* Names - Side by Side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* English Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Name (English) *
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                disabled={isSubmitting}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                placeholder="e.g., Base Cabinets"
+                required
+              />
+            </div>
+
+            {/* Arabic Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Name (Arabic) *
+              </label>
+              <input
+                type="text"
+                value={formData.nameAr}
+                onChange={(e) =>
+                  setFormData({ ...formData, nameAr: e.target.value })
+                }
+                disabled={isSubmitting}
+                dir="rtl"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-right"
+                placeholder="مثل: الخزائن الأرضية"
+                required
+              />
+            </div>
           </div>
 
-          {/* Arabic Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Name (Arabic) *
-            </label>
-            <input
-              type="text"
-              value={formData.nameAr}
-              onChange={(e) =>
-                setFormData({ ...formData, nameAr: e.target.value })
-              }
-              disabled={isSubmitting}
-              dir="rtl"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-right"
-              placeholder="مثل: الخزائن الأرضية"
-              required
-            />
+          {/* Descriptions - Side by Side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* English Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Description (English)
+              </label>
+              <textarea
+                value={formData.description || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                disabled={isSubmitting}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                rows={3}
+                placeholder="Brief description of this category..."
+              />
+            </div>
+
+            {/* Arabic Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Description (Arabic)
+              </label>
+              <textarea
+                value={formData.descriptionAr || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, descriptionAr: e.target.value })
+                }
+                disabled={isSubmitting}
+                dir="rtl"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-right"
+                rows={3}
+                placeholder="وصف مختصر لهذه الفئة..."
+              />
+            </div>
           </div>
 
-          {/* English Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Description (English)
-            </label>
-            <textarea
-              value={formData.description || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              rows={3}
-              placeholder="Brief description of this category..."
-            />
-          </div>
-
-          {/* Arabic Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Description (Arabic)
-            </label>
-            <textarea
-              value={formData.descriptionAr || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, descriptionAr: e.target.value })
-              }
-              disabled={isSubmitting}
-              dir="rtl"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-right"
-              rows={3}
-              placeholder="وصف مختصر لهذه الفئة..."
-            />
-          </div>
-
-          {/* Icon/Image URL */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Icon URL (optional)
-            </label>
-            <input
-              type="text"
-              value={formData.icon || ""}
-              onChange={(e) =>
-                setFormData({ ...formData, icon: e.target.value })
-              }
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              placeholder="/images/icons/category-icon.png"
-            />
-          </div>
+          {/* Category Thumbnail/Icon Upload */}
+          <FileUploadField
+            label="Category Thumbnail"
+            value={formData.icon || ""}
+            onChange={(path) => setFormData({ ...formData, icon: path })}
+            accept="image/*,.png,.jpg,.jpeg,.webp,.svg"
+            placeholder="/images/categories/category-icon.png"
+            directory="images/categories"
+            helpText="PNG, JPG, WebP, or SVG images for category display"
+          />
 
           {/* Form Actions */}
           <div className="flex gap-3 justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
