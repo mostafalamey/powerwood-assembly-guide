@@ -38,7 +38,14 @@ export function CategoryFormModal({
 
   useEffect(() => {
     if (category && mode === "edit") {
-      setFormData(category);
+      setFormData({
+        id: category.id,
+        name: category.name,
+        nameAr: category.nameAr,
+        description: category.description || "",
+        descriptionAr: category.descriptionAr || "",
+        icon: category.icon || "",
+      });
     } else {
       setFormData({
         id: "",
@@ -177,7 +184,7 @@ export function CategoryFormModal({
               Description (English)
             </label>
             <textarea
-              value={formData.description}
+              value={formData.description || ""}
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
@@ -194,7 +201,7 @@ export function CategoryFormModal({
               Description (Arabic)
             </label>
             <textarea
-              value={formData.descriptionAr}
+              value={formData.descriptionAr || ""}
               onChange={(e) =>
                 setFormData({ ...formData, descriptionAr: e.target.value })
               }
@@ -213,7 +220,7 @@ export function CategoryFormModal({
             </label>
             <input
               type="text"
-              value={formData.icon}
+              value={formData.icon || ""}
               onChange={(e) =>
                 setFormData({ ...formData, icon: e.target.value })
               }
