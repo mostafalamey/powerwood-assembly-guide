@@ -844,8 +844,8 @@ export default function AssembliesListPage() {
                 </Link>
                 <button
                   onClick={() => {
-                    router.push(`/admin/assemblies/${activeDropdown}/edit`);
-                    setActiveDropdown(null);
+                    const assembly = assemblies.find((a) => a.id === activeDropdown);
+                    if (assembly) openEditAssemblyModal(assembly);
                   }}
                   className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >
