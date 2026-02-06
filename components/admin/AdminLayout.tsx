@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   LayoutDashboard,
   Package,
+  FolderOpen,
   QrCode,
   ExternalLink,
   Moon,
@@ -161,11 +162,11 @@ export default function AdminLayout({
               </TransitionLink>
 
               <TransitionLink
-                href="/admin/cabinets"
-                title="Cabinets"
+                href="/admin/assemblies"
+                title="Assemblies"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                   ${
-                    isActivePrefix("/admin/cabinets")
+                    isActivePrefix("/admin/assemblies")
                       ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
                       : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
                   } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
@@ -177,7 +178,28 @@ export default function AdminLayout({
                   }
                 />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
-                  Cabinets
+                  Assemblies
+                </span>
+              </TransitionLink>
+
+              <TransitionLink
+                href="/admin/categories"
+                title="Categories"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActivePrefix("/admin/categories")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <FolderOpen
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
+                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
+                  Categories
                 </span>
               </TransitionLink>
 
