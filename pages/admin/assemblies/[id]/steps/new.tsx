@@ -33,7 +33,7 @@ interface Cabinet {
 export default function NewStepPage() {
   const router = useRouter();
   const { id } = router.query; // cabinet ID
-  const [cabinet, setCabinet] = useState<Cabinet | null>(null);
+  const [assembly, setCabinet] = useState<Assembly | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -45,8 +45,8 @@ export default function NewStepPage() {
   });
 
   const getAudioDirectory = (langCode: "eng" | "arb") => {
-    const cabinetId = String(id || "");
-    const prefix = cabinetId.split("-")[0];
+    const assemblyId = String(id || "");
+    const prefix = assemblyId.split("-")[0];
     let category = "";
 
     switch (prefix) {
@@ -75,7 +75,7 @@ export default function NewStepPage() {
         category = "BaseCabinets";
     }
 
-    const formattedId = cabinetId.replace("-", "_");
+    const formattedId = assemblyId.replace("-", "_");
     return `audio/${langCode}/${category}/${formattedId}`;
   };
 
@@ -86,14 +86,14 @@ export default function NewStepPage() {
 
   useEffect(() => {
     if (id) {
-      fetchCabinet();
+      fetchAssembly();
     }
   }, [id]);
 
-  const fetchCabinet = async () => {
+  const fetchAssembly = async () => {
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/cabinets?id=${id}`, {
+      const response = await fetch(`/api/assemblies?id=${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -144,14 +144,14 @@ export default function NewStepPage() {
       const token = localStorage.getItem("admin_token");
       const updatedSteps = [...(cabinet?.steps || []), formData];
 
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...cabinet,
+          ...assembly,
           steps: updatedSteps,
         }),
       });
@@ -225,7 +225,7 @@ export default function NewStepPage() {
     );
   }
 
-  if (!cabinet) {
+  if (!assembly) {
     return (
       <AuthGuard>
         <Head>
@@ -262,9 +262,9 @@ export default function NewStepPage() {
   return (
     <AuthGuard>
       <Head>
-        <title>Add Step - {cabinet.name.en} - Admin Panel</title>
+        <title>Add Step - {assembly.name.en} - Admin Panel</title>
       </Head>
-      <AdminLayout title={`Add Step to ${cabinet.name.en}`}>
+      <AdminLayout title={`Add Step to ${assembly.name.en}`}>
         <div className="p-6">
           {/* Breadcrumb */}
           <div className="mb-6">

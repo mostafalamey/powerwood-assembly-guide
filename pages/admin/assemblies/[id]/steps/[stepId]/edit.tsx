@@ -44,7 +44,7 @@ interface Cabinet {
 export default function EditStepPage() {
   const router = useRouter();
   const { id, stepId } = router.query; // cabinet ID and step ID
-  const [cabinet, setCabinet] = useState<Cabinet | null>(null);
+  const [assembly, setCabinet] = useState<Assembly | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -76,14 +76,14 @@ export default function EditStepPage() {
 
   useEffect(() => {
     if (id && stepId) {
-      fetchCabinet();
+      fetchAssembly();
     }
   }, [id, stepId]);
 
-  const fetchCabinet = async () => {
+  const fetchAssembly = async () => {
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/cabinets?id=${id}`, {
+      const response = await fetch(`/api/assemblies?id=${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -148,14 +148,14 @@ export default function EditStepPage() {
           step.id === stepId ? updatedStep : step,
         ) || [];
 
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...cabinet,
+          ...assembly,
           steps: updatedSteps,
         }),
       });
@@ -211,8 +211,8 @@ export default function EditStepPage() {
   };
 
   const getAudioDirectory = (langCode: "eng" | "arb") => {
-    const cabinetId = String(id || "");
-    const prefix = cabinetId.split("-")[0];
+    const assemblyId = String(id || "");
+    const prefix = assemblyId.split("-")[0];
     let category = "";
 
     switch (prefix) {
@@ -241,7 +241,7 @@ export default function EditStepPage() {
         category = "BaseCabinets";
     }
 
-    const formattedId = cabinetId.replace("-", "_");
+    const formattedId = assemblyId.replace("-", "_");
     return `audio/${langCode}/${category}/${formattedId}`;
   };
 
@@ -435,7 +435,7 @@ export default function EditStepPage() {
     <AuthGuard>
       <Head>
         <title>
-          Edit Step {formData.id} - {cabinet.name.en} - Admin Panel
+          Edit Step {formData.id} - {assembly.name.en} - Admin Panel
         </title>
       </Head>
       <AdminLayout

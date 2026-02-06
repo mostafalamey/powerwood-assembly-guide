@@ -83,7 +83,7 @@ export default function CabinetFormModal({
         description: formData.description || { en: "", ar: "" },
       };
 
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         method,
         headers: {
           "Content-Type": "application/json",
@@ -280,7 +280,7 @@ export default function CabinetFormModal({
                       }
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                       rows={3}
-                      placeholder="Standard 2-door base cabinet..."
+                      placeholder="Standard 2-door base assembly..."
                     />
                   </div>
                   <div>

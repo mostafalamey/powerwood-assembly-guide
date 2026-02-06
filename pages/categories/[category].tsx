@@ -7,23 +7,23 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import categoriesData from "@/data/categories.json";
-import { Cabinet } from "@/types/cabinet";
+import { Assembly } from "@/types/assembly";
 import { FolderOpen, Home, Package, Clock, ListOrdered } from "lucide-react";
 
 export default function CategoryPage() {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const { category } = router.query;
-  const [cabinets, setCabinets] = useState<Cabinet[]>([]);
+  const [assemblies, setCabinets] = useState<Assembly[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch cabinets from API
+  // Fetch assemblys from API
   useEffect(() => {
     if (!category) return;
 
-    const fetchCabinets = async () => {
+    const fetchAssemblys = async () => {
       try {
-        const response = await fetch(`/api/cabinets?_=${Date.now()}`, {
+        const response = await fetch(`/api/assemblies?_=${Date.now()}`, {
           cache: "no-store",
         });
 
@@ -31,7 +31,7 @@ export default function CategoryPage() {
           const allCabinets = await response.json();
           // Filter by category
           const filtered = allCabinets.filter(
-            (cab: Cabinet) => cab.category === category,
+            (cab: Assembly) => cab.category === category,
           );
           setCabinets(filtered);
         }
@@ -42,7 +42,7 @@ export default function CategoryPage() {
       }
     };
 
-    fetchCabinets();
+    fetchAssemblys();
   }, [category]);
 
   // Find category info
@@ -134,37 +134,37 @@ export default function CategoryPage() {
             </div>
 
             {/* Cabinets Grid */}
-            {cabinets.length > 0 ? (
+            {assemblies.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {cabinets.map((cabinet) => {
+                {assemblies.map((assembly) => {
                   const cabinetName =
-                    typeof cabinet.name === "string"
+                    typeof assembly.name === "string"
                       ? locale === "ar"
                         ? (cabinet as any).nameAr
-                        : cabinet.name
+                        : assembly.name
                       : locale === "ar"
-                        ? cabinet.name.ar
-                        : cabinet.name.en;
+                        ? assembly.name.ar
+                        : assembly.name.en;
                   const cabinetDesc =
-                    typeof cabinet.description === "string"
+                    typeof assembly.description === "string"
                       ? locale === "ar"
                         ? (cabinet as any).descriptionAr
-                        : cabinet.description
+                        : assembly.description
                       : locale === "ar"
-                        ? cabinet.description?.ar
-                        : cabinet.description?.en;
+                        ? assembly.description?.ar
+                        : assembly.description?.en;
 
                   return (
                     <TransitionLink
-                      key={cabinet.id}
-                      href={`/cabinet/${cabinet.id}`}
+                      key={assembly.id}
+                      href={`/assembly/${assembly.id}`}
                       className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all"
                     >
                       {/* Cabinet Image */}
                       <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 h-40 flex items-center justify-center relative overflow-hidden group-hover:from-primary-100 group-hover:to-primary-200 dark:group-hover:from-primary-900/30 dark:group-hover:to-primary-800/30 transition-colors">
-                        {cabinet.image ? (
+                        {assembly.image ? (
                           <Image
-                            src={cabinet.image}
+                            src={assembly.image}
                             alt={cabinetName}
                             fill
                             className="object-contain p-4"
@@ -189,14 +189,14 @@ export default function CategoryPage() {
                           <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4 text-blue-500" />
                             <span>
-                              {cabinet.estimatedTime} {t("cabinet.minutes")}
+                              {assembly.estimatedTime} {t("assembly.minutes")}
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
                             <ListOrdered className="w-4 h-4 text-green-500" />
                             <span>
                               {(cabinet as any).stepCount || 0}{" "}
-                              {t("cabinet.steps")}
+                              {t("assembly.steps")}
                             </span>
                           </div>
                         </div>

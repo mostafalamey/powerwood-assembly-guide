@@ -51,7 +51,7 @@ export default function NewCabinetPage() {
 
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -265,7 +265,7 @@ export default function NewCabinetPage() {
                       focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
                       transition-all duration-200 resize-none"
                     rows={3}
-                    placeholder="Standard 2-door base cabinet..."
+                    placeholder="Standard 2-door base assembly..."
                   />
                 </div>
                 <div>

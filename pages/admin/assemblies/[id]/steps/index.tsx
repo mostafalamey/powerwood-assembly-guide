@@ -59,7 +59,7 @@ export default function StepManagementPage() {
   const router = useRouter();
   const toast = useToast();
   const { id } = router.query;
-  const [cabinet, setCabinet] = useState<Cabinet | null>(null);
+  const [assembly, setCabinet] = useState<Assembly | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -74,14 +74,14 @@ export default function StepManagementPage() {
 
   useEffect(() => {
     if (id) {
-      fetchCabinet();
+      fetchAssembly();
     }
   }, [id]);
 
-  const fetchCabinet = async () => {
+  const fetchAssembly = async () => {
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/cabinets?id=${id}`, {
+      const response = await fetch(`/api/assemblies?id=${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -103,8 +103,8 @@ export default function StepManagementPage() {
   };
 
   const getAudioDirectory = (langCode: "eng" | "arb") => {
-    const cabinetId = String(id || "");
-    const prefix = cabinetId.split("-")[0];
+    const assemblyId = String(id || "");
+    const prefix = assemblyId.split("-")[0];
     let category = "";
 
     switch (prefix) {
@@ -133,7 +133,7 @@ export default function StepManagementPage() {
         category = "BaseCabinets";
     }
 
-    const formattedId = cabinetId.replace("-", "_");
+    const formattedId = assemblyId.replace("-", "_");
     return `audio/${langCode}/${category}/${formattedId}`;
   };
 
@@ -145,14 +145,14 @@ export default function StepManagementPage() {
   const saveSteps = async (updatedSteps: Step[]) => {
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...cabinet,
+          ...assembly,
           steps: updatedSteps,
         }),
       });
@@ -209,7 +209,7 @@ export default function StepManagementPage() {
 
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -224,13 +224,13 @@ export default function StepManagementPage() {
     }
   };
 
-  const loadSourceSteps = async (cabinetId: string) => {
-    if (!cabinetId) return;
+  const loadSourceSteps = async (assemblyId: string) => {
+    if (!assemblyId) return;
     setCopyLoading(true);
 
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/cabinets?id=${cabinetId}`, {
+      const response = await fetch(`/api/assemblies?id=${assemblyId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -250,13 +250,13 @@ export default function StepManagementPage() {
     }
   };
 
-  const handleSelectSourceCabinet = async (cabinetId: string) => {
-    setSourceCabinetId(cabinetId);
-    await loadSourceSteps(cabinetId);
+  const handleSelectSourceCabinet = async (assemblyId: string) => {
+    setSourceCabinetId(assemblyId);
+    await loadSourceSteps(assemblyId);
   };
 
   const handleCopyStep = async (sourceStep: Step) => {
-    if (!cabinet) return;
+    if (!assembly) return;
 
     const insertIndex = Math.max(
       1,
@@ -355,7 +355,7 @@ export default function StepManagementPage() {
     );
   }
 
-  if (error || !cabinet) {
+  if (error || !assembly) {
     return (
       <AuthGuard>
         <Head>
@@ -387,9 +387,9 @@ export default function StepManagementPage() {
   return (
     <AuthGuard>
       <Head>
-        <title>Manage Steps - {cabinet.name.en} - Admin Panel</title>
+        <title>Manage Steps - {assembly.name.en} - Admin Panel</title>
       </Head>
-      <AdminLayout title={`Manage Steps: ${cabinet.name.en}`}>
+      <AdminLayout title={`Manage Steps: ${assembly.name.en}`}>
         <div className="p-4 sm:p-6">
           {/* Breadcrumb */}
           <div className="mb-6 flex items-center gap-2 text-sm overflow-x-auto">
@@ -404,7 +404,7 @@ export default function StepManagementPage() {
               href={`/admin/cabinets/${id}/edit`}
               className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap font-mono"
             >
-              {cabinet.id}
+              {assembly.id}
             </Link>
             <ChevronRight className="w-4 h-4 text-gray-400" />
             <span className="text-gray-900 dark:text-white font-medium">
@@ -640,7 +640,7 @@ export default function StepManagementPage() {
                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                         focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                     >
-                      <option value="">Select cabinet...</option>
+                      <option value="">Select assembly...</option>
                       {cabinetIndex.map((item) => (
                         <option key={item.id} value={item.id}>
                           {item.id} - {item.name.en}

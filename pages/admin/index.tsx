@@ -64,8 +64,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch cabinets index
-        const cabinetsRes = await fetch("/api/cabinets");
+        // Fetch assemblys index
+        const cabinetsRes = await fetch("/api/assemblies");
         const cabinetsData = await cabinetsRes.json();
         // API returns array directly, not wrapped in object
         const cabinets: CabinetIndex[] = Array.isArray(cabinetsData)
@@ -82,31 +82,31 @@ export default function AdminDashboard() {
         setCategories(categoriesList);
 
         // Calculate stats
-        const totalSteps = cabinets.reduce(
+        const totalSteps = assemblies.reduce(
           (sum, c) => sum + (c.stepCount || 0),
           0,
         );
-        const cabinetsWithModels = cabinets.filter((c) => c.model).length;
-        const cabinetsWithImages = cabinets.filter((c) => c.image).length;
+        const cabinetsWithModels = assemblies.filter((c) => c.model).length;
+        const cabinetsWithImages = assemblies.filter((c) => c.image).length;
 
         // Count by category
         const categoryCounts: Record<string, number> = {};
-        cabinets.forEach((c) => {
+        assemblies.forEach((c) => {
           categoryCounts[c.category] = (categoryCounts[c.category] || 0) + 1;
         });
 
         // Cabinets needing attention (no steps or no model)
-        const cabinetsNeedingAttention = cabinets.filter(
+        const cabinetsNeedingAttention = assemblies.filter(
           (c) => !c.stepCount || c.stepCount === 0 || !c.model,
         );
 
         setStats({
-          totalCabinets: cabinets.length,
+          totalCabinets: assemblies.length,
           totalSteps,
           cabinetsWithModels,
           cabinetsWithImages,
           categoryCounts,
-          recentCabinets: cabinets.slice(0, 5),
+          recentCabinets: assemblies.slice(0, 5),
           cabinetsNeedingAttention: cabinetsNeedingAttention.slice(0, 5),
         });
       } catch (error) {
@@ -387,14 +387,14 @@ export default function AdminDashboard() {
                   </div>
                   <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
                     {stats.cabinetsNeedingAttention.length > 0 ? (
-                      stats.cabinetsNeedingAttention.map((cabinet) => (
+                      stats.cabinetsNeedingAttention.map((assembly) => (
                         <Link
-                          key={cabinet.id}
-                          href={`/admin/cabinets/${cabinet.id}/edit`}
+                          key={assembly.id}
+                          href={`/admin/cabinets/${assembly.id}/edit`}
                           className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                         >
                           <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                            {!cabinet.model ? (
+                            {!assembly.model ? (
                               <Box className="text-amber-600 dark:text-amber-400 w-5 h-5" />
                             ) : (
                               <ListOrdered className="text-amber-600 dark:text-amber-400 w-5 h-5" />
@@ -402,16 +402,16 @@ export default function AdminDashboard() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {cabinet.name.en}
+                              {assembly.name.en}
                             </p>
                             <p className="text-xs text-amber-600 dark:text-amber-400">
-                              {!cabinet.model && "Missing 3D model"}
-                              {!cabinet.model &&
-                                (!cabinet.stepCount ||
-                                  cabinet.stepCount === 0) &&
+                              {!assembly.model && "Missing 3D model"}
+                              {!assembly.model &&
+                                (!assembly.stepCount ||
+                                  assembly.stepCount === 0) &&
                                 " • "}
-                              {(!cabinet.stepCount ||
-                                cabinet.stepCount === 0) &&
+                              {(!assembly.stepCount ||
+                                assembly.stepCount === 0) &&
                                 "No steps"}
                             </p>
                           </div>
@@ -528,17 +528,17 @@ export default function AdminDashboard() {
                   </Link>
                 </div>
                 <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
-                  {stats.recentCabinets.map((cabinet) => (
+                  {stats.recentCabinets.map((assembly) => (
                     <Link
-                      key={cabinet.id}
-                      href={`/admin/cabinets/${cabinet.id}/steps`}
+                      key={assembly.id}
+                      href={`/admin/cabinets/${assembly.id}/steps`}
                       className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                     >
                       <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                        {cabinet.image ? (
+                        {assembly.image ? (
                           <img
-                            src={cabinet.image}
-                            alt={cabinet.name.en}
+                            src={assembly.image}
+                            alt={assembly.name.en}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -547,16 +547,16 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          {cabinet.name.en}
+                          {assembly.name.en}
                         </p>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                             <Folder className="w-3 h-3" />
-                            {getCategoryName(cabinet.category)}
+                            {getCategoryName(assembly.category)}
                           </span>
                           <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                             <ListOrdered className="w-3 h-3" />
-                            {cabinet.stepCount || 0} steps
+                            {assembly.stepCount || 0} steps
                           </span>
                         </div>
                       </div>

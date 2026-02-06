@@ -36,15 +36,15 @@ export default function CabinetPage() {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
-  const [cabinet, setCabinet] = useState<Cabinet | null>(null);
+  const [assembly, setCabinet] = useState<Assembly | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
 
-    const fetchCabinet = async () => {
+    const fetchAssembly = async () => {
       try {
-        const response = await fetch(`/api/cabinets?id=${id}&_=${Date.now()}`, {
+        const response = await fetch(`/api/assemblies?id=${id}&_=${Date.now()}`, {
           cache: "no-store",
         });
 
@@ -59,7 +59,7 @@ export default function CabinetPage() {
       }
     };
 
-    fetchCabinet();
+    fetchAssembly();
   }, [id]);
 
   if (loading) {
@@ -83,7 +83,7 @@ export default function CabinetPage() {
     );
   }
 
-  if (!cabinet) {
+  if (!assembly) {
     return (
       <>
         <Head>
@@ -116,22 +116,22 @@ export default function CabinetPage() {
 
   // Handle both old and new data formats
   const cabinetName =
-    typeof cabinet.name === "string"
+    typeof assembly.name === "string"
       ? locale === "ar"
-        ? (cabinet as any).nameAr || cabinet.name
-        : cabinet.name
+        ? (cabinet as any).nameAr || assembly.name
+        : assembly.name
       : locale === "ar"
-        ? (cabinet.name as any)?.ar || ""
-        : (cabinet.name as any)?.en || "";
+        ? (assembly.name as any)?.ar || ""
+        : (assembly.name as any)?.en || "";
 
   const description =
-    typeof cabinet.description === "string"
+    typeof assembly.description === "string"
       ? locale === "ar"
-        ? (cabinet as any).descriptionAr || cabinet.description
-        : cabinet.description
+        ? (cabinet as any).descriptionAr || assembly.description
+        : assembly.description
       : locale === "ar"
-        ? (cabinet.description as any)?.ar || ""
-        : (cabinet.description as any)?.en || "";
+        ? (assembly.description as any)?.ar || ""
+        : (assembly.description as any)?.en || "";
 
   const tools =
     typeof (cabinet as any).requiredTools !== "undefined"
@@ -165,9 +165,9 @@ export default function CabinetPage() {
               <div className="h-full bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
                 {/* Cabinet Image */}
                 <div className="relative h-48 lg:h-64 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 flex items-center justify-center overflow-hidden">
-                  {cabinet.image ? (
+                  {assembly.image ? (
                     <Image
-                      src={cabinet.image}
+                      src={assembly.image}
                       alt={cabinetName}
                       fill
                       className="object-contain p-6"
@@ -194,13 +194,13 @@ export default function CabinetPage() {
                       <div className="flex items-center gap-2 mb-1">
                         <Clock className="w-4 h-4 text-blue-500" />
                         <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-                          {t("cabinet.estimatedTime")}
+                          {t("assembly.estimatedTime")}
                         </span>
                       </div>
                       <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                        {cabinet.estimatedTime}{" "}
+                        {assembly.estimatedTime}{" "}
                         <span className="text-xs font-normal">
-                          {t("cabinet.minutes")}
+                          {t("assembly.minutes")}
                         </span>
                       </p>
                     </div>
@@ -208,13 +208,13 @@ export default function CabinetPage() {
                       <div className="flex items-center gap-2 mb-1">
                         <ListOrdered className="w-4 h-4 text-green-500" />
                         <span className="text-xs text-green-700 dark:text-green-300 font-medium">
-                          {t("cabinet.totalSteps")}
+                          {t("assembly.totalSteps")}
                         </span>
                       </div>
                       <p className="text-lg font-bold text-green-600 dark:text-green-400">
-                        {cabinet.steps?.length || 0}{" "}
+                        {assembly.steps?.length || 0}{" "}
                         <span className="text-xs font-normal">
-                          {t("cabinet.steps")}
+                          {t("assembly.steps")}
                         </span>
                       </p>
                     </div>
@@ -225,7 +225,7 @@ export default function CabinetPage() {
                     <div className="mb-4">
                       <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
                         <Wrench className="w-4 h-4 text-purple-500" />
-                        {t("cabinet.requiredTools")}
+                        {t("assembly.requiredTools")}
                       </h3>
                       <div className="flex flex-wrap gap-1.5">
                         {tools
@@ -250,11 +250,11 @@ export default function CabinetPage() {
                   {/* Start Button */}
                   <div className="mt-auto">
                     <TransitionLink
-                      href={`/cabinet/${cabinet.id}/step/${cabinet.steps?.[0]?.id || "1"}`}
+                      href={`/assembly/${assembly.id}/step/${assembly.steps?.[0]?.id || "1"}`}
                       className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 min-h-[48px]"
                     >
                       <Play className="w-5 h-5" />
-                      {t("cabinet.startAssembly")}
+                      {t("assembly.startAssembly")}
                     </TransitionLink>
                   </div>
                 </div>
@@ -266,17 +266,17 @@ export default function CabinetPage() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <CheckSquare className="w-6 h-6 text-primary-500" />
-                  {t("cabinet.assemblySteps") || "Assembly Steps"}
+                  {t("assembly.assemblySteps") || "Assembly Steps"}
                 </h2>
                 <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
-                  {cabinet.steps?.length || 0} {t("cabinet.steps")}
+                  {assembly.steps?.length || 0} {t("assembly.steps")}
                 </span>
               </div>
 
               {/* Steps List */}
               <div className="flex-1 overflow-y-auto">
                 <div className="grid gap-2 pb-4">
-                  {cabinet.steps?.map((step: any, index: number) => {
+                  {assembly.steps?.map((step: any, index: number) => {
                     const stepTitle =
                       typeof step.title === "string"
                         ? locale === "ar"
@@ -289,7 +289,7 @@ export default function CabinetPage() {
                     return (
                       <TransitionLink
                         key={step.id}
-                        href={`/cabinet/${cabinet.id}/step/${step.id}`}
+                        href={`/assembly/${assembly.id}/step/${step.id}`}
                         className="group flex items-center gap-4 p-3 md:p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 hover:shadow-lg hover:shadow-primary-500/10 transition-all hover:-translate-y-0.5"
                       >
                         {/* Step Number */}

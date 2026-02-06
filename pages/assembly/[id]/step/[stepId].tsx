@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import SceneViewer from "@/components/3d/SceneViewer";
 import StepNavigation from "@/components/StepNavigation";
 import AudioPlayer from "@/components/AudioPlayer";
-import { Cabinet, Step } from "@/types/cabinet";
+import { Cabinet, Step } from "@/types/assembly";
 import {
   Play,
   Pause,
@@ -26,7 +26,7 @@ export default function StepPage() {
   const { id, stepId } = router.query;
   const { t, locale } = useTranslation();
 
-  const [cabinet, setCabinet] = useState<Cabinet | null>(null);
+  const [assembly, setCabinet] = useState<Assembly | null>(null);
   const [currentStep, setCurrentStep] = useState<Step | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -60,10 +60,10 @@ export default function StepPage() {
   useEffect(() => {
     if (!id) return;
 
-    // Fetch cabinet from API instead of bundled data
-    const fetchCabinet = async () => {
+    // Fetch assembly from API instead of bundled data
+    const fetchAssembly = async () => {
       try {
-        const response = await fetch(`/api/cabinets?id=${id}&_=${Date.now()}`, {
+        const response = await fetch(`/api/assemblies?id=${id}&_=${Date.now()}`, {
           cache: "no-store",
         });
 
@@ -84,11 +84,11 @@ export default function StepPage() {
             setCurrentStep(foundCabinet.steps[stepIndex] as Step);
             setCurrentStepIndex(stepIndex);
           } else {
-            router.push(`/cabinet/${id}`);
+            router.push(`/assembly/${id}`);
           }
         } else if (foundCabinet.steps && foundCabinet.steps.length > 0) {
           const firstStep = foundCabinet.steps[0] as Step;
-          router.push(`/cabinet/${id}/step/${firstStep.id}`);
+          router.push(`/assembly/${id}/step/${firstStep.id}`);
         }
       } catch (error) {
         console.error("Error fetching cabinet:", error);
@@ -96,7 +96,7 @@ export default function StepPage() {
       }
     };
 
-    fetchCabinet();
+    fetchAssembly();
   }, [id, stepId, router]);
 
   // Reset isAnimating when step changes (don't auto-start)
@@ -230,17 +230,17 @@ export default function StepPage() {
   // Navigation handlers for fullscreen mode
   const handlePrevStep = useCallback(() => {
     if (cabinet?.steps && currentStepIndex > 0) {
-      const prevStep = cabinet.steps[currentStepIndex - 1] as Step;
-      router.push(`/cabinet/${id}/step/${prevStep.id}`);
+      const prevStep = assembly.steps[currentStepIndex - 1] as Step;
+      router.push(`/assembly/${id}/step/${prevStep.id}`);
     }
-  }, [cabinet, currentStepIndex, id, router]);
+  }, [assembly, currentStepIndex, id, router]);
 
   const handleNextStep = useCallback(() => {
-    if (cabinet?.steps && currentStepIndex < cabinet.steps.length - 1) {
-      const nextStep = cabinet.steps[currentStepIndex + 1] as Step;
-      router.push(`/cabinet/${id}/step/${nextStep.id}`);
+    if (cabinet?.steps && currentStepIndex < assembly.steps.length - 1) {
+      const nextStep = assembly.steps[currentStepIndex + 1] as Step;
+      router.push(`/assembly/${id}/step/${nextStep.id}`);
     }
-  }, [cabinet, currentStepIndex, id, router]);
+  }, [assembly, currentStepIndex, id, router]);
 
   // Format time helper for timeline display
   const formatTime = (seconds: number) => {
@@ -272,13 +272,13 @@ export default function StepPage() {
 
   // Handle both old and new data formats
   const cabinetName =
-    typeof cabinet.name === "string"
+    typeof assembly.name === "string"
       ? locale === "ar"
         ? (cabinet as any).nameAr
-        : cabinet.name
+        : assembly.name
       : locale === "ar"
-        ? cabinet.name.ar
-        : cabinet.name.en;
+        ? assembly.name.ar
+        : assembly.name.en;
 
   const stepTitle =
     typeof currentStep.title === "string"
@@ -349,7 +349,7 @@ export default function StepPage() {
                   </div>
                   <div className="w-11 h-11 flex items-center justify-center">
                     <span className="text-white/70 text-sm font-medium">
-                      {currentStepIndex + 1}/{cabinet.steps?.length || 0}
+                      {currentStepIndex + 1}/{assembly.steps?.length || 0}
                     </span>
                   </div>
                 </div>
@@ -429,13 +429,13 @@ export default function StepPage() {
                     <button
                       onClick={handleNextStep}
                       disabled={
-                        !cabinet.steps ||
-                        currentStepIndex >= cabinet.steps.length - 1 ||
+                        !assembly.steps ||
+                        currentStepIndex >= assembly.steps.length - 1 ||
                         isAnimating
                       }
                       className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
-                        !cabinet.steps ||
-                        currentStepIndex >= cabinet.steps.length - 1 ||
+                        !assembly.steps ||
+                        currentStepIndex >= assembly.steps.length - 1 ||
                         isAnimating
                           ? "bg-white/10 text-white/30 cursor-not-allowed"
                           : "bg-white/20 hover:bg-white/30 text-white"
@@ -558,7 +558,7 @@ export default function StepPage() {
             {/* Audio Player - Mobile */}
             <AudioPlayer
               ref={audioPlayerRef}
-              cabinetId={cabinet.id}
+              assemblyId={assembly.id}
               stepId={currentStep.id}
               audioUrl={currentStep.audioUrl}
               autoPlay={false}
@@ -568,8 +568,8 @@ export default function StepPage() {
 
             {/* Navigation - Mobile */}
             <StepNavigation
-              cabinetId={cabinet.id}
-              steps={cabinet.steps as Step[]}
+              assemblyId={assembly.id}
+              steps={assembly.steps as Step[]}
               currentStepIndex={currentStepIndex}
               isAnimating={isAnimating}
               onStepClick={(index) => {
@@ -590,21 +590,21 @@ export default function StepPage() {
                   {cabinetName}
                 </h2>
                 <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                  {typeof cabinet.description === "string"
+                  {typeof assembly.description === "string"
                     ? locale === "ar"
                       ? (cabinet as any).descriptionAr
-                      : cabinet.description
+                      : assembly.description
                     : locale === "ar"
-                      ? cabinet.description?.ar
-                      : cabinet.description?.en}
+                      ? assembly.description?.ar
+                      : assembly.description?.en}
                 </p>
               </div>
 
               {/* Steps List */}
               <div className="flex-1 overflow-y-auto">
                 <StepNavigation
-                  cabinetId={cabinet.id}
-                  steps={cabinet.steps as Step[]}
+                  assemblyId={assembly.id}
+                  steps={assembly.steps as Step[]}
                   currentStepIndex={currentStepIndex}
                   isAnimating={isAnimating}
                   onStepClick={(index) => {
@@ -662,7 +662,7 @@ export default function StepPage() {
               {/* Audio Player - Desktop */}
               <AudioPlayer
                 ref={audioPlayerRef}
-                cabinetId={cabinet.id}
+                assemblyId={assembly.id}
                 stepId={currentStep.id}
                 audioUrl={currentStep.audioUrl}
                 autoPlay={false}
@@ -680,8 +680,8 @@ export default function StepPage() {
                     {currentStepIndex + 1}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {t("cabinet.step")} {currentStepIndex + 1} /{" "}
-                    {cabinet.steps?.length || 0}
+                    {t("assembly.step")} {currentStepIndex + 1} /{" "}
+                    {assembly.steps?.length || 0}
                   </span>
                 </div>
                 <h1 className="text-xl font-bold text-gray-900 dark:text-white">

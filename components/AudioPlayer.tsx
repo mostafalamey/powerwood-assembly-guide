@@ -17,7 +17,7 @@ export interface AudioPlayerRef {
 }
 
 interface AudioPlayerProps {
-  cabinetId: string;
+  assemblyId: string;
   stepId: string;
   audioUrl?: { en?: string; ar?: string };
   autoPlay?: boolean;
@@ -29,7 +29,7 @@ interface AudioPlayerProps {
 const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
   function AudioPlayer(
     {
-      cabinetId,
+      assemblyId,
       stepId,
       audioUrl,
       autoPlay = false,

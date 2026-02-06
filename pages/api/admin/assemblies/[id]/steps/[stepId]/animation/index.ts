@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const CABINETS_DIR = path.join(process.cwd(), "data", "cabinets");
+const ASSEMBLIES_DIR = path.join(process.cwd(), "data", "cabinets");
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,30 +32,30 @@ export default async function handler(
 
   try {
     // Read the cabinet file
-    const cabinetFile = path.join(CABINETS_DIR, `${id}.json`);
-    console.log(`[Animation API] Looking for file:`, cabinetFile);
-    console.log(`[Animation API] File exists:`, fs.existsSync(cabinetFile));
+    const assemblyFile = path.join(ASSEMBLIES_DIR, `${id}.json`);
+    console.log(`[Animation API] Looking for file:`, assemblyFile);
+    console.log(`[Animation API] File exists:`, fs.existsSync(assemblyFile));
 
-    if (!fs.existsSync(cabinetFile)) {
-      console.log(`[Animation API] ERROR: Cabinet file not found`);
+    if (!fs.existsSync(assemblyFile)) {
+      console.log(`[Animation API] ERROR: Assembly file not found`);
       return res.status(404).json({ message: "Cabinet not found" });
     }
 
-    const cabinetData = JSON.parse(fs.readFileSync(cabinetFile, "utf8"));
+    const assemblyData = JSON.parse(fs.readFileSync(assemblyFile, "utf8"));
     console.log(
       `[Animation API] Cabinet data loaded, steps count:`,
-      cabinetData.steps?.length,
+      assemblyData.steps?.length,
     );
 
     // Find the step (compare as strings since JSON has string IDs)
-    const stepIndex = cabinetData.steps?.findIndex(
+    const stepIndex = assemblyData.steps?.findIndex(
       (s: any) => s.id === stepId || s.id === parseInt(stepId as string),
     );
     console.log(`[Animation API] Looking for step ID:`, stepId);
     console.log(`[Animation API] Step index found:`, stepIndex);
     console.log(
       `[Animation API] Available step IDs:`,
-      cabinetData.steps?.map((s: any) => s.id),
+      assemblyData.steps?.map((s: any) => s.id),
     );
 
     if (stepIndex === -1 || stepIndex === undefined) {
@@ -64,11 +64,11 @@ export default async function handler(
     }
 
     // Update the animation data
-    cabinetData.steps[stepIndex].animation = req.body;
+    assemblyData.steps[stepIndex].animation = req.body;
     console.log(`[Animation API] Animation data updated for step ${stepId}`);
 
     // Write back to file
-    fs.writeFileSync(cabinetFile, JSON.stringify(cabinetData, null, 2), "utf8");
+    fs.writeFileSync(assemblyFile, JSON.stringify(assemblyData, null, 2), "utf8");
     console.log(`[Animation API] File saved successfully`);
 
     return res.status(200).json({ message: "Animation saved successfully" });

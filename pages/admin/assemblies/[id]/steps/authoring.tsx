@@ -60,7 +60,7 @@ export default function StepAuthoringPage() {
   const [modelPath, setModelPath] = useState<string | undefined>(undefined);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [cabinet, setCabinet] = useState<any>(null);
+  const [assembly, setCabinet] = useState<any>(null);
   const loadedModelRef = useRef<any>(null);
   const [selectedObject, setSelectedObject] = useState<any>(null);
   const [transformMode, setTransformMode] = useState<
@@ -162,14 +162,14 @@ export default function StepAuthoringPage() {
     [cameraKeyframes],
   );
 
-  // Fetch cabinet data to get the model path
+  // Fetch assembly data to get the model path
   useEffect(() => {
     if (!id) return;
 
-    const fetchCabinet = async () => {
+    const fetchAssembly = async () => {
       try {
         const token = localStorage.getItem("admin_token");
-        const response = await fetch(`/api/cabinets?id=${id}&_=${Date.now()}`, {
+        const response = await fetch(`/api/assemblies?id=${id}&_=${Date.now()}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -196,7 +196,7 @@ export default function StepAuthoringPage() {
       }
     };
 
-    fetchCabinet();
+    fetchAssembly();
   }, [id]);
 
   const handleSceneReady = useCallback((scene: any, camera: any) => {
@@ -378,10 +378,10 @@ export default function StepAuthoringPage() {
     }
   }, []);
 
-  // Load animation when step/cabinet/model changes
+  // Load animation when step/assembly/model changes
   useEffect(() => {
     if (!step || !cabinet?.steps || !modelLoaded) return;
-    const stepData = cabinet.steps.find((s: any) => s.id === step);
+    const stepData = assembly.steps.find((s: any) => s.id === step);
     const nextAudioUrl =
       stepData?.audioUrl?.en || stepData?.audioUrl?.ar || null;
     setAudioUrl(nextAudioUrl);
@@ -390,7 +390,7 @@ export default function StepAuthoringPage() {
     if (stepData?.animation) {
       loadAnimation(stepData.animation);
     }
-  }, [step, cabinet, modelLoaded, loadAnimation]);
+  }, [step, assembly, modelLoaded, loadAnimation]);
 
   // Load animation from JSON
   const handleLoadAnimation = useCallback(
@@ -1716,7 +1716,7 @@ export default function StepAuthoringPage() {
   }, [isPlaying]);
 
   // Note: Animation loading is handled by the useEffect that watches
-  // [step, cabinet, modelLoaded, loadAnimation] - don't duplicate here
+  // [step, assembly, modelLoaded, loadAnimation] - don't duplicate here
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1759,7 +1759,7 @@ export default function StepAuthoringPage() {
               {step &&
                 cabinet?.steps &&
                 (() => {
-                  const stepData = cabinet.steps.find(
+                  const stepData = assembly.steps.find(
                     (s: any) => s.id === step,
                   );
                   return stepData ? (

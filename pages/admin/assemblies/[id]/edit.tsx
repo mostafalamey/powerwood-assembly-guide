@@ -49,14 +49,14 @@ export default function EditCabinetPage() {
 
   useEffect(() => {
     if (id) {
-      fetchCabinet();
+      fetchAssembly();
     }
   }, [id]);
 
-  const fetchCabinet = async () => {
+  const fetchAssembly = async () => {
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/cabinets?id=${id}`, {
+      const response = await fetch(`/api/assemblies?id=${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -90,7 +90,7 @@ export default function EditCabinetPage() {
 
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -160,7 +160,7 @@ export default function EditCabinetPage() {
               </svg>
             </div>
             <p className="text-gray-600 dark:text-gray-400">
-              Loading cabinet...
+              Loading assembly...
             </p>
           </div>
         </AdminLayout>
@@ -340,7 +340,7 @@ export default function EditCabinetPage() {
                           focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
                           transition-all duration-200 resize-none"
                         rows={3}
-                        placeholder="Standard 2-door base cabinet..."
+                        placeholder="Standard 2-door base assembly..."
                       />
                     </div>
                     <div>

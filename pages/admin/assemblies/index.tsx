@@ -43,7 +43,7 @@ interface Cabinet {
 
 export default function CabinetsListPage() {
   const toast = useToast();
-  const [cabinets, setCabinets] = useState<Cabinet[]>([]);
+  const [assemblies, setCabinets] = useState<Assembly[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,7 +57,7 @@ export default function CabinetsListPage() {
 
   useEffect(() => {
     setIsMounted(true);
-    fetchCabinets();
+    fetchAssemblys();
   }, []);
 
   // Close dropdown when clicking outside
@@ -67,10 +67,10 @@ export default function CabinetsListPage() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
-  const fetchCabinets = async () => {
+  const fetchAssemblys = async () => {
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch("/api/cabinets", {
+      const response = await fetch("/api/assemblies", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,11 +81,11 @@ export default function CabinetsListPage() {
         setCabinets(data);
       } else {
         setError("Failed to fetch cabinets");
-        toast.error("Failed to fetch cabinets.");
+        toast.error("Failed to fetch assemblies.");
       }
     } catch (err) {
       setError("Error loading cabinets");
-      toast.error("Error loading cabinets.");
+      toast.error("Error loading assemblies.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -105,7 +105,7 @@ export default function CabinetsListPage() {
 
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await fetch(`/api/cabinets?id=${id}`, {
+      const response = await fetch(`/api/assemblies?id=${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -113,24 +113,24 @@ export default function CabinetsListPage() {
       });
 
       if (response.ok) {
-        setCabinets(cabinets.filter((c) => c.id !== id));
+        setCabinets(assemblies.filter((c) => c.id !== id));
         toast.success(`Cabinet ${id} deleted.`);
       } else {
-        toast.error("Failed to delete cabinet.");
+        toast.error("Failed to delete assembly.");
       }
     } catch (err) {
-      toast.error("Error deleting cabinet.");
+      toast.error("Error deleting assembly.");
       console.error(err);
     }
   };
 
-  const handleEdit = (cabinet: Cabinet) => {
-    router.push(`/admin/cabinets/${cabinet.id}/edit`);
+  const handleEdit = (cabinet: Assembly) => {
+    router.push(`/admin/cabinets/${assembly.id}/edit`);
     setActiveDropdown(null);
   };
 
-  const handleManageSteps = (cabinet: Cabinet) => {
-    router.push(`/admin/cabinets/${cabinet.id}/steps`);
+  const handleManageSteps = (cabinet: Assembly) => {
+    router.push(`/admin/cabinets/${assembly.id}/steps`);
     setActiveDropdown(null);
   };
 
@@ -154,11 +154,11 @@ export default function CabinetsListPage() {
     }
   };
 
-  const filteredCabinets = cabinets.filter(
-    (cabinet) =>
-      cabinet.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cabinet.name.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cabinet.category.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredCabinets = assemblies.filter(
+    (assembly) =>
+      assembly.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assembly.name.en.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      assembly.category.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const getCategoryColor = (category: string) => {
@@ -188,7 +188,7 @@ export default function CabinetsListPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
-                  placeholder="Search cabinets..."
+                  placeholder="Search assemblies..."
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 
                     bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
                     placeholder-gray-400 dark:placeholder-gray-500
@@ -250,7 +250,7 @@ export default function CabinetsListPage() {
                 </svg>
               </div>
               <p className="text-gray-600 dark:text-gray-400">
-                Loading cabinets...
+                Loading assemblies...
               </p>
             </div>
           )}
@@ -269,7 +269,7 @@ export default function CabinetsListPage() {
           {!loading && !error && (
             <>
               <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Showing {filteredCabinets.length} of {cabinets.length} cabinets
+                Showing {filteredCabinets.length} of {assemblies.length} cabinets
               </div>
 
               {/* Desktop Table View */}
@@ -314,18 +314,18 @@ export default function CabinetsListPage() {
                         </td>
                       </tr>
                     ) : (
-                      filteredCabinets.map((cabinet) => (
+                      filteredCabinets.map((assembly) => (
                         <tr
-                          key={cabinet.id}
+                          key={assembly.id}
                           className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
                         >
                           {/* Thumbnail */}
                           <td className="px-4 py-4 whitespace-nowrap">
                             <div className="w-14 h-14 relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
-                              {cabinet.image ? (
+                              {assembly.image ? (
                                 <Image
-                                  src={cabinet.image}
-                                  alt={cabinet.name.en}
+                                  src={assembly.image}
+                                  alt={assembly.name.en}
                                   width={56}
                                   height={56}
                                   className="object-cover"
@@ -342,36 +342,36 @@ export default function CabinetsListPage() {
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className="text-sm font-mono font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                              {cabinet.id}
+                              {assembly.id}
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {cabinet.name.en}
+                            {assembly.name.en}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span
-                              className={`px-2.5 py-1 text-xs font-semibold rounded-lg text-white bg-gradient-to-r ${getCategoryColor(cabinet.category)} shadow-sm`}
+                              className={`px-2.5 py-1 text-xs font-semibold rounded-lg text-white bg-gradient-to-r ${getCategoryColor(assembly.category)} shadow-sm`}
                             >
-                              {cabinet.category}
+                              {assembly.category}
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                               <ListOrdered className="w-4 h-4" />
-                              {cabinet.stepCount !== undefined
-                                ? cabinet.stepCount
-                                : cabinet.steps?.length || 0}
+                              {assembly.stepCount !== undefined
+                                ? assembly.stepCount
+                                : assembly.steps?.length || 0}
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                               <Clock className="w-4 h-4" />
-                              {cabinet.estimatedTime}m
+                              {assembly.estimatedTime}m
                             </span>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-right">
                             <button
-                              onClick={(e) => toggleDropdown(cabinet.id, e)}
+                              onClick={(e) => toggleDropdown(assembly.id, e)}
                               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 
                                 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                               aria-label="Open actions menu"
@@ -396,19 +396,19 @@ export default function CabinetsListPage() {
                       : "No cabinets yet"}
                   </div>
                 ) : (
-                  filteredCabinets.map((cabinet) => (
+                  filteredCabinets.map((assembly) => (
                     <div
-                      key={cabinet.id}
+                      key={assembly.id}
                       className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 
                         hover:shadow-lg hover:border-gray-300/50 dark:hover:border-gray-600/50 transition-all duration-300"
                     >
                       <div className="flex gap-4">
                         {/* Thumbnail */}
                         <div className="w-16 h-16 flex-shrink-0 relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
-                          {cabinet.image ? (
+                          {assembly.image ? (
                             <Image
-                              src={cabinet.image}
-                              alt={cabinet.name.en}
+                              src={assembly.image}
+                              alt={assembly.name.en}
                               width={64}
                               height={64}
                               className="object-cover"
@@ -427,15 +427,15 @@ export default function CabinetsListPage() {
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex-1 min-w-0">
                               <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                {cabinet.name.en}
+                                {assembly.name.en}
                               </h3>
                               <p className="text-xs font-mono text-gray-500 dark:text-gray-400 mt-0.5 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded inline-block">
-                                {cabinet.id}
+                                {assembly.id}
                               </p>
                             </div>
                             <div className="relative flex-shrink-0">
                               <button
-                                onClick={(e) => toggleDropdown(cabinet.id, e)}
+                                onClick={(e) => toggleDropdown(assembly.id, e)}
                                 className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 
                                   hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200"
                                 aria-label="Open actions menu"
@@ -444,14 +444,14 @@ export default function CabinetsListPage() {
                               </button>
 
                               {/* Dropdown Menu for Mobile Cards */}
-                              {activeDropdown === cabinet.id && (
+                              {activeDropdown === assembly.id && (
                                 <div
                                   className="absolute top-full right-0 mt-1 w-48 rounded-xl shadow-xl bg-white dark:bg-gray-800 z-50 
                                     border border-gray-200 dark:border-gray-700 overflow-hidden"
                                 >
                                   <div className="py-1">
                                     <Link
-                                      href={`/cabinet/${cabinet.id}`}
+                                      href={`/assembly/${assembly.id}`}
                                       target="_blank"
                                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
@@ -459,14 +459,14 @@ export default function CabinetsListPage() {
                                       View
                                     </Link>
                                     <button
-                                      onClick={() => handleEdit(cabinet)}
+                                      onClick={() => handleEdit(assembly)}
                                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
                                       <Edit className="w-4 h-4" />
                                       Edit
                                     </button>
                                     <button
-                                      onClick={() => handleManageSteps(cabinet)}
+                                      onClick={() => handleManageSteps(assembly)}
                                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                                     >
                                       <List className="w-4 h-4" />
@@ -474,7 +474,7 @@ export default function CabinetsListPage() {
                                     </button>
                                     <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
                                     <button
-                                      onClick={() => handleDelete(cabinet.id)}
+                                      onClick={() => handleDelete(assembly.id)}
                                       className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                     >
                                       <Trash2 className="w-4 h-4" />
@@ -488,20 +488,20 @@ export default function CabinetsListPage() {
 
                           <div className="flex flex-wrap items-center gap-2 mt-3">
                             <span
-                              className={`px-2 py-0.5 text-xs font-semibold rounded-lg text-white bg-gradient-to-r ${getCategoryColor(cabinet.category)} shadow-sm`}
+                              className={`px-2 py-0.5 text-xs font-semibold rounded-lg text-white bg-gradient-to-r ${getCategoryColor(assembly.category)} shadow-sm`}
                             >
-                              {cabinet.category}
+                              {assembly.category}
                             </span>
                             <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                               <ListOrdered className="w-3.5 h-3.5" />
-                              {cabinet.stepCount !== undefined
-                                ? cabinet.stepCount
-                                : cabinet.steps?.length || 0}{" "}
+                              {assembly.stepCount !== undefined
+                                ? assembly.stepCount
+                                : assembly.steps?.length || 0}{" "}
                               steps
                             </span>
                             <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                               <Clock className="w-3.5 h-3.5" />
-                              {cabinet.estimatedTime}m
+                              {assembly.estimatedTime}m
                             </span>
                           </div>
                         </div>
@@ -529,7 +529,7 @@ export default function CabinetsListPage() {
             >
               <div className="py-1">
                 <Link
-                  href={`/cabinet/${activeDropdown}`}
+                  href={`/assembly/${activeDropdown}`}
                   target="_blank"
                   className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                 >

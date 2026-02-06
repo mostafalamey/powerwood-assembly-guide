@@ -1,10 +1,10 @@
 import { useTranslation } from "@/lib/i18n";
 import TransitionLink from "@/components/TransitionLink";
-import { Step } from "@/types/cabinet";
+import { Step } from "@/types/assembly";
 import { ArrowLeft, ArrowRight, CheckCircle, Check } from "lucide-react";
 
 interface StepNavigationProps {
-  cabinetId: string;
+  assemblyId: string;
   steps: Step[];
   currentStepIndex: number;
   onStepClick?: (stepIndex: number) => void;
@@ -12,7 +12,7 @@ interface StepNavigationProps {
 }
 
 export default function StepNavigation({
-  cabinetId,
+  assemblyId,
   steps,
   currentStepIndex,
   onStepClick,
@@ -49,7 +49,7 @@ export default function StepNavigation({
       <div className="flex gap-2">
         {hasPrevious ? (
           <TransitionLink
-            href={`/cabinet/${cabinetId}/step/${steps[currentStepIndex - 1].id}`}
+            href={`/assembly/${assemblyId}/step/${steps[currentStepIndex - 1].id}`}
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl hover:bg-white dark:hover:bg-gray-700 border border-white/50 dark:border-gray-700/50 rounded-xl transition-all shadow-sm hover:shadow min-h-[44px]"
           >
             <ArrowLeft className="w-4 h-4 rtl:rotate-180 text-gray-700 dark:text-gray-300" />
@@ -76,7 +76,7 @@ export default function StepNavigation({
             </div>
           ) : (
             <TransitionLink
-              href={`/cabinet/${cabinetId}/step/${steps[currentStepIndex + 1].id}`}
+              href={`/assembly/${assemblyId}/step/${steps[currentStepIndex + 1].id}`}
               className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl min-h-[44px]"
             >
               <span className="font-medium text-sm">
@@ -87,7 +87,7 @@ export default function StepNavigation({
           )
         ) : (
           <TransitionLink
-            href={`/cabinet/${cabinetId}`}
+            href={`/assembly/${assemblyId}`}
             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all shadow-lg shadow-green-500/25 hover:shadow-xl min-h-[44px]"
           >
             <CheckCircle className="w-4 h-4" />
@@ -145,7 +145,7 @@ export default function StepNavigation({
             ) : (
               <TransitionLink
                 key={step.id}
-                href={`/cabinet/${cabinetId}/step/${step.id}`}
+                href={`/assembly/${assemblyId}/step/${step.id}`}
                 onClick={handleClick}
                 className={`block p-2.5 mb-1.5 rounded-lg transition-all ${
                   isActive

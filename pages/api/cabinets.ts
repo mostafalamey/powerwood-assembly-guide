@@ -2,12 +2,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const CABINETS_INDEX_FILE = path.join(
+const ASSEMBLIES_INDEX_FILE = path.join(
   process.cwd(),
   "data",
-  "cabinets-index.json",
+  "assemblies-index.json",
 );
-const CABINETS_DIR = path.join(process.cwd(), "data", "cabinets");
+const ASSEMBLIES_DIR = path.join(process.cwd(), "data", "cabinets");
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,30 +33,30 @@ export default async function handler(
 
   try {
     // Read cabinets index data
-    const fileContents = fs.readFileSync(CABINETS_INDEX_FILE, "utf8");
+    const fileContents = fs.readFileSync(ASSEMBLIES_INDEX_FILE, "utf8");
     const data = JSON.parse(fileContents);
 
     switch (req.method) {
       case "GET":
         // Get all cabinets or single cabinet by ID
         if (req.query.id) {
-          const cabinet = data.cabinets.find((c: any) => c.id === req.query.id);
-          if (!cabinet) {
+          const assembly = data.assemblies.find((c: any) => c.id === req.query.id);
+          if (!assembly) {
             return res.status(404).json({ message: "Cabinet not found" });
           }
 
           // Load steps/animation data from separate file if it exists
-          const cabinetFile = path.join(CABINETS_DIR, `${req.query.id}.json`);
-          if (fs.existsSync(cabinetFile)) {
-            const cabinetData = JSON.parse(
-              fs.readFileSync(cabinetFile, "utf8"),
+          const assemblyFile = path.join(ASSEMBLIES_DIR, `${req.query.id}.json`);
+          if (fs.existsSync(assemblyFile)) {
+            const assemblyData = JSON.parse(
+              fs.readFileSync(assemblyFile, "utf8"),
             );
             return res
               .status(200)
-              .json({ ...cabinet, steps: cabinetData.steps || [] });
+              .json({ ...assembly, steps: assemblyData.steps || [] });
           }
 
-          return res.status(200).json({ ...cabinet, steps: [] });
+          return res.status(200).json({ ...assembly, steps: [] });
         }
         return res.status(200).json(data.cabinets);
 
@@ -70,7 +70,7 @@ export default async function handler(
         }
 
         // Check for duplicate ID
-        if (data.cabinets.some((c: any) => c.id === newCabinet.id)) {
+        if (data.assemblies.some((c: any) => c.id === newCabinet.id)) {
           return res.status(409).json({ message: "Cabinet ID already exists" });
         }
 
@@ -79,13 +79,13 @@ export default async function handler(
         cabinetMetadata.stepCount = steps?.length || 0;
 
         // Add cabinet metadata to index
-        data.cabinets.push(cabinetMetadata);
-        fs.writeFileSync(CABINETS_INDEX_FILE, JSON.stringify(data, null, 2));
+        data.assemblies.push(cabinetMetadata);
+        fs.writeFileSync(ASSEMBLIES_INDEX_FILE, JSON.stringify(data, null, 2));
 
         // Save steps/animation to separate file if exists
         if (steps && steps.length > 0) {
           const newCabinetFile = path.join(
-            CABINETS_DIR,
+            ASSEMBLIES_DIR,
             `${newCabinet.id}.json`,
           );
           fs.writeFileSync(
@@ -106,7 +106,7 @@ export default async function handler(
       case "PUT":
         // Update existing cabinet
         const updatedCabinet = req.body;
-        const index = data.cabinets.findIndex(
+        const index = data.assemblies.findIndex(
           (c: any) => c.id === updatedCabinet.id,
         );
 
@@ -118,13 +118,13 @@ export default async function handler(
         const { steps: updatedSteps, ...updatedMetadata } = updatedCabinet;
         updatedMetadata.stepCount = updatedSteps?.length || 0;
 
-        // Update cabinet metadata in index
-        data.cabinets[index] = updatedMetadata;
-        fs.writeFileSync(CABINETS_INDEX_FILE, JSON.stringify(data, null, 2));
+        // Update assembly metadata in index
+        data.assemblies[index] = updatedMetadata;
+        fs.writeFileSync(ASSEMBLIES_INDEX_FILE, JSON.stringify(data, null, 2));
 
         // Update steps/animation in separate file
         const updateCabinetFile = path.join(
-          CABINETS_DIR,
+          ASSEMBLIES_DIR,
           `${updatedCabinet.id}.json`,
         );
         if (updatedSteps && updatedSteps.length > 0) {
@@ -147,9 +147,9 @@ export default async function handler(
         return res.status(200).json(updatedCabinet);
 
       case "DELETE":
-        // Delete cabinet
+        // Delete assembly
         const deleteId = req.query.id as string;
-        const deleteIndex = data.cabinets.findIndex(
+        const deleteIndex = data.assemblies.findIndex(
           (c: any) => c.id === deleteId,
         );
 
@@ -158,11 +158,11 @@ export default async function handler(
         }
 
         // Remove from index
-        data.cabinets.splice(deleteIndex, 1);
-        fs.writeFileSync(CABINETS_INDEX_FILE, JSON.stringify(data, null, 2));
+        data.assemblies.splice(deleteIndex, 1);
+        fs.writeFileSync(ASSEMBLIES_INDEX_FILE, JSON.stringify(data, null, 2));
 
         // Delete animation file if exists
-        const deleteCabinetFile = path.join(CABINETS_DIR, `${deleteId}.json`);
+        const deleteCabinetFile = path.join(ASSEMBLIES_DIR, `${deleteId}.json`);
         if (fs.existsSync(deleteCabinetFile)) {
           fs.unlinkSync(deleteCabinetFile);
         }
