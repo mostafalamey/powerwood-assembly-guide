@@ -146,7 +146,9 @@ export function AssemblyFormModal({
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                {mode === "create" ? "Add New Assembly" : `Edit Assembly: ${formData.id}`}
+                {mode === "create"
+                  ? "Add New Assembly"
+                  : `Edit Assembly: ${formData.id}`}
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {mode === "create"
@@ -167,12 +169,17 @@ export function AssemblyFormModal({
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[calc(90vh-140px)]">
+        <form
+          onSubmit={handleSubmit}
+          className="overflow-y-auto max-h-[calc(90vh-140px)]"
+        >
           <div className="p-6 space-y-6">
             {/* Error Message */}
             {error && (
               <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
-                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                <p className="text-sm text-red-700 dark:text-red-300">
+                  {error}
+                </p>
               </div>
             )}
 
@@ -184,7 +191,9 @@ export function AssemblyFormModal({
               <input
                 type="text"
                 value={formData.id}
-                onChange={(e) => handleChange("id", e.target.value.toUpperCase())}
+                onChange={(e) =>
+                  handleChange("id", e.target.value.toUpperCase())
+                }
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
                   bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono
                   placeholder-gray-400 dark:placeholder-gray-500
@@ -277,7 +286,12 @@ export function AssemblyFormModal({
                   <input
                     type="number"
                     value={formData.estimatedTime}
-                    onChange={(e) => handleChange("estimatedTime", parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      handleChange(
+                        "estimatedTime",
+                        parseInt(e.target.value) || 0,
+                      )
+                    }
                     className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
                       bg-white dark:bg-gray-900 text-gray-900 dark:text-white
                       placeholder-gray-400 dark:placeholder-gray-500
@@ -302,7 +316,9 @@ export function AssemblyFormModal({
                   </label>
                   <textarea
                     value={formData.description.en}
-                    onChange={(e) => handleChange("description.en", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("description.en", e.target.value)
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
                       bg-white dark:bg-gray-900 text-gray-900 dark:text-white
                       placeholder-gray-400 dark:placeholder-gray-500
@@ -318,7 +334,9 @@ export function AssemblyFormModal({
                   </label>
                   <textarea
                     value={formData.description.ar}
-                    onChange={(e) => handleChange("description.ar", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("description.ar", e.target.value)
+                    }
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
                       bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-right
                       placeholder-gray-400 dark:placeholder-gray-500
@@ -376,7 +394,11 @@ export function AssemblyFormModal({
                 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Saving..." : mode === "create" ? "Create Assembly" : "Update Assembly"}
+              {isSubmitting
+                ? "Saving..."
+                : mode === "create"
+                  ? "Create Assembly"
+                  : "Update Assembly"}
             </button>
           </div>
         </form>

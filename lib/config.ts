@@ -3,22 +3,25 @@
  * Provides access to tenant-specific configuration throughout the app
  */
 
-import { TenantConfig } from '@/types/config';
-import { useEffect, useState } from 'react';
+import { TenantConfig } from "@/types/config";
+import { useEffect, useState } from "react";
 
 // Default configuration (fallback)
 const DEFAULT_CONFIG: TenantConfig = {
   branding: {
-    appName: { en: 'Assembly Guide', ar: 'دليل التجميع' },
-    companyName: 'Your Company',
-    tagline: { en: '3D Assembly Instructions', ar: 'تعليمات التجميع ثلاثية الأبعاد' },
-    primaryColor: '#0ea5e9',
-    logoUrl: '/images/logo.png',
+    appName: { en: "Assembly Guide", ar: "دليل التجميع" },
+    companyName: "Your Company",
+    tagline: {
+      en: "3D Assembly Instructions",
+      ar: "تعليمات التجميع ثلاثية الأبعاد",
+    },
+    primaryColor: "#0ea5e9",
+    logoUrl: "/images/logo.png",
   },
   terminology: {
-    itemSingular: { en: 'Assembly', ar: 'تجميع' },
-    itemPlural: { en: 'Assemblies', ar: 'تجميعات' },
-    urlSlug: 'assembly',
+    itemSingular: { en: "Assembly", ar: "تجميع" },
+    itemPlural: { en: "Assemblies", ar: "تجميعات" },
+    urlSlug: "assembly",
   },
   features: {
     enableQRCodes: true,
@@ -27,8 +30,8 @@ const DEFAULT_CONFIG: TenantConfig = {
     enableDarkMode: true,
   },
   contact: {
-    email: 'support@example.com',
-    website: 'https://example.com',
+    email: "support@example.com",
+    website: "https://example.com",
   },
 };
 
@@ -45,10 +48,10 @@ export async function loadTenantConfig(): Promise<TenantConfig> {
 
   try {
     // In browser, fetch from public API
-    if (typeof window !== 'undefined') {
-      const response = await fetch('/config/tenant.json');
+    if (typeof window !== "undefined") {
+      const response = await fetch("/config/tenant.json");
       if (!response.ok) {
-        console.warn('Failed to load tenant config, using defaults');
+        console.warn("Failed to load tenant config, using defaults");
         return DEFAULT_CONFIG;
       }
       cachedConfig = await response.json();
@@ -56,14 +59,14 @@ export async function loadTenantConfig(): Promise<TenantConfig> {
     }
 
     // Server-side: read from file system
-    const fs = await import('fs/promises');
-    const path = await import('path');
-    const configPath = path.join(process.cwd(), 'config', 'tenant.json');
-    const configData = await fs.readFile(configPath, 'utf-8');
+    const fs = await import("fs/promises");
+    const path = await import("path");
+    const configPath = path.join(process.cwd(), "config", "tenant.json");
+    const configData = await fs.readFile(configPath, "utf-8");
     cachedConfig = JSON.parse(configData);
     return cachedConfig;
   } catch (error) {
-    console.error('Error loading tenant config:', error);
+    console.error("Error loading tenant config:", error);
     return DEFAULT_CONFIG;
   }
 }
@@ -91,7 +94,7 @@ export function useTenantConfig() {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.error('Failed to load tenant config:', error);
+        console.error("Failed to load tenant config:", error);
         setConfig(DEFAULT_CONFIG);
         setIsLoading(false);
       });
@@ -103,7 +106,7 @@ export function useTenantConfig() {
 /**
  * Helper to get terminology for current language
  */
-export function getTerminology(config: TenantConfig, language: 'en' | 'ar') {
+export function getTerminology(config: TenantConfig, language: "en" | "ar") {
   return {
     itemSingular: config.terminology.itemSingular[language],
     itemPlural: config.terminology.itemPlural[language],

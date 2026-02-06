@@ -40,13 +40,18 @@ export default async function handler(
       case "GET":
         // Get all assemblies or single assembly by ID
         if (req.query.id) {
-          const assembly = data.assemblies.find((c: any) => c.id === req.query.id);
+          const assembly = data.assemblies.find(
+            (c: any) => c.id === req.query.id,
+          );
           if (!assembly) {
             return res.status(404).json({ message: "Assembly not found" });
           }
 
           // Load steps/animation data from separate file if it exists
-          const assemblyFile = path.join(ASSEMBLIES_DIR, `${req.query.id}.json`);
+          const assemblyFile = path.join(
+            ASSEMBLIES_DIR,
+            `${req.query.id}.json`,
+          );
           if (fs.existsSync(assemblyFile)) {
             const assemblyData = JSON.parse(
               fs.readFileSync(assemblyFile, "utf8"),
@@ -71,7 +76,9 @@ export default async function handler(
 
         // Check for duplicate ID
         if (data.assemblies.some((c: any) => c.id === newAssembly.id)) {
-          return res.status(409).json({ message: "Assembly ID already exists" });
+          return res
+            .status(409)
+            .json({ message: "Assembly ID already exists" });
         }
 
         // Separate metadata from steps/animation
@@ -162,7 +169,10 @@ export default async function handler(
         fs.writeFileSync(ASSEMBLIES_INDEX_FILE, JSON.stringify(data, null, 2));
 
         // Delete animation file if exists
-        const deleteAssemblyFile = path.join(ASSEMBLIES_DIR, `${deleteId}.json`);
+        const deleteAssemblyFile = path.join(
+          ASSEMBLIES_DIR,
+          `${deleteId}.json`,
+        );
         if (fs.existsSync(deleteAssemblyFile)) {
           fs.unlinkSync(deleteAssemblyFile);
         }

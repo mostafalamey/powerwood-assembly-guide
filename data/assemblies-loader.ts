@@ -25,7 +25,9 @@ export function getAllAssemblies(): Omit<Assembly, "steps">[] {
 export function getAssembly(assemblyId: string): Assembly | null {
   try {
     // Get metadata from index
-    const metadata = assembliesIndex.assemblies.find((c) => c.id === assemblyId);
+    const metadata = assembliesIndex.assemblies.find(
+      (c) => c.id === assemblyId,
+    );
     if (!metadata) {
       return null;
     }
@@ -74,7 +76,9 @@ export function getAllAssemblyIds(): string[] {
 export function getAssembliesByCategory(
   category: string,
 ): Omit<Assembly, "steps">[] {
-  return assembliesIndex.assemblies.filter((c) => c.category === category) as any;
+  return assembliesIndex.assemblies.filter(
+    (c) => c.category === category,
+  ) as any;
 }
 
 // Legacy support: Export all assemblies data (loads ALL files)

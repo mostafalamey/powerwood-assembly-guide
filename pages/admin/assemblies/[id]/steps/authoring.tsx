@@ -60,7 +60,7 @@ export default function StepAuthoringPage() {
   const [modelPath, setModelPath] = useState<string | undefined>(undefined);
   const [modelLoaded, setModelLoaded] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [assembly, setCabinet] = useState<any>(null);
+  const [assembly, setAssembly] = useState<any>(null);
   const loadedModelRef = useRef<any>(null);
   const [selectedObject, setSelectedObject] = useState<any>(null);
   const [transformMode, setTransformMode] = useState<
@@ -169,17 +169,20 @@ export default function StepAuthoringPage() {
     const fetchAssembly = async () => {
       try {
         const token = localStorage.getItem("admin_token");
-        const response = await fetch(`/api/assemblies?id=${id}&_=${Date.now()}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          `/api/assemblies?id=${id}&_=${Date.now()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            cache: "no-store",
           },
-          cache: "no-store",
-        });
+        );
 
         if (response.ok) {
           const data = await response.json();
-          setCabinet(data);
-          // Auto-load the cabinet's 3D model if it has one
+          setAssembly(data);
+          // Auto-load the assembly's 3D model if it has one
           if (data.model) {
             setModelPath(data.model);
           }
@@ -192,7 +195,7 @@ export default function StepAuthoringPage() {
           }
         }
       } catch (err) {
-        console.error("Error loading cabinet:", err);
+        console.error("Error loading assembly:", err);
       }
     };
 
@@ -297,7 +300,7 @@ export default function StepAuthoringPage() {
   }, [selectedObject]);
 
   // Convert editor keyframes to production format
-  // Save animation to cabinet JSON file
+  // Save animation to assembly JSON file
   const handleSaveAnimation = useCallback(async () => {
     try {
       const animationData: StepAnimation = {
@@ -309,9 +312,9 @@ export default function StepAuthoringPage() {
           annotationInstances.length > 0 ? annotationInstances : undefined,
       };
 
-      // Save to the step in the cabinet JSON
+      // Save to the step in the assembly JSON
       const response = await fetch(
-        `/api/admin/cabinets/${id}/steps/${step}/animation`,
+        `/api/admin/assemblies/${id}/steps/${step}/animation`,
         {
           method: "PUT",
           headers: {
@@ -339,7 +342,7 @@ export default function StepAuthoringPage() {
     toast,
   ]);
 
-  // Load animation from cabinet JSON
+  // Load animation from assembly JSON
   const loadAnimation = useCallback(async (animationData: StepAnimation) => {
     if (!animationData) return;
 
@@ -380,7 +383,7 @@ export default function StepAuthoringPage() {
 
   // Load animation when step/assembly/model changes
   useEffect(() => {
-    if (!step || !cabinet?.steps || !modelLoaded) return;
+    if (!step || !assembly?.steps || !modelLoaded) return;
     const stepData = assembly.steps.find((s: any) => s.id === step);
     const nextAudioUrl =
       stepData?.audioUrl?.en || stepData?.audioUrl?.ar || null;
@@ -1745,7 +1748,7 @@ export default function StepAuthoringPage() {
           {/* Top toolbar */}
           <div className="relative z-20 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b border-white/50 dark:border-gray-700/50 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4 shadow-sm">
             <Link
-              href={`/admin/cabinets/${id}/steps`}
+              href={`/admin/assemblies/${id}/steps`}
               className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -1754,10 +1757,12 @@ export default function StepAuthoringPage() {
             </Link>
             <div className="hidden sm:block w-px h-5 bg-gray-300 dark:bg-gray-600" />
             <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate flex-1 sm:flex-initial">
-              <span className="text-gray-500 dark:text-gray-400">Cabinet:</span>{" "}
+              <span className="text-gray-500 dark:text-gray-400">
+                Assembly:
+              </span>{" "}
               <span className="font-semibold">{id}</span>
               {step &&
-                cabinet?.steps &&
+                assembly?.steps &&
                 (() => {
                   const stepData = assembly.steps.find(
                     (s: any) => s.id === step,
@@ -2104,8 +2109,8 @@ export default function StepAuthoringPage() {
                       )}
 
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {cabinet?.model
-                          ? "Cabinet model will load automatically, or upload a different one."
+                        {assembly?.model
+                          ? "Assembly model will load automatically, or upload a different one."
                           : "Upload a 3D model to begin creating animations."}
                       </p>
                     </div>

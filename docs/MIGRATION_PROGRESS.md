@@ -148,7 +148,7 @@ Fixed runtime errors:
 
 Due to Windows permission issues with nested brackets `[id]`, the following folders need manual renaming:
 
-```
+```text
 # Pages - Rename via File Explorer or git mv:
 pages/cabinet/          → pages/assembly/
 pages/admin/cabinets/   → pages/admin/assemblies/

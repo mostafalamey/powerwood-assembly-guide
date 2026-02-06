@@ -294,7 +294,7 @@ export default function StepManagementPage() {
     if (!saved) return;
 
     setIsCopyModalOpen(false);
-    router.push(`/admin/cabinets/${id}/steps/${newStepId}/edit`);
+    router.push(`/admin/assemblies/${id}/steps/${newStepId}/edit`);
   };
 
   const handleDeleteStep = async (stepId: string) => {
@@ -372,11 +372,11 @@ export default function StepManagementPage() {
               </div>
             </div>
             <Link
-              href="/admin/cabinets"
+              href="/admin/assemblies"
               className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Cabinets
+              Back to Assemblies
             </Link>
           </div>
         </AdminLayout>
@@ -394,14 +394,14 @@ export default function StepManagementPage() {
           {/* Breadcrumb */}
           <div className="mb-6 flex items-center gap-2 text-sm overflow-x-auto">
             <Link
-              href="/admin/cabinets"
+              href="/admin/assemblies"
               className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
             >
-              Cabinets
+              Assemblies
             </Link>
             <ChevronRight className="w-4 h-4 text-gray-400" />
             <Link
-              href={`/admin/cabinets/${id}/edit`}
+              href={`/admin/assemblies/${id}/edit`}
               className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap font-mono"
             >
               {assembly.id}
@@ -424,7 +424,7 @@ export default function StepManagementPage() {
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
-                onClick={() => router.push(`/admin/cabinets/${id}/steps/new`)}
+                onClick={() => router.push(`/admin/assemblies/${id}/steps/new`)}
                 className="px-4 py-2.5 rounded-xl font-medium text-sm
                   bg-gradient-to-r from-blue-500 to-indigo-600 text-white
                   hover:from-blue-600 hover:to-indigo-700
@@ -447,7 +447,7 @@ export default function StepManagementPage() {
               </button>
               <button
                 onClick={() =>
-                  router.push(`/admin/cabinets/${id}/steps/authoring`)
+                  router.push(`/admin/assemblies/${id}/steps/authoring`)
                 }
                 className="px-4 py-2.5 rounded-xl font-medium text-sm
                   bg-gradient-to-r from-purple-500 to-purple-600 text-white
@@ -475,7 +475,9 @@ export default function StepManagementPage() {
               </p>
               <div className="mt-6">
                 <button
-                  onClick={() => router.push(`/admin/cabinets/${id}/steps/new`)}
+                  onClick={() =>
+                    router.push(`/admin/assemblies/${id}/steps/new`)
+                  }
                   className="px-6 py-2.5 rounded-xl font-medium text-sm
                     bg-gradient-to-r from-blue-500 to-indigo-600 text-white
                     hover:from-blue-600 hover:to-indigo-700
@@ -553,7 +555,7 @@ export default function StepManagementPage() {
                             <button
                               onClick={() =>
                                 router.push(
-                                  `/admin/cabinets/${id}/steps/authoring?step=${step.id}`,
+                                  `/admin/assemblies/${id}/steps/authoring?step=${step.id}`,
                                 )
                               }
                               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
@@ -567,7 +569,7 @@ export default function StepManagementPage() {
                             <button
                               onClick={() =>
                                 router.push(
-                                  `/admin/cabinets/${id}/steps/${step.id}/edit`,
+                                  `/admin/assemblies/${id}/steps/${step.id}/edit`,
                                 )
                               }
                               className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
