@@ -6,6 +6,7 @@ import {
   CategoryFormData,
 } from "@/components/admin/CategoryFormModal";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/components/admin/ToastProvider";
 import { Plus, Edit2, Trash2, FolderOpen } from "lucide-react";
 
 interface Category {
@@ -19,6 +20,7 @@ interface Category {
 
 export default function CategoriesPage() {
   const { token } = useAuth();
+  const toast = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,8 +28,6 @@ export default function CategoriesPage() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null,
   );
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const fetchCategories = async () => {
     try {
@@ -35,10 +35,12 @@ export default function CategoriesPage() {
       if (response.ok) {
         const data = await response.json();
         setCategories(data.categories || []);
+      } else {
+        toast.error("Failed to load categories");
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
-      setError("Failed to load categories");
+      toast.error("Failed to load categories");
     } finally {
       setLoading(false);
     }
@@ -60,11 +62,12 @@ export default function CategoriesPage() {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || error.message || "Failed to create category");
+      throw new Error(
+        error.error || error.message || "Failed to create category",
+      );
     }
 
-    setSuccessMessage("Category created successfully");
-    setTimeout(() => setSuccessMessage(null), 3000);
+    toast.success("Category created successfully");
     fetchCategories();
   };
 
@@ -80,20 +83,26 @@ export default function CategoriesPage() {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || error.message || "Failed to update category");
+      throw new Error(
+        error.error || error.message || "Failed to update category",
+      );
     }
 
-    setSuccessMessage("Category updated successfully");
-    setTimeout(() => setSuccessMessage(null), 3000);
+    toast.success("Category updated successfully");
     fetchCategories();
   };
 
   const handleDeleteCategory = async (id: string) => {
-    if (
-      !confirm(
+    const confirmed = await toast.confirm({
+      title: "Delete Category",
+      message:
         "Are you sure you want to delete this category? This action cannot be undone.",
-      )
-    ) {
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      type: "danger",
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -107,15 +116,15 @@ export default function CategoriesPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || error.message || "Failed to delete category");
+        throw new Error(
+          error.error || error.message || "Failed to delete category",
+        );
       }
 
-      setSuccessMessage("Category deleted successfully");
-      setTimeout(() => setSuccessMessage(null), 3000);
+      toast.success("Category deleted successfully");
       fetchCategories();
     } catch (error: any) {
-      setError(error.message || "Failed to delete category");
-      setTimeout(() => setError(null), 5000);
+      toast.error(error.message || "Failed to delete category");
     }
   };
 
@@ -153,20 +162,6 @@ export default function CategoriesPage() {
               Add Category
             </button>
           </div>
-
-          {/* Success Message */}
-          {successMessage && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg">
-              {successMessage}
-            </div>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
 
           {/* Loading State */}
           {loading && (
@@ -263,7 +258,9 @@ export default function CategoriesPage() {
         <CategoryFormModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onSubmit={modalMode === "create" ? handleCreateCategory : handleUpdateCategory}
+          onSubmit={
+            modalMode === "create" ? handleCreateCategory : handleUpdateCategory
+          }
           category={selectedCategory}
           mode={modalMode}
         />
