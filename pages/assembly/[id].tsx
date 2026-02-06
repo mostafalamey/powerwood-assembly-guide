@@ -16,27 +16,13 @@ import {
   CheckSquare,
   ChevronRight,
 } from "lucide-react";
+import { Assembly } from "@/types/assembly";
 
-interface Cabinet {
-  id: string;
-  name: string | { en: string; ar: string };
-  nameAr?: string;
-  category: string;
-  estimatedTime: number;
-  image: string;
-  model: string;
-  description: string | { en: string; ar: string };
-  descriptionAr?: string;
-  steps: any[];
-  requiredTools?: string[];
-  requiredToolsAr?: string[];
-}
-
-export default function CabinetPage() {
+export default function AssemblyPage() {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const { id } = router.query;
-  const [assembly, setCabinet] = useState<Assembly | null>(null);
+  const [assembly, setAssembly] = useState<Assembly | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,10 +36,10 @@ export default function CabinetPage() {
 
         if (response.ok) {
           const data = await response.json();
-          setCabinet(data);
+          setAssembly(data);
         }
       } catch (error) {
-        console.error("Error fetching cabinet:", error);
+        console.error("Error fetching assembly:", error);
       } finally {
         setLoading(false);
       }
@@ -115,10 +101,10 @@ export default function CabinetPage() {
   }
 
   // Handle both old and new data formats
-  const cabinetName =
+  const assemblyName =
     typeof assembly.name === "string"
       ? locale === "ar"
-        ? (cabinet as any).nameAr || assembly.name
+        ? (assembly as any).nameAr || assembly.name
         : assembly.name
       : locale === "ar"
         ? (assembly.name as any)?.ar || ""
@@ -127,27 +113,27 @@ export default function CabinetPage() {
   const description =
     typeof assembly.description === "string"
       ? locale === "ar"
-        ? (cabinet as any).descriptionAr || assembly.description
+        ? (assembly as any).descriptionAr || assembly.description
         : assembly.description
       : locale === "ar"
         ? (assembly.description as any)?.ar || ""
         : (assembly.description as any)?.en || "";
 
   const tools =
-    typeof (cabinet as any).requiredTools !== "undefined"
+    typeof (assembly as any).requiredTools !== "undefined"
       ? locale === "ar"
-        ? (cabinet as any).requiredToolsAr || []
-        : (cabinet as any).requiredTools || []
-      : (cabinet as any).tools
+        ? (assembly as any).requiredToolsAr || []
+        : (assembly as any).requiredTools || []
+      : (assembly as any).tools
         ? locale === "ar"
-          ? (cabinet as any).tools?.ar || []
-          : (cabinet as any).tools?.en || []
+          ? (assembly as any).tools?.ar || []
+          : (assembly as any).tools?.en || []
         : [];
 
   return (
     <>
       <Head>
-        <title>{`${cabinetName} - ${t("appTitle")}`}</title>
+        <title>{`${assemblyName} - ${t("appTitle")}`}</title>
         <meta name="description" content={description} />
         <meta
           name="viewport"
@@ -160,15 +146,15 @@ export default function CabinetPage() {
 
         <main className="flex-1 overflow-y-auto md:overflow-hidden">
           <div className="h-full flex flex-col lg:flex-row p-4 md:p-6 gap-4 md:gap-6 max-w-7xl mx-auto">
-            {/* Left Panel - Cabinet Image & Quick Info */}
+            {/* Left Panel - Assembly Image & Quick Info */}
             <div className="lg:w-2/5 xl:w-1/3 flex-shrink-0">
               <div className="h-full bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
-                {/* Cabinet Image */}
+                {/* Assembly Image */}
                 <div className="relative h-48 lg:h-64 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 flex items-center justify-center overflow-hidden">
                   {assembly.image ? (
                     <Image
                       src={assembly.image}
-                      alt={cabinetName}
+                      alt={assemblyName}
                       fill
                       className="object-contain p-6"
                       priority
@@ -179,10 +165,10 @@ export default function CabinetPage() {
                   )}
                 </div>
 
-                {/* Cabinet Info */}
+                {/* Assembly Info */}
                 <div className="flex-1 p-4 md:p-5 flex flex-col">
                   <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    {cabinetName}
+                    {assemblyName}
                   </h1>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 lg:line-clamp-none">
                     {description}
