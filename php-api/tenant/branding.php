@@ -9,9 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-require_once __DIR__ . '/config.php';
+// Config.php is in the parent directory (php-api/)
+require_once __DIR__ . '/../config.php';
 
-$TENANT_CONFIG_PATH = __DIR__ . '/../config/tenant.json';
+// tenant.json is in the root config/ directory
+$TENANT_CONFIG_PATH = __DIR__ . '/../../config/tenant.json';
 
 // Ensure config directory exists
 function ensureConfigDir() {
