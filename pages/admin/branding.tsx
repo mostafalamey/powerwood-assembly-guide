@@ -4,7 +4,14 @@ import AuthGuard from "@/components/admin/AuthGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastProvider";
 import FileUploadField from "@/components/admin/FileUploadField";
-import { Palette, Save, RotateCcw, Image as ImageIcon, Type, Droplet } from "lucide-react";
+import {
+  Palette,
+  Save,
+  RotateCcw,
+  Image as ImageIcon,
+  Type,
+  Droplet,
+} from "lucide-react";
 
 interface TenantBranding {
   companyName: string;
@@ -159,7 +166,10 @@ export default function BrandingPage() {
                       type="text"
                       value={formData.companyName}
                       onChange={(e) =>
-                        setFormData({ ...formData, companyName: e.target.value })
+                        setFormData({
+                          ...formData,
+                          companyName: e.target.value,
+                        })
                       }
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
                         bg-white dark:bg-gray-900 text-gray-900 dark:text-white
@@ -175,7 +185,10 @@ export default function BrandingPage() {
                       type="text"
                       value={formData.companyNameAr}
                       onChange={(e) =>
-                        setFormData({ ...formData, companyNameAr: e.target.value })
+                        setFormData({
+                          ...formData,
+                          companyNameAr: e.target.value,
+                        })
                       }
                       className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
                         bg-white dark:bg-gray-900 text-gray-900 dark:text-white
@@ -245,7 +258,10 @@ export default function BrandingPage() {
                         type="color"
                         value={formData.primaryColor}
                         onChange={(e) =>
-                          setFormData({ ...formData, primaryColor: e.target.value })
+                          setFormData({
+                            ...formData,
+                            primaryColor: e.target.value,
+                          })
                         }
                         className="w-16 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer"
                       />
@@ -253,7 +269,10 @@ export default function BrandingPage() {
                         type="text"
                         value={formData.primaryColor}
                         onChange={(e) =>
-                          setFormData({ ...formData, primaryColor: e.target.value })
+                          setFormData({
+                            ...formData,
+                            primaryColor: e.target.value,
+                          })
                         }
                         className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
                           bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono
@@ -274,7 +293,10 @@ export default function BrandingPage() {
                         type="color"
                         value={formData.secondaryColor}
                         onChange={(e) =>
-                          setFormData({ ...formData, secondaryColor: e.target.value })
+                          setFormData({
+                            ...formData,
+                            secondaryColor: e.target.value,
+                          })
                         }
                         className="w-16 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer"
                       />
@@ -282,7 +304,10 @@ export default function BrandingPage() {
                         type="text"
                         value={formData.secondaryColor}
                         onChange={(e) =>
-                          setFormData({ ...formData, secondaryColor: e.target.value })
+                          setFormData({
+                            ...formData,
+                            secondaryColor: e.target.value,
+                          })
                         }
                         className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
                           bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono
@@ -312,7 +337,10 @@ export default function BrandingPage() {
                       />
                     )}
                     <div>
-                      <h3 className="text-xl font-bold" style={{ color: formData.primaryColor }}>
+                      <h3
+                        className="text-xl font-bold"
+                        style={{ color: formData.primaryColor }}
+                      >
                         {formData.companyName || "Company Name"}
                       </h3>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -322,8 +350,8 @@ export default function BrandingPage() {
                   </div>
                   <button
                     className="px-4 py-2 rounded-lg text-white font-medium transition-colors"
-                    style={{ 
-                      background: `linear-gradient(to right, ${formData.primaryColor}, ${formData.secondaryColor})`
+                    style={{
+                      background: `linear-gradient(to right, ${formData.primaryColor}, ${formData.secondaryColor})`,
                     }}
                   >
                     Sample Button

@@ -8,10 +8,12 @@ import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import categoriesData from "@/data/categories.json";
 import { Assembly } from "@/types/assembly";
+import { useBranding } from "@/contexts/BrandingContext";
 import { FolderOpen, Home, Package, Clock, ListOrdered } from "lucide-react";
 
 export default function CategoryPage() {
   const { t, locale } = useTranslation();
+  const { branding } = useBranding();
   const router = useRouter();
   const { category } = router.query;
   const [assemblies, setCabinets] = useState<Assembly[]>([]);
@@ -50,11 +52,15 @@ export default function CategoryPage() {
     (cat) => cat.id === category,
   );
 
+  const companyName = locale === 'en' ? branding.companyName : branding.companyNameAr;
+
   if (!categoryInfo) {
     return (
       <>
         <Head>
-          <title>{`${t("errors.notFound")} - ${t("appTitle")}`}</title>
+          <title>{`${t("errors.notFound")} - ${companyName}`}</title>
+          {branding.favicon && <link rel="icon" href={branding.favicon} />}
+          {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
         </Head>
         <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
           <Header showBackButton />
@@ -90,7 +96,9 @@ export default function CategoryPage() {
     return (
       <>
         <Head>
-          <title>{`${categoryName} - ${t("appTitle")}`}</title>
+          <title>{`${categoryName} - ${companyName}`}</title>
+          {branding.favicon && <link rel="icon" href={branding.favicon} />}
+          {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
         </Head>
         <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
           <Header showBackButton />
@@ -110,12 +118,14 @@ export default function CategoryPage() {
   return (
     <>
       <Head>
-        <title>{`${categoryName} - ${t("appTitle")}`}</title>
+        <title>{`${categoryName} - ${companyName}`}</title>
         <meta name="description" content={categoryDescription} />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
+        {branding.favicon && <link rel="icon" href={branding.favicon} />}
+        {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
       </Head>
 
       <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">

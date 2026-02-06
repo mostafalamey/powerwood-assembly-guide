@@ -28,7 +28,10 @@ const readTenantConfig = () => {
       },
       categories: [],
     };
-    fs.writeFileSync(TENANT_CONFIG_PATH, JSON.stringify(defaultConfig, null, 2));
+    fs.writeFileSync(
+      TENANT_CONFIG_PATH,
+      JSON.stringify(defaultConfig, null, 2),
+    );
     return defaultConfig;
   }
   const content = fs.readFileSync(TENANT_CONFIG_PATH, "utf-8");
@@ -67,7 +70,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const token = authHeader.substring(7);
     const adminToken = process.env.ADMIN_TOKEN || "admin123";
-    
+
     if (token !== adminToken) {
       return res.status(401).json({ error: "Invalid token" });
     }
@@ -77,7 +80,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
       // Validation
       if (!branding.companyName || !branding.companyNameAr) {
-        return res.status(400).json({ error: "Company name is required in both languages" });
+        return res
+          .status(400)
+          .json({ error: "Company name is required in both languages" });
       }
 
       // Read current config

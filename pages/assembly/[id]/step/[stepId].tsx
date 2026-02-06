@@ -7,6 +7,7 @@ import SceneViewer from "@/components/3d/SceneViewer";
 import StepNavigation from "@/components/StepNavigation";
 import AudioPlayer from "@/components/AudioPlayer";
 import { Assembly, Step } from "@/types/assembly";
+import { useBranding } from "@/contexts/BrandingContext";
 import {
   Play,
   Pause,
@@ -25,6 +26,7 @@ export default function StepPage() {
   const router = useRouter();
   const { id, stepId } = router.query;
   const { t, locale } = useTranslation();
+  const { branding } = useBranding();
 
   const [assembly, setAssembly] = useState<Assembly | null>(null);
   const [currentStep, setCurrentStep] = useState<Step | null>(null);
@@ -252,11 +254,15 @@ export default function StepPage() {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const companyName = locale === 'en' ? branding.companyName : branding.companyNameAr;
+
   if (!assembly || !currentStep) {
     return (
       <>
         <Head>
-          <title>{t("loading")}</title>
+          <title>{t("loading")} - {companyName}</title>
+          {branding.favicon && <link rel="icon" href={branding.favicon} />}
+          {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
         </Head>
         <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
           <Header showBackButton />
@@ -307,7 +313,9 @@ export default function StepPage() {
   return (
     <>
       <Head>
-        <title>{`${stepTitle} - ${assemblyName}`}</title>
+        <title>{`${stepTitle} - ${assemblyName} - ${companyName}`}</title>
+        {branding.favicon && <link rel="icon" href={branding.favicon} />}
+        {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
       </Head>
 
       <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">

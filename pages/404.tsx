@@ -2,16 +2,21 @@ import Head from "next/head";
 import Image from "next/image";
 import TransitionLink from "@/components/TransitionLink";
 import { useTranslation } from "@/lib/i18n";
+import { useBranding } from "@/contexts/BrandingContext";
 import { Home } from "lucide-react";
 
 export default function Custom404() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const { branding } = useBranding();
+  const companyName = locale === 'en' ? branding.companyName : branding.companyNameAr;
 
   return (
     <>
       <Head>
-        <title>{`404 - ${t("errors.notFound")} | ${t("appTitle")}`}</title>
+        <title>{`404 - ${t("errors.notFound")} | ${companyName}`}</title>
         <meta name="description" content="Page not found" />
+        {branding.favicon && <link rel="icon" href={branding.favicon} />}
+        {branding.primaryColor && <meta name="theme-color" content={branding.primaryColor} />}
       </Head>
 
       <div className="min-h-screen w-full relative bg-white">
