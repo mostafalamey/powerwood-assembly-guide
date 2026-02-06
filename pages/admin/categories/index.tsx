@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
-import { AuthGuard } from "@/components/admin/AuthGuard";
+import AuthGuard from "@/components/admin/AuthGuard";
 import {
   CategoryFormModal,
   CategoryFormData,

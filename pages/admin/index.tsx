@@ -24,7 +24,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-interface CabinetIndex {
+interface AssemblyIndex {
   id: string;
   name: { en: string; ar: string };
   category: string;
@@ -41,13 +41,13 @@ interface Category {
 }
 
 interface DashboardStats {
-  totalCabinets: number;
+  totalAssemblies: number;
   totalSteps: number;
-  cabinetsWithModels: number;
-  cabinetsWithImages: number;
+  assembliesWithModels: number;
+  assembliesWithImages: number;
   categoryCounts: Record<string, number>;
-  recentCabinets: CabinetIndex[];
-  cabinetsNeedingAttention: CabinetIndex[];
+  recentAssemblies: AssemblyIndex[];
+  assembliesNeedingAttention: AssemblyIndex[];
 }
 
 export default function AdminDashboard() {
@@ -64,13 +64,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch assemblys index
-        const cabinetsRes = await fetch("/api/assemblies");
-        const cabinetsData = await cabinetsRes.json();
+        // Fetch assemblies index
+        const assembliesRes = await fetch("/api/assemblies");
+        const assembliesData = await assembliesRes.json();
         // API returns array directly, not wrapped in object
-        const cabinets: CabinetIndex[] = Array.isArray(cabinetsData)
-          ? cabinetsData
-          : cabinetsData.cabinets || [];
+        const assemblies: AssemblyIndex[] = Array.isArray(assembliesData)
+          ? assembliesData
+          : assembliesData.assemblies || [];
 
         // Fetch categories
         const categoriesRes = await fetch("/api/categories");
@@ -86,8 +86,8 @@ export default function AdminDashboard() {
           (sum, c) => sum + (c.stepCount || 0),
           0,
         );
-        const cabinetsWithModels = assemblies.filter((c) => c.model).length;
-        const cabinetsWithImages = assemblies.filter((c) => c.image).length;
+        const assembliesWithModels = assemblies.filter((c) => c.model).length;
+        const assembliesWithImages = assemblies.filter((c) => c.image).length;
 
         // Count by category
         const categoryCounts: Record<string, number> = {};
@@ -95,19 +95,19 @@ export default function AdminDashboard() {
           categoryCounts[c.category] = (categoryCounts[c.category] || 0) + 1;
         });
 
-        // Cabinets needing attention (no steps or no model)
-        const cabinetsNeedingAttention = assemblies.filter(
+        // Assemblies needing attention (no steps or no model)
+        const assembliesNeedingAttention = assemblies.filter(
           (c) => !c.stepCount || c.stepCount === 0 || !c.model,
         );
 
         setStats({
-          totalCabinets: assemblies.length,
+          totalAssemblies: assemblies.length,
           totalSteps,
-          cabinetsWithModels,
-          cabinetsWithImages,
+          assembliesWithModels,
+          assembliesWithImages,
           categoryCounts,
-          recentCabinets: assemblies.slice(0, 5),
-          cabinetsNeedingAttention: cabinetsNeedingAttention.slice(0, 5),
+          recentAssemblies: assemblies.slice(0, 5),
+          assembliesNeedingAttention: assembliesNeedingAttention.slice(0, 5),
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
