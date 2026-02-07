@@ -194,7 +194,19 @@ export default function CategoryPage() {
 
                       {/* Cabinet Info */}
                       <div className="p-4">
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+                        <h3
+                          className="text-base font-semibold text-gray-900 dark:text-white mb-1 transition-colors truncate"
+                          style={{
+                            ["--hover-color" as any]: branding.primaryColor,
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.color =
+                              branding.primaryColor)
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.color = "")
+                          }
+                        >
                           {cabinetName}
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 text-xs mb-3 line-clamp-2">
@@ -204,14 +216,20 @@ export default function CategoryPage() {
                         {/* Stats */}
                         <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                           <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4 text-blue-500" />
+                            <Clock
+                              className="w-4 h-4"
+                              style={{ color: branding.primaryColor }}
+                            />
                             <span>
                               {assembly.estimatedTime} {t("assembly.minutes")}
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <ListOrdered className="w-4 h-4 text-green-500" />
-                            <span>
+                            <ListOrdered
+                              className="w-4 h-4"
+                              style={{ color: branding.secondaryColor }}
+                            />
+                            <span style={{ color: branding.secondaryColor }}>
                               {(assembly as any).stepCount || 0}{" "}
                               {t("assembly.steps")}
                             </span>

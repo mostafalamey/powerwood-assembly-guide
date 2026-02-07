@@ -5,6 +5,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
 import Image from "next/image";
 import { ArrowLeft, Box } from "lucide-react";
+import { Color } from "three";
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -33,10 +34,7 @@ export default function Header({ showBackButton = false }: HeaderProps) {
             )}
             <TransitionLink href="/" className="flex items-center gap-3">
               {branding.logo ? (
-                <div
-                  className="w-16 h-14 rounded-xl overflow-hidden relative p-1.5"
-                  style={{ backgroundColor: branding.secondaryColor }}
-                >
+                <div className="w-16 h-16 rounded-xl overflow-hidden relative p-1.5 bg:bg-primary-500/10 dark:bg-primary-100/20">
                   <Image
                     src={branding.logo}
                     alt={companyName}
@@ -50,7 +48,7 @@ export default function Header({ showBackButton = false }: HeaderProps) {
                   <Box className="w-7 h-7 text-white" />
                 </div>
               )}
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white hidden sm:block">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white hidden sm:block">
                 {companyName}
               </h1>
             </TransitionLink>

@@ -368,7 +368,10 @@ export default function StepPage() {
                   </div>
                   <div className="w-11 h-11 flex items-center justify-center">
                     <span className="text-white/70 text-sm font-medium">
-                      {currentStepIndex + 1}/{assembly.steps?.length || 0}
+                      <span style={{ color: branding.secondaryColor }}>
+                        {currentStepIndex + 1}
+                      </span>
+                      /{assembly.steps?.length || 0}
                     </span>
                   </div>
                 </div>
@@ -388,7 +391,7 @@ export default function StepPage() {
                       }
                       className="w-full h-1.5 bg-white/30 rounded-full appearance-none cursor-pointer"
                       style={{
-                        background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${
+                        background: `linear-gradient(to right, ${branding.primaryColor} 0%, ${branding.primaryColor} ${
                           (animationProgress / (animationDuration || 5)) * 100
                         }%, rgba(255,255,255,0.3) ${
                           (animationProgress / (animationDuration || 5)) * 100
@@ -432,7 +435,11 @@ export default function StepPage() {
                     {/* Play/Pause Button */}
                     <button
                       onClick={handlePlayPause}
-                      className="w-16 h-16 bg-primary-600 hover:bg-primary-700 rounded-2xl flex items-center justify-center transition-colors shadow-lg shadow-primary-600/30"
+                      className="w-16 h-16 rounded-2xl flex items-center justify-center transition-colors shadow-lg"
+                      style={{
+                        backgroundColor: branding.primaryColor,
+                        boxShadow: `0 10px 15px -3px ${branding.primaryColor}50`,
+                      }}
                       aria-label={
                         isPlaying ? t("pause") || "Pause" : t("play") || "Play"
                       }
@@ -535,7 +542,10 @@ export default function StepPage() {
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     {assemblyName}
                   </span>
-                  <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+                  <h1
+                    className="text-lg font-bold text-gray-900 dark:text-white"
+                    style={{ color: branding.primaryColor }}
+                  >
                     {stepTitle}
                   </h1>
                 </div>
@@ -562,7 +572,11 @@ export default function StepPage() {
                           {currentStep.toolsRequired.map((tool, index) => (
                             <span
                               key={index}
-                              className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-full border border-blue-200 dark:border-blue-800"
+                              className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700/50 text-xs rounded-full border"
+                              style={{
+                                color: branding.secondaryColor,
+                                borderColor: branding.secondaryColor,
+                              }}
                             >
                               {tool}
                             </span>
@@ -591,6 +605,8 @@ export default function StepPage() {
               steps={assembly.steps as Step[]}
               currentStepIndex={currentStepIndex}
               isAnimating={isAnimating}
+              primaryColor={branding.primaryColor}
+              secondaryColor={branding.secondaryColor}
               onStepClick={(index) => {
                 if (index === currentStepIndex) {
                   handleReset();
@@ -626,6 +642,8 @@ export default function StepPage() {
                   steps={assembly.steps as Step[]}
                   currentStepIndex={currentStepIndex}
                   isAnimating={isAnimating}
+                  primaryColor={branding.primaryColor}
+                  secondaryColor={branding.secondaryColor}
                   onStepClick={(index) => {
                     if (index === currentStepIndex) {
                       handleReset();
@@ -693,17 +711,29 @@ export default function StepPage() {
             {/* Right Sidebar - Step Info */}
             <div className="w-80 xl:w-96 flex-shrink-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
               {/* Step Header */}
-              <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-primary-50/50 to-blue-50/50 dark:from-primary-900/20 dark:to-blue-900/20">
+              <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/20">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="w-8 h-8 rounded-lg bg-primary-500 text-white flex items-center justify-center text-sm font-bold">
+                  <span
+                    className="w-8 h-8 rounded-lg text-white flex items-center justify-center text-sm font-bold"
+                    style={{ backgroundColor: branding.primaryColor }}
+                  >
                     {currentStepIndex + 1}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {t("assembly.step")} {currentStepIndex + 1} /{" "}
-                    {assembly.steps?.length || 0}
+                    {t("assembly.step")}{" "}
+                    <span style={{ color: branding.secondaryColor }}>
+                      {currentStepIndex + 1}
+                    </span>{" "}
+                    /{" "}
+                    <span style={{ color: branding.secondaryColor }}>
+                      {assembly.steps?.length || 0}
+                    </span>
                   </span>
                 </div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h1
+                  className="text-xl font-bold text-gray-900 dark:text-white"
+                  style={{ color: branding.primaryColor }}
+                >
                   {stepTitle}
                 </h1>
               </div>
@@ -719,7 +749,10 @@ export default function StepPage() {
                   currentStep.toolsRequired.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                       <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
-                        <Wrench className="w-4 h-4 text-purple-500" />
+                        <Wrench
+                          className="w-4 h-4"
+                          style={{ color: branding.secondaryColor }}
+                        />
                         {t("toolsRequired")}
                       </h3>
                       <div className="flex flex-wrap gap-1.5">

@@ -6,6 +6,7 @@ import React, {
   forwardRef,
 } from "react";
 import { useTranslation } from "@/lib/i18n";
+import { useBranding } from "@/contexts/BrandingContext";
 import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
 
 export interface AudioPlayerRef {
@@ -40,6 +41,7 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
     ref,
   ) {
     const { t, locale } = useTranslation();
+    const { branding } = useBranding();
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -249,8 +251,16 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
             className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all min-h-[44px] min-w-[44px] ${
               isLoading
                 ? "bg-gray-200 dark:bg-gray-700 cursor-not-allowed"
-                : "bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
+                : "shadow-lg"
             }`}
+            style={
+              !isLoading
+                ? {
+                    backgroundColor: branding.primaryColor,
+                    boxShadow: `0 10px 15px -3px ${branding.primaryColor}40`,
+                  }
+                : undefined
+            }
             aria-label={isPlaying ? t("pause") || "Pause" : t("play") || "Play"}
           >
             {isLoading ? (

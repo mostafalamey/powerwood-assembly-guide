@@ -196,28 +196,46 @@ export default function AssemblyPage() {
 
                   {/* Stats Row */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 border border-blue-100 dark:border-blue-800/50">
+                    <div className="bg-gray-50 dark:bg-gray-900/20 rounded-xl p-3 border border-gray-200 dark:border-gray-800/50">
                       <div className="flex items-center gap-2 mb-1">
-                        <Clock className="w-4 h-4 text-blue-500" />
-                        <span className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                        <Clock
+                          className="w-4 h-4"
+                          style={{ color: branding.primaryColor }}
+                        />
+                        <span
+                          className="text-xs font-medium"
+                          style={{ color: branding.primaryColor }}
+                        >
                           {t("assembly.estimatedTime")}
                         </span>
                       </div>
-                      <p className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                      <p
+                        className="text-lg font-bold"
+                        style={{ color: branding.primaryColor }}
+                      >
                         {assembly.estimatedTime}{" "}
                         <span className="text-xs font-normal">
                           {t("assembly.minutes")}
                         </span>
                       </p>
                     </div>
-                    <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 border border-green-100 dark:border-green-800/50">
+                    <div className="bg-gray-50 dark:bg-gray-900/20 rounded-xl p-3 border border-gray-200 dark:border-gray-800/50">
                       <div className="flex items-center gap-2 mb-1">
-                        <ListOrdered className="w-4 h-4 text-green-500" />
-                        <span className="text-xs text-green-700 dark:text-green-300 font-medium">
+                        <ListOrdered
+                          className="w-4 h-4"
+                          style={{ color: branding.secondaryColor }}
+                        />
+                        <span
+                          className="text-xs font-medium"
+                          style={{ color: branding.secondaryColor }}
+                        >
                           {t("assembly.totalSteps")}
                         </span>
                       </div>
-                      <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                      <p
+                        className="text-lg font-bold"
+                        style={{ color: branding.secondaryColor }}
+                      >
                         {assembly.steps?.length || 0}{" "}
                         <span className="text-xs font-normal">
                           {t("assembly.steps")}
@@ -257,7 +275,11 @@ export default function AssemblyPage() {
                   <div className="mt-auto">
                     <TransitionLink
                       href={`/assembly/${assembly.id}/step/${assembly.steps?.[0]?.id || "1"}`}
-                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 min-h-[48px]"
+                      className="flex items-center justify-center gap-2 w-full text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[48px]"
+                      style={{
+                        backgroundColor: branding.primaryColor,
+                        boxShadow: `0 10px 15px -3px ${branding.primaryColor}40`,
+                      }}
                     >
                       <Play className="w-5 h-5" />
                       {t("assembly.startAssembly")}
