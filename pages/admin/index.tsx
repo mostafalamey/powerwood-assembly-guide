@@ -201,7 +201,7 @@ export default function AdminDashboard() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold mb-1">
-                  Welcome to PW Assembly Admin
+                  Welcome to ML Assemble Admin Panel
                 </h1>
                 <p className="text-blue-100 text-sm">
                   Manage your assembly guides, 3D models, and animations
