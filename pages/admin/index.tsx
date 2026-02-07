@@ -24,7 +24,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-interface CabinetIndex {
+interface AssemblyIndex {
   id: string;
   name: { en: string; ar: string };
   category: string;
@@ -41,13 +41,13 @@ interface Category {
 }
 
 interface DashboardStats {
-  totalCabinets: number;
+  totalAssemblies: number;
   totalSteps: number;
-  cabinetsWithModels: number;
-  cabinetsWithImages: number;
+  assembliesWithModels: number;
+  assembliesWithImages: number;
   categoryCounts: Record<string, number>;
-  recentCabinets: CabinetIndex[];
-  cabinetsNeedingAttention: CabinetIndex[];
+  recentAssemblies: AssemblyIndex[];
+  assembliesNeedingAttention: AssemblyIndex[];
 }
 
 export default function AdminDashboard() {
@@ -64,16 +64,23 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch cabinets index
-        const cabinetsRes = await fetch("/api/cabinets");
-        const cabinetsData = await cabinetsRes.json();
+        // Add cache-busting to prevent stale cached responses
+        const cacheBuster = `_=${Date.now()}`;
+
+        // Fetch assemblies index
+        const assembliesRes = await fetch(`/api/assemblies?${cacheBuster}`, {
+          cache: "no-store",
+        });
+        const assembliesData = await assembliesRes.json();
         // API returns array directly, not wrapped in object
-        const cabinets: CabinetIndex[] = Array.isArray(cabinetsData)
-          ? cabinetsData
-          : cabinetsData.cabinets || [];
+        const assemblies: AssemblyIndex[] = Array.isArray(assembliesData)
+          ? assembliesData
+          : assembliesData.assemblies || [];
 
         // Fetch categories
-        const categoriesRes = await fetch("/api/categories");
+        const categoriesRes = await fetch(`/api/categories?${cacheBuster}`, {
+          cache: "no-store",
+        });
         const categoriesData = await categoriesRes.json();
         // Categories API also returns array directly
         const categoriesList = Array.isArray(categoriesData)
@@ -82,32 +89,32 @@ export default function AdminDashboard() {
         setCategories(categoriesList);
 
         // Calculate stats
-        const totalSteps = cabinets.reduce(
+        const totalSteps = assemblies.reduce(
           (sum, c) => sum + (c.stepCount || 0),
           0,
         );
-        const cabinetsWithModels = cabinets.filter((c) => c.model).length;
-        const cabinetsWithImages = cabinets.filter((c) => c.image).length;
+        const assembliesWithModels = assemblies.filter((c) => c.model).length;
+        const assembliesWithImages = assemblies.filter((c) => c.image).length;
 
         // Count by category
         const categoryCounts: Record<string, number> = {};
-        cabinets.forEach((c) => {
+        assemblies.forEach((c) => {
           categoryCounts[c.category] = (categoryCounts[c.category] || 0) + 1;
         });
 
-        // Cabinets needing attention (no steps or no model)
-        const cabinetsNeedingAttention = cabinets.filter(
+        // Assemblies needing attention (no steps or no model)
+        const assembliesNeedingAttention = assemblies.filter(
           (c) => !c.stepCount || c.stepCount === 0 || !c.model,
         );
 
         setStats({
-          totalCabinets: cabinets.length,
+          totalAssemblies: assemblies.length,
           totalSteps,
-          cabinetsWithModels,
-          cabinetsWithImages,
+          assembliesWithModels,
+          assembliesWithImages,
           categoryCounts,
-          recentCabinets: cabinets.slice(0, 5),
-          cabinetsNeedingAttention: cabinetsNeedingAttention.slice(0, 5),
+          recentAssemblies: assemblies.slice(0, 5),
+          assembliesNeedingAttention: assembliesNeedingAttention.slice(0, 5),
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -194,18 +201,18 @@ export default function AdminDashboard() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold mb-1">
-                  Welcome to PW Assembly Admin
+                  Welcome to ML Assemble Admin Panel
                 </h1>
                 <p className="text-blue-100 text-sm">
-                  Manage your cabinet assembly guides, 3D models, and animations
+                  Manage your assembly guides, 3D models, and animations
                 </p>
               </div>
               <Link
-                href="/admin/cabinets/new"
+                href="/admin/assemblies/new"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl text-sm font-medium transition-all duration-200"
               >
                 <Plus className="w-5 h-5" />
-                Add New Cabinet
+                Add New Assembly
               </Link>
             </div>
           </div>
@@ -226,15 +233,15 @@ export default function AdminDashboard() {
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Total Cabinets */}
+                {/* Total Assemblies */}
                 <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-5 border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Total Cabinets
+                        Total Assemblies
                       </p>
                       <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                        {stats.totalCabinets}
+                        {stats.totalAssemblies}
                       </p>
                     </div>
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
@@ -243,10 +250,10 @@ export default function AdminDashboard() {
                   </div>
                   <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
                     <Link
-                      href="/admin/cabinets"
+                      href="/admin/assemblies"
                       className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
                     >
-                      View all cabinets
+                      View all assemblies
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
@@ -271,9 +278,9 @@ export default function AdminDashboard() {
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       ~
                       {Math.round(
-                        stats.totalSteps / (stats.totalCabinets || 1),
+                        stats.totalSteps / (stats.totalAssemblies || 1),
                       )}{" "}
-                      steps per cabinet
+                      steps per assembly
                     </p>
                   </div>
                 </div>
@@ -286,9 +293,9 @@ export default function AdminDashboard() {
                         3D Models
                       </p>
                       <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                        {stats.cabinetsWithModels}
+                        {stats.assembliesWithModels}
                         <span className="text-lg text-gray-400 dark:text-gray-500">
-                          /{stats.totalCabinets}
+                          /{stats.totalAssemblies}
                         </span>
                       </p>
                     </div>
@@ -301,7 +308,7 @@ export default function AdminDashboard() {
                       <div
                         className="bg-gradient-to-r from-violet-500 to-purple-600 h-1.5 rounded-full transition-all"
                         style={{
-                          width: `${(stats.cabinetsWithModels / (stats.totalCabinets || 1)) * 100}%`,
+                          width: `${(stats.assembliesWithModels / (stats.totalAssemblies || 1)) * 100}%`,
                         }}
                       ></div>
                     </div>
@@ -338,7 +345,7 @@ export default function AdminDashboard() {
                   <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
                     <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                       <PieChart className="text-amber-500 w-5 h-5" />
-                      Cabinets by Category
+                      Assemblies by Category
                     </h2>
                   </div>
                   <div className="p-5 space-y-3">
@@ -361,7 +368,7 @@ export default function AdminDashboard() {
                               <div
                                 className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all"
                                 style={{
-                                  width: `${(count / stats.totalCabinets) * 100}%`,
+                                  width: `${(count / stats.totalAssemblies) * 100}%`,
                                 }}
                               ></div>
                             </div>
@@ -371,7 +378,7 @@ export default function AdminDashboard() {
                     )}
                     {Object.keys(stats.categoryCounts).length === 0 && (
                       <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-                        No cabinets added yet
+                        No assemblies added yet
                       </p>
                     )}
                   </div>
@@ -386,15 +393,15 @@ export default function AdminDashboard() {
                     </h2>
                   </div>
                   <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
-                    {stats.cabinetsNeedingAttention.length > 0 ? (
-                      stats.cabinetsNeedingAttention.map((cabinet) => (
+                    {stats.assembliesNeedingAttention.length > 0 ? (
+                      stats.assembliesNeedingAttention.map((assembly) => (
                         <Link
-                          key={cabinet.id}
-                          href={`/admin/cabinets/${cabinet.id}/edit`}
+                          key={assembly.id}
+                          href={`/admin/assemblies/${assembly.id}/edit`}
                           className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                         >
                           <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                            {!cabinet.model ? (
+                            {!assembly.model ? (
                               <Box className="text-amber-600 dark:text-amber-400 w-5 h-5" />
                             ) : (
                               <ListOrdered className="text-amber-600 dark:text-amber-400 w-5 h-5" />
@@ -402,16 +409,16 @@ export default function AdminDashboard() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {cabinet.name.en}
+                              {assembly.name.en}
                             </p>
                             <p className="text-xs text-amber-600 dark:text-amber-400">
-                              {!cabinet.model && "Missing 3D model"}
-                              {!cabinet.model &&
-                                (!cabinet.stepCount ||
-                                  cabinet.stepCount === 0) &&
+                              {!assembly.model && "Missing 3D model"}
+                              {!assembly.model &&
+                                (!assembly.stepCount ||
+                                  assembly.stepCount === 0) &&
                                 " • "}
-                              {(!cabinet.stepCount ||
-                                cabinet.stepCount === 0) &&
+                              {(!assembly.stepCount ||
+                                assembly.stepCount === 0) &&
                                 "No steps"}
                             </p>
                           </div>
@@ -424,7 +431,7 @@ export default function AdminDashboard() {
                           <CheckCircle className="text-green-600 dark:text-green-400 w-6 h-6" />
                         </div>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                          All cabinets are complete!
+                          All assemblies are complete!
                         </p>
                       </div>
                     )}
@@ -442,7 +449,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <Link
-                    href="/admin/cabinets/new"
+                    href="/admin/assemblies/new"
                     className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200/50 dark:border-blue-700/30 hover:shadow-md transition-all group"
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
@@ -450,16 +457,16 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Add Cabinet
+                        Add Assembly
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Create new cabinet
+                        Create new assembly
                       </p>
                     </div>
                   </Link>
 
                   <Link
-                    href="/admin/cabinets"
+                    href="/admin/assemblies"
                     className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-700/30 hover:shadow-md transition-all group"
                   >
                     <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
@@ -467,10 +474,10 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Manage Cabinets
+                        Manage Assemblies
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        View all cabinets
+                        View all assemblies
                       </p>
                     </div>
                   </Link>
@@ -513,32 +520,32 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Recent Cabinets */}
+              {/* Recent Assemblies */}
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
                 <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between">
                   <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <Clock className="text-blue-500 w-5 h-5" />
-                    Recent Cabinets
+                    Recent Assemblies
                   </h2>
                   <Link
-                    href="/admin/cabinets"
+                    href="/admin/assemblies"
                     className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     View all
                   </Link>
                 </div>
                 <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
-                  {stats.recentCabinets.map((cabinet) => (
+                  {stats.recentAssemblies.map((assembly) => (
                     <Link
-                      key={cabinet.id}
-                      href={`/admin/cabinets/${cabinet.id}/steps`}
+                      key={assembly.id}
+                      href={`/admin/assemblies/${assembly.id}/steps`}
                       className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
                     >
                       <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                        {cabinet.image ? (
+                        {assembly.image ? (
                           <img
-                            src={cabinet.image}
-                            alt={cabinet.name.en}
+                            src={assembly.image}
+                            alt={assembly.name.en}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -547,31 +554,31 @@ export default function AdminDashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          {cabinet.name.en}
+                          {assembly.name.en}
                         </p>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                             <Folder className="w-3 h-3" />
-                            {getCategoryName(cabinet.category)}
+                            {getCategoryName(assembly.category)}
                           </span>
                           <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                             <ListOrdered className="w-3 h-3" />
-                            {cabinet.stepCount || 0} steps
+                            {assembly.stepCount || 0} steps
                           </span>
                         </div>
                       </div>
                       <ChevronRight className="text-gray-400 w-5 h-5" />
                     </Link>
                   ))}
-                  {stats.recentCabinets.length === 0 && (
+                  {stats.recentAssemblies.length === 0 && (
                     <div className="px-5 py-8 text-center">
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        No cabinets yet.{" "}
+                        No assemblies yet.{" "}
                         <Link
-                          href="/admin/cabinets/new"
+                          href="/admin/assemblies/new"
                           className="text-blue-600 dark:text-blue-400 hover:underline"
                         >
-                          Add your first cabinet
+                          Add your first assembly
                         </Link>
                       </p>
                     </div>

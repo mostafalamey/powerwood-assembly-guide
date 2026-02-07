@@ -1,10 +1,11 @@
 import Link, { LinkProps } from "next/link";
 import { useRouter } from "next/router";
-import { forwardRef, MouseEvent, ReactNode } from "react";
+import { CSSProperties, forwardRef, MouseEvent, ReactNode } from "react";
 
 interface TransitionLinkProps extends LinkProps {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
   title?: string;
   target?: string;
   onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
@@ -16,7 +17,10 @@ interface TransitionLinkProps extends LinkProps {
  * View Transitions API is not supported.
  */
 const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>(
-  ({ children, className, title, target, onClick, href, ...props }, ref) => {
+  (
+    { children, className, style, title, target, onClick, href, ...props },
+    ref,
+  ) => {
     const router = useRouter();
 
     const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -54,6 +58,7 @@ const TransitionLink = forwardRef<HTMLAnchorElement, TransitionLinkProps>(
         ref={ref}
         href={href}
         className={className}
+        style={style}
         title={title}
         target={target}
         onClick={handleClick}

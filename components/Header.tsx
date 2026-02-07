@@ -1,15 +1,22 @@
 import { useTranslation } from "@/lib/i18n";
+import { useBranding } from "@/contexts/BrandingContext";
 import TransitionLink from "./TransitionLink";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
+import Image from "next/image";
 import { ArrowLeft, Box } from "lucide-react";
+import { Color } from "three";
 
 interface HeaderProps {
   showBackButton?: boolean;
 }
 
 export default function Header({ showBackButton = false }: HeaderProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const { branding } = useBranding();
+
+  const companyName =
+    locale === "ar" ? branding.companyNameAr : branding.companyName;
 
   return (
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-sm sticky top-0 z-50 border-b border-gray-200/50 dark:border-gray-800/50">
@@ -26,11 +33,23 @@ export default function Header({ showBackButton = false }: HeaderProps) {
               </TransitionLink>
             )}
             <TransitionLink href="/" className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-md shadow-primary-500/20">
-                <Box className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white hidden sm:block">
-                {t("appTitle")}
+              {branding.logo ? (
+                <div className="w-16 h-16 rounded-xl overflow-hidden relative p-1.5 bg:bg-primary-500/10 dark:bg-primary-100/20">
+                  <Image
+                    src={branding.logo}
+                    alt={companyName}
+                    fill
+                    className="object-contain p-1"
+                    unoptimized
+                  />
+                </div>
+              ) : (
+                <div className="w-16 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-md shadow-primary-500/20">
+                  <Box className="w-7 h-7 text-white" />
+                </div>
+              )}
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white hidden sm:block">
+                {companyName}
               </h1>
             </TransitionLink>
           </div>

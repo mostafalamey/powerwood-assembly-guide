@@ -16,7 +16,7 @@ export default function Document() {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#0ea5e9" />
 
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        {/* Favicon is set dynamically per-page from branding settings */}
         <link rel="manifest" href="/manifest.json" />
       </Head>
       <body>

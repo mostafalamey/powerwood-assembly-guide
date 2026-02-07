@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useBranding } from "../../contexts/BrandingContext";
 import Head from "next/head";
 import { useToast } from "../../components/admin/ToastProvider";
 import {
@@ -18,6 +19,7 @@ import {
 export default function AdminLogin() {
   const toast = useToast();
   const { theme, toggleTheme } = useTheme();
+  const { branding } = useBranding();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -34,7 +36,7 @@ export default function AdminLogin() {
 
     if (success) {
       toast.success("Signed in successfully.");
-      router.push("/admin/cabinets");
+      router.push("/admin");
     } else {
       setError("Invalid username or password");
       toast.error("Invalid username or password.");
@@ -45,7 +47,8 @@ export default function AdminLogin() {
   return (
     <>
       <Head>
-        <title>Admin Login - PWAssemblyGuide</title>
+        <title>Admin Login | ML-Assemble</title>
+        <link rel="icon" href="/favicon.svg" />
       </Head>
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
         {/* Background decoration */}

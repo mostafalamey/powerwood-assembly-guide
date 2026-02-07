@@ -7,7 +7,7 @@ import {
   StepAnimation,
   ObjectKeyframe,
   CameraKeyframe,
-} from "@/types/cabinet";
+} from "@/types/assembly";
 import { AnnotationInstance } from "@/types/animation";
 import {
   loadAnnotationModel,

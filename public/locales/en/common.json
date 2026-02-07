@@ -1,11 +1,11 @@
 {
   "appTitle": "PW Assembly Guide",
-  "appDescription": "Interactive 3D kitchen cabinet assembly instructions",
+  "appDescription": "Interactive 3D assembly instructions with step-by-step guidance",
   "welcome": "Welcome to PW Assembly Guide",
-  "homeDescription": "Follow step-by-step 3D instructions to assemble your kitchen cabinets with ease",
+  "homeDescription": "Follow step-by-step 3D instructions to assemble your products with ease",
   "scanQRCode": "Scan QR Code to Get Started",
-  "scanInstructions": "Use your phone camera to scan the QR code on your cabinet box",
-  "qrCodeLocation": "Look for the QR code sticker on the side of your cabinet packaging",
+  "scanInstructions": "Use your phone camera to scan the QR code on your product box",
+  "qrCodeLocation": "Look for the QR code sticker on the side of your product packaging",
   "browseCategories": "Browse by Category",
   "features": "Key Features",
   "feature3D": "Interactive 3D View",
@@ -30,8 +30,8 @@
     "fillers": "Fillers",
     "fillersDescription": "Filler strips and accessories"
   },
-  "cabinet": {
-    "overview": "Cabinet Overview",
+  "assembly": {
+    "overview": "Assembly Overview",
     "estimatedTime": "Estimated Time",
     "totalSteps": "Total Steps",
     "requiredTools": "Required Tools",
@@ -69,15 +69,15 @@
     "arabic": "العربية"
   },
   "errors": {
-    "notFound": "Cabinet Not Found",
-    "notFoundDescription": "The cabinet you're looking for doesn't exist or has been removed.",
+    "notFound": "Assembly Not Found",
+    "notFoundDescription": "The assembly guide you're looking for doesn't exist or has been removed.",
     "goHome": "Go to Home",
     "loadError": "Failed to Load",
     "loadErrorDescription": "There was an error loading the 3D model. Please check your internet connection.",
     "retry": "Retry"
   },
   "loading": {
-    "cabinet": "Loading cabinet...",
+    "assembly": "Loading assembly...",
     "model": "Loading 3D model...",
     "audio": "Loading audio..."
   },

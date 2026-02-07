@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
+import Head from "next/head";
+import Image from "next/image";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useBranding } from "../../contexts/BrandingContext";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import TransitionLink from "../TransitionLink";
@@ -11,7 +14,9 @@ import {
   ChevronLeft,
   LayoutDashboard,
   Package,
+  FolderOpen,
   QrCode,
+  Palette,
   ExternalLink,
   Moon,
   Sun,
@@ -30,6 +35,7 @@ export default function AdminLayout({
 }: AdminLayoutProps) {
   const { logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { branding } = useBranding();
   const router = useRouter();
   const toast = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -76,6 +82,10 @@ export default function AdminLayout({
 
   return (
     <div className="h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+      <Head>
+        <title>{title} | ML-Assemble</title>
+        <link rel="icon" href="/favicon.svg" />
+      </Head>
       <div className="flex h-full">
         {/* Mobile overlay */}
         {sidebarOpen && (
@@ -123,14 +133,24 @@ export default function AdminLayout({
               <div
                 className={`flex items-center gap-3 ${isSidebarCollapsed ? "lg:justify-center" : ""}`}
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <Wrench className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center">
+                  <Image
+                    src="/Logo.svg"
+                    alt="ML-Assemble Logo"
+                    width={60}
+                    height={60}
+                    unoptimized
+                  />
                 </div>
                 <div className={isSidebarCollapsed ? "lg:hidden" : ""}>
-                  <h1 className="text-sm font-bold text-gray-900 dark:text-white">
-                    PW Assembly
+                  <h1 className="text-md font-extrabold text-gray-900 dark:text-white">
+                    ML
+                    <span className="font-extralight opacity-70 text-primary-200">
+                      {" "}
+                      Assemble
+                    </span>
                   </h1>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                  <p className="text-[12px] text-gray-500 dark:text-gray-400 font-medium">
                     Admin Panel
                   </p>
                 </div>
@@ -161,11 +181,32 @@ export default function AdminLayout({
               </TransitionLink>
 
               <TransitionLink
-                href="/admin/cabinets"
-                title="Cabinets"
+                href="/admin/categories"
+                title="Categories"
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                   ${
-                    isActivePrefix("/admin/cabinets")
+                    isActivePrefix("/admin/categories")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <FolderOpen
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
+                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
+                  Categories
+                </span>
+              </TransitionLink>
+
+              <TransitionLink
+                href="/admin/assemblies"
+                title="Assemblies"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActivePrefix("/admin/assemblies")
                       ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
                       : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
                   } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
@@ -177,7 +218,7 @@ export default function AdminLayout({
                   }
                 />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
-                  Cabinets
+                  Assemblies
                 </span>
               </TransitionLink>
 
@@ -199,6 +240,27 @@ export default function AdminLayout({
                 />
                 <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
                   QR Codes
+                </span>
+              </TransitionLink>
+
+              <TransitionLink
+                href="/admin/branding"
+                title="Branding"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
+                  ${
+                    isActive("/admin/branding")
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:shadow-md"
+                  } ${isSidebarCollapsed ? "lg:justify-center lg:px-2" : ""}`}
+                onClick={() => setSidebarOpen(false)}
+              >
+                <Palette
+                  className={
+                    isSidebarCollapsed ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  }
+                />
+                <span className={isSidebarCollapsed ? "lg:hidden" : ""}>
+                  Branding
                 </span>
               </TransitionLink>
             </nav>

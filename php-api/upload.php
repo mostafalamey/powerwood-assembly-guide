@@ -11,8 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Define paths
-define('UPLOAD_DIR', __DIR__ . '/../public');
+// Define paths - use DOCUMENT_ROOT on Hostinger, fall back to ../public for local dev
+$uploadRoot = isset($_SERVER['DOCUMENT_ROOT']) && is_dir($_SERVER['DOCUMENT_ROOT'])
+    ? $_SERVER['DOCUMENT_ROOT']
+    : __DIR__ . '/..';
+// On Hostinger static export, assets live in the web root (not in a /public subfolder)
+// In local dev, DOCUMENT_ROOT points to the project root where /public exists
+if (is_dir($uploadRoot . '/public')) {
+    $uploadRoot = $uploadRoot . '/public';
+}
+define('UPLOAD_DIR', $uploadRoot);
 
 // Helper functions
 function sendJSON($data, $statusCode = 200) {

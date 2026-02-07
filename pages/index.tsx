@@ -4,6 +4,7 @@ import TransitionLink from "@/components/TransitionLink";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
 import Image from "next/image";
+import { useBranding } from "@/contexts/BrandingContext";
 import {
   Box,
   ScanLine,
@@ -14,7 +15,8 @@ import {
 } from "lucide-react";
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const { branding } = useBranding();
 
   // Category images mapping
   const categoryImages: Record<string, string> = {
@@ -40,24 +42,48 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>{`${t("appTitle")} - Assembly Guide`}</title>
+        <title>
+          {locale === "en" ? branding.companyName : branding.companyNameAr}
+        </title>
         <meta name="description" content={t("appDescription")} />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
+        <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+        {branding.secondaryColor && (
+          <meta name="theme-color" content={branding.secondaryColor} />
+        )}
       </Head>
 
       <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
         {/* Top Bar */}
         <header className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-800/50 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
-              <Box className="w-5 h-5 text-white" />
-            </div>
+            {branding.logo ? (
+              <div className="w-16 h-16 rounded-xl overflow-hidden relative p-1.5 bg-primary-500/10 dark:bg-primary-100/20">
+                <Image
+                  src={branding.logo}
+                  alt={
+                    locale === "en"
+                      ? branding.companyName
+                      : branding.companyNameAr
+                  }
+                  fill
+                  className="object-contain p-1"
+                  unoptimized
+                />
+              </div>
+            ) : (
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
+                <Box className="w-7 h-7 text-white" />
+              </div>
+            )}
             <div>
               <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight">
-                {t("appTitle")}
+                {locale === "en"
+                  ? branding.companyName
+                  : branding.companyNameAr}
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
                 {t("homeDescription")}
@@ -80,9 +106,17 @@ export default function Home() {
                 <div className="flex md:flex-col items-center md:items-stretch gap-3 md:gap-0">
                   {/* QR Icon */}
                   <div className="relative w-12 h-12 md:w-20 md:h-20 flex-shrink-0 md:mx-auto md:mb-4">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl md:rounded-2xl opacity-20 animate-pulse" />
+                    <div
+                      className="absolute inset-0 rounded-xl md:rounded-2xl opacity-20 animate-pulse"
+                      style={{
+                        background: `linear-gradient(135deg, ${branding.primaryColor}, ${branding.primaryColor})`,
+                      }}
+                    />
                     <div className="absolute inset-1 bg-white dark:bg-gray-800 rounded-lg md:rounded-xl flex items-center justify-center">
-                      <ScanLine className="w-6 h-6 md:w-10 md:h-10 text-primary-500" />
+                      <ScanLine
+                        className="w-6 h-6 md:w-10 md:h-10"
+                        style={{ color: branding.primaryColor }}
+                      />
                     </div>
                   </div>
 
@@ -97,10 +131,22 @@ export default function Home() {
                 </div>
 
                 {/* Info Badge - Hidden on mobile */}
-                <div className="hidden md:block mt-auto bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800/50">
+                <div
+                  className="hidden md:block mt-auto rounded-xl p-4 border"
+                  style={{
+                    background: `linear-gradient(to right, ${branding.primaryColor}15, ${branding.primaryColor}20)`,
+                    borderColor: `${branding.primaryColor}40`,
+                  }}
+                >
                   <div className="flex items-start gap-3">
-                    <Info className="w-[18px] h-[18px] text-blue-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                    <Info
+                      className="w-[18px] h-[18px] flex-shrink-0 mt-0.5"
+                      style={{ color: branding.primaryColor }}
+                    />
+                    <p
+                      className="text-xs leading-relaxed"
+                      style={{ color: branding.primaryColor }}
+                    >
                       {t("qrCodeLocation")}
                     </p>
                   </div>
@@ -109,19 +155,28 @@ export default function Home() {
                 {/* Features - Hidden on mobile */}
                 <div className="hidden md:grid mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid-cols-3 gap-2">
                   <div className="text-center p-2">
-                    <Box className="w-[18px] h-[18px] text-primary-500 mb-1 mx-auto" />
+                    <Box
+                      className="w-[18px] h-[18px] mb-1 mx-auto"
+                      style={{ color: branding.primaryColor }}
+                    />
                     <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
                       3D View
                     </span>
                   </div>
                   <div className="text-center p-2">
-                    <Languages className="w-[18px] h-[18px] text-primary-500 mb-1 mx-auto" />
+                    <Languages
+                      className="w-[18px] h-[18px] mb-1 mx-auto"
+                      style={{ color: branding.primaryColor }}
+                    />
                     <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
                       Bilingual
                     </span>
                   </div>
                   <div className="text-center p-2">
-                    <Volume2 className="w-[18px] h-[18px] text-primary-500 mb-1 mx-auto" />
+                    <Volume2
+                      className="w-[18px] h-[18px] mb-1 mx-auto"
+                      style={{ color: branding.primaryColor }}
+                    />
                     <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
                       Audio
                     </span>
@@ -164,14 +219,29 @@ export default function Home() {
 
                       {/* Category Label */}
                       <div className="p-2 bg-white/80 dark:bg-gray-800/80">
-                        <h3 className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+                        <h3
+                          className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white transition-colors truncate"
+                          style={{
+                            ["--hover-color" as any]: branding.primaryColor,
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.color =
+                              branding.primaryColor)
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.color = "")
+                          }
+                        >
                           {t(`categories.${category}`)}
                         </h3>
                       </div>
 
                       {/* Arrow indicator */}
                       <span className="absolute top-2 end-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/80 dark:bg-gray-700/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                        <ArrowRight className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary-500 rtl:rotate-180" />
+                        <ArrowRight
+                          className="w-3 h-3 md:w-3.5 md:h-3.5 rtl:rotate-180"
+                          style={{ color: branding.secondaryColor }}
+                        />
                       </span>
                     </TransitionLink>
                   ))}
