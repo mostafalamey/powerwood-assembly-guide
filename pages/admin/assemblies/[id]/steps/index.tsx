@@ -634,6 +634,7 @@ export default function StepManagementPage() {
                       Source Cabinet
                     </label>
                     <select
+                      aria-label="Source Cabinet"
                       value={sourceCabinetId}
                       onChange={(e) =>
                         handleSelectSourceCabinet(e.target.value)
@@ -674,6 +675,7 @@ export default function StepManagementPage() {
                       Insert at Position
                     </label>
                     <select
+                      aria-label="Insert at Position"
                       value={copyInsertIndex}
                       onChange={(e) =>
                         setCopyInsertIndex(Number(e.target.value))
