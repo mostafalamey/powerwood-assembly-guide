@@ -24,6 +24,7 @@ export interface AuthoringSceneViewerRef {
   removeAnnotation: (annotationId: string) => void;
   updateAnnotationColor: (annotationId: string, color: string) => void;
   getAnnotationObject: (annotationId: string) => THREE.Object3D | null;
+  frameObject: (object?: THREE.Object3D | null) => void;
 }
 
 interface AuthoringSceneViewerProps {
@@ -179,6 +180,55 @@ const AuthoringSceneViewer = forwardRef<
       getAnnotationObject: (annotationId: string): THREE.Object3D | null => {
         return annotationObjectsRef.current.get(annotationId) || null;
       },
+
+      frameObject: (object?: THREE.Object3D | null) => {
+        if (!object || !cameraRef.current || !controlsRef.current) return;
+
+        const camera = cameraRef.current;
+        const controls = controlsRef.current;
+        const box = new THREE.Box3().setFromObject(object);
+        const center = new THREE.Vector3();
+        const size = new THREE.Vector3();
+
+        if (box.isEmpty()) {
+          object.getWorldPosition(center);
+          const fallbackDirection = camera.position
+            .clone()
+            .sub(controls.target)
+            .normalize();
+          const direction =
+            fallbackDirection.lengthSq() > 0
+              ? fallbackDirection
+              : new THREE.Vector3(1, 1, 1).normalize();
+          const distance = camera.position.distanceTo(controls.target) || 2;
+          camera.position.copy(center).add(direction.multiplyScalar(distance));
+          controls.target.copy(center);
+          controls.update();
+          return;
+        }
+
+        box.getCenter(center);
+        box.getSize(size);
+
+        const maxSize = Math.max(size.x, size.y, size.z);
+        const fov = THREE.MathUtils.degToRad(camera.fov);
+        const fitDistance = maxSize / 2 / Math.tan(fov / 2);
+        const paddedDistance = fitDistance * 1.3;
+        const fallbackDirection = camera.position
+          .clone()
+          .sub(controls.target)
+          .normalize();
+        const direction =
+          fallbackDirection.lengthSq() > 0
+            ? fallbackDirection
+            : new THREE.Vector3(1, 1, 1).normalize();
+
+        camera.position
+          .copy(center)
+          .add(direction.multiplyScalar(paddedDistance));
+        controls.target.copy(center);
+        controls.update();
+      },
     }),
     [onAnnotationLoaded, onObjectSelected],
   );
@@ -279,10 +329,10 @@ const AuthoringSceneViewer = forwardRef<
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.15;
-    controls.rotateSpeed = 0.25; // Reduced from default 1.0
-    controls.panSpeed = 0.25; // Reduced from default 1.0
-    controls.minDistance = 1;
-    controls.maxDistance = 20;
+    controls.rotateSpeed = 0.5; // Reduced from default 1.0
+    controls.panSpeed = 0.8; // Reduced from default 1.0
+    controls.minDistance = 0.5;
+    controls.maxDistance = 30;
     controls.target.set(0, 0.45, 0);
     controlsRef.current = controls;
 

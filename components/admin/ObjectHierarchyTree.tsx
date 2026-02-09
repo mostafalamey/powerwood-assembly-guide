@@ -284,8 +284,8 @@ export default function ObjectHierarchyTree({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-gray-200/50 dark:border-gray-700/50">
+    <div className="flex flex-col h-full max-h-full">
+      <div className="p-3 border-b border-gray-200/50 dark:border-gray-700/50 flex-shrink-0">
         <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
           <GitBranch className="w-4 h-4 text-indigo-500" />
           Object Hierarchy
@@ -294,7 +294,7 @@ export default function ObjectHierarchyTree({
           Click to select • Toggle visibility
         </p>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {renderTree(tree)}
 
         {/* Annotations Section */}
@@ -323,7 +323,7 @@ export default function ObjectHierarchyTree({
           </div>
         )}
       </div>
-      <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+      <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0">
         <Package className="w-3 h-3" />
         {tree.children.length} object(s)
         {annotations.length > 0 && ` • ${annotations.length} annotation(s)`}

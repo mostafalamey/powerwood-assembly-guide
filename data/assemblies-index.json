@@ -1,36 +1,52 @@
 {
-    "assemblies": [
-        {
-            "id": "BC-002",
-            "name": {
-                "en": "1-Door Base Cabinet 60cm",
-                "ar": "خزانة أرضية باب واحد 60 سم"
-            },
-            "category": "base",
-            "estimatedTime": 25,
-            "image": "/images/cabinets/BC-002.png",
-            "model": "/models/BC_002.glb",
-            "description": {
-                "en": "Standard 1-door base cabinet with adjustable shelf",
-                "ar": "خزانة أرضية قياسية باب واحد مع رف قابل للتعديل"
-            },
-            "stepCount": 7
-        },
-        {
-            "id": "BC-003",
-            "name": {
-                "en": "2-Door Base Cabinet 90cm",
-                "ar": "خزانة ارضية بابين 90 سم"
-            },
-            "category": "base",
-            "estimatedTime": 22,
-            "description": {
-                "en": "Some desctiption 123",
-                "ar": "خزانة ارضية بابين"
-            },
-            "stepCount": 3,
-            "image": "/images/cabinets/BC-003.png",
-            "model": "/models/BC_003.glb"
-        }
-    ]
+  "assemblies": [
+    {
+      "id": "BC-002",
+      "name": {
+        "en": "1-Door Base Cabinet 60cm",
+        "ar": "خزانة أرضية باب واحد 60 سم"
+      },
+      "category": "base",
+      "estimatedTime": 25,
+      "image": "/images/cabinets/BC-002.png",
+      "model": "/models/BC_002.glb",
+      "description": {
+        "en": "Standard 1-door base cabinet with adjustable shelf",
+        "ar": "خزانة أرضية قياسية باب واحد مع رف قابل للتعديل"
+      },
+      "stepCount": 7
+    },
+    {
+      "id": "BC-003",
+      "name": {
+        "en": "2-Door Base Cabinet 90cm",
+        "ar": "خزانة ارضية بابين 90 سم"
+      },
+      "category": "base",
+      "estimatedTime": 22,
+      "description": {
+        "en": "Some desctiption 123",
+        "ar": "خزانة ارضية بابين"
+      },
+      "stepCount": 3,
+      "image": "/images/cabinets/BC-003.png",
+      "model": "/models/BC_003.glb"
+    },
+    {
+      "id": "BU-1D-600",
+      "name": {
+        "en": "Base Unit 1 Door 600",
+        "ar": "خزانة ارضية 1 باب 600"
+      },
+      "category": "base",
+      "estimatedTime": 20,
+      "description": {
+        "en": "",
+        "ar": ""
+      },
+      "model": "/models/BaseUnit_1D_600-1770671787115.glb",
+      "image": "/images/assemblies/BaseUnit_1D_600-1770646387877.png",
+      "stepCount": 2
+    }
+  ]
 }

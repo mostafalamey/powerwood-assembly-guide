@@ -380,7 +380,7 @@ export default function EditAssemblyPage() {
                       </span>
                     </div>
                     <Link
-                      href={`/admin/cabinets/${formData.id}/steps`}
+                      href={`/admin/assemblies/${formData.id}/steps`}
                       className="px-4 py-2 text-sm font-medium rounded-xl
                         bg-gradient-to-r from-purple-500 to-purple-600 text-white
                         hover:from-purple-600 hover:to-purple-700

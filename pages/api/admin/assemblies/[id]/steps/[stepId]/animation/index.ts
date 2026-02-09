@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 
-const ASSEMBLIES_DIR = path.join(process.cwd(), "data", "cabinets");
+const ASSEMBLIES_DIR = path.join(process.cwd(), "data", "assemblies");
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,23 +27,23 @@ export default async function handler(
   const { id, stepId } = req.query;
 
   if (!id || !stepId) {
-    return res.status(400).json({ message: "Missing cabinet ID or step ID" });
+    return res.status(400).json({ message: "Missing assembly ID or step ID" });
   }
 
   try {
-    // Read the cabinet file
+    // Read the assembly file
     const assemblyFile = path.join(ASSEMBLIES_DIR, `${id}.json`);
     console.log(`[Animation API] Looking for file:`, assemblyFile);
     console.log(`[Animation API] File exists:`, fs.existsSync(assemblyFile));
 
     if (!fs.existsSync(assemblyFile)) {
       console.log(`[Animation API] ERROR: Assembly file not found`);
-      return res.status(404).json({ message: "Cabinet not found" });
+      return res.status(404).json({ message: "Assembly not found" });
     }
 
     const assemblyData = JSON.parse(fs.readFileSync(assemblyFile, "utf8"));
     console.log(
-      `[Animation API] Cabinet data loaded, steps count:`,
+      `[Animation API] Assembly data loaded, steps count:`,
       assemblyData.steps?.length,
     );
 
@@ -68,7 +68,11 @@ export default async function handler(
     console.log(`[Animation API] Animation data updated for step ${stepId}`);
 
     // Write back to file
-    fs.writeFileSync(assemblyFile, JSON.stringify(assemblyData, null, 2), "utf8");
+    fs.writeFileSync(
+      assemblyFile,
+      JSON.stringify(assemblyData, null, 2),
+      "utf8",
+    );
     console.log(`[Animation API] File saved successfully`);
 
     return res.status(200).json({ message: "Animation saved successfully" });

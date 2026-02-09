@@ -180,7 +180,7 @@ export default function EditStepPage() {
           setPendingFiles({});
         }
 
-        router.push(`/admin/cabinets/${id}/steps`);
+        router.push(`/admin/assemblies/${id}/steps`);
       } else {
         const data = await response.json();
         setError(data.message || "Failed to update step");
@@ -419,7 +419,7 @@ export default function EditStepPage() {
               </div>
             </div>
             <Link
-              href={`/admin/cabinets/${id}/steps`}
+              href={`/admin/assemblies/${id}/steps`}
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -445,7 +445,7 @@ export default function EditStepPage() {
           {/* Breadcrumb */}
           <div className="mb-6">
             <Link
-              href={`/admin/cabinets/${id}/steps`}
+              href={`/admin/assemblies/${id}/steps`}
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -620,7 +620,7 @@ export default function EditStepPage() {
                             </div>
                           </div>
                           <Link
-                            href={`/admin/cabinets/${id}/steps/authoring?step=${stepId}`}
+                            href={`/admin/assemblies/${id}/steps/authoring?step=${stepId}`}
                             className="px-4 py-2 text-xs font-medium rounded-xl
                               bg-gradient-to-r from-green-500 to-emerald-600 text-white
                               hover:from-green-600 hover:to-emerald-700
@@ -647,7 +647,7 @@ export default function EditStepPage() {
                             </div>
                           </div>
                           <Link
-                            href={`/admin/cabinets/${id}/steps/authoring?step=${stepId}`}
+                            href={`/admin/assemblies/${id}/steps/authoring?step=${stepId}`}
                             className="px-4 py-2 text-xs font-medium rounded-xl
                               bg-gradient-to-r from-blue-500 to-indigo-600 text-white
                               hover:from-blue-600 hover:to-indigo-700
@@ -664,7 +664,7 @@ export default function EditStepPage() {
                 {/* Actions */}
                 <div className="flex items-center justify-between pt-2">
                   <Link
-                    href={`/admin/cabinets/${id}/steps`}
+                    href={`/admin/assemblies/${id}/steps`}
                     className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 
                       hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
                   >

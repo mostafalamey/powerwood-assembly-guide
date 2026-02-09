@@ -157,7 +157,7 @@ export default function NewStepPage() {
       });
 
       if (response.ok) {
-        router.push(`/admin/cabinets/${id}/steps`);
+        router.push(`/admin/assemblies/${id}/steps`);
       } else {
         const data = await response.json();
         setError(data.message || "Failed to create step");
@@ -269,7 +269,7 @@ export default function NewStepPage() {
           {/* Breadcrumb */}
           <div className="mb-6">
             <Link
-              href={`/admin/cabinets/${id}/steps`}
+              href={`/admin/assemblies/${id}/steps`}
               className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -438,7 +438,7 @@ export default function NewStepPage() {
               {/* Actions */}
               <div className="flex items-center justify-between pt-2">
                 <Link
-                  href={`/admin/cabinets/${id}/steps`}
+                  href={`/admin/assemblies/${id}/steps`}
                   className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 
                     hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
                 >

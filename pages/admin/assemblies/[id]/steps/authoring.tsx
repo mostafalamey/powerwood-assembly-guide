@@ -31,6 +31,7 @@ import {
   Grid3x3,
   Trash2,
   Clock,
+  Focus,
 } from "lucide-react";
 import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
@@ -232,6 +233,11 @@ export default function StepAuthoringPage() {
   const handleSelectObject = useCallback((object: any) => {
     setSelectedObject(object);
   }, []);
+
+  const handleFrameSelected = useCallback(() => {
+    if (!selectedObject) return;
+    sceneViewerRef.current?.frameObject(selectedObject);
+  }, [selectedObject]);
 
   const handlePlayPause = useCallback(() => {
     setIsPlaying((prev) => {
@@ -1743,7 +1749,7 @@ export default function StepAuthoringPage() {
         <title>Visual Step Editor - Admin Panel</title>
       </Head>
       <AdminLayout title="Visual Step Editor">
-        <div className="min-h-[calc(100vh-140px)] flex flex-col overflow-hidden rounded-xl">
+        <div className="h-[calc(100vh-140px)] min-h-0 flex flex-col overflow-hidden rounded-xl">
           <audio ref={audioRef} className="hidden" preload="auto" />
           {/* Top toolbar */}
           <div className="relative z-20 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b border-white/50 dark:border-gray-700/50 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4 shadow-sm">
@@ -1836,6 +1842,15 @@ export default function StepAuthoringPage() {
                   <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
+
+              <button
+                onClick={handleFrameSelected}
+                disabled={!selectedObject}
+                className="px-3 py-1.5 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-xl hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 border border-gray-200/50 dark:border-gray-600/50 flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Frame selected object"
+              >
+                <Focus className="w-4 h-4 sm:w-5 sm:h-5" />
+              </button>
 
               {/* Snap settings dropdown - Desktop only */}
               <div className="hidden md:block relative" ref={snapDropdownRef}>
@@ -2014,9 +2029,9 @@ export default function StepAuthoringPage() {
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)_360px]">
+          <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)_360px] overflow-hidden">
             {/* Left column: Scene status + hierarchy */}
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/50 dark:border-gray-700/50 flex flex-col min-h-[30vh] md:min-h-0">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b md:border-b-0 md:border-r border-white/50 dark:border-gray-700/50 flex flex-col overflow-hidden min-h-0 min-h-[30vh] md:min-h-0">
               <div className="p-3 sm:p-4 border-b border-gray-200/50 dark:border-gray-700/50">
                 <h3 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white mb-2 sm:mb-3 flex items-center gap-2">
                   <Box className="w-5 h-5 text-blue-500" />
@@ -2186,7 +2201,7 @@ export default function StepAuthoringPage() {
             </div>
 
             {/* Right column: Keyframe Properties Editor */}
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/50 dark:border-gray-700/50 px-4 py-3 overflow-y-auto">
+            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/50 dark:border-gray-700/50 px-4 py-3 min-h-0 overflow-y-auto">
               {(() => {
                 const hasSelection = selectedKeyframeTime !== null;
                 // Find the selected keyframe(s)
