@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Head from "next/head";
 import Link from "next/link";
@@ -31,6 +31,7 @@ import {
   Package,
   FolderPlus,
   FolderTree,
+  GripVertical,
 } from "lucide-react";
 
 interface Assembly {
@@ -86,6 +87,13 @@ export default function AssembliesListPage() {
   const [assemblyModalMode, setAssemblyModalMode] = useState<"create" | "edit">(
     "create",
   );
+  const [draggedAssemblyId, setDraggedAssemblyId] = useState<string | null>(
+    null,
+  );
+  const [dragOverCategoryId, setDragOverCategoryId] = useState<string | null>(
+    null,
+  );
+  const [isDragActive, setIsDragActive] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -135,6 +143,26 @@ export default function AssembliesListPage() {
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchAssemblyById = async (assemblyId: string) => {
+    try {
+      const token = localStorage.getItem("admin_token");
+      const response = await fetch(`/api/assemblies?id=${assemblyId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      return (await response.json()) as Assembly;
+    } catch (error) {
+      console.error("Error loading assembly:", error);
+      return null;
     }
   };
 
@@ -251,7 +279,9 @@ export default function AssembliesListPage() {
     fetchAssemblys();
   };
 
-  const handleUpdateAssembly = async (formData: AssemblyFormData) => {
+  const handleUpdateAssembly = async (
+    formData: AssemblyFormData & { steps?: any[] },
+  ) => {
     const token = localStorage.getItem("admin_token");
     const response = await fetch("/api/assemblies", {
       method: "PUT",
@@ -272,6 +302,83 @@ export default function AssembliesListPage() {
     toast.success("Assembly updated successfully");
     fetchAssemblys();
   };
+
+  const handleAssemblyDragStart =
+    (assemblyId: string) => (event: React.DragEvent) => {
+      event.dataTransfer.setData("text/plain", assemblyId);
+      event.dataTransfer.effectAllowed = "move";
+      const dragImageTarget = (event.currentTarget as HTMLElement).closest(
+        "tr",
+      ) as HTMLElement | null;
+      if (dragImageTarget) {
+        const rect = dragImageTarget.getBoundingClientRect();
+        event.dataTransfer.setDragImage(
+          dragImageTarget,
+          event.clientX - rect.left,
+          event.clientY - rect.top,
+        );
+      }
+      setDraggedAssemblyId(assemblyId);
+      setIsDragActive(true);
+    };
+
+  const handleAssemblyDragEnd = () => {
+    setDraggedAssemblyId(null);
+    setDragOverCategoryId(null);
+    setIsDragActive(false);
+  };
+
+  const handleCategoryDragOver =
+    (categoryId: string) => (event: React.DragEvent) => {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = "move";
+      setDragOverCategoryId(categoryId);
+    };
+
+  const handleCategoryDragLeave = (event: React.DragEvent) => {
+    if (
+      event.relatedTarget instanceof Node &&
+      event.currentTarget.contains(event.relatedTarget)
+    ) {
+      return;
+    }
+    setDragOverCategoryId(null);
+  };
+
+  const handleCategoryDrop =
+    (categoryId: string) => async (event: React.DragEvent) => {
+      event.preventDefault();
+      const assemblyId =
+        event.dataTransfer.getData("text/plain") || draggedAssemblyId;
+
+      setDragOverCategoryId(null);
+      setIsDragActive(false);
+      setDraggedAssemblyId(null);
+
+      if (!assemblyId) {
+        return;
+      }
+
+      const currentAssembly = assemblies.find((a) => a.id === assemblyId);
+      if (!currentAssembly || currentAssembly.category === categoryId) {
+        return;
+      }
+
+      const fullAssembly = await fetchAssemblyById(assemblyId);
+      if (!fullAssembly) {
+        toast.error("Failed to load assembly details.");
+        return;
+      }
+
+      try {
+        await handleUpdateAssembly({
+          ...fullAssembly,
+          category: categoryId,
+        });
+      } catch (error: any) {
+        toast.error(error.message || "Failed to update assembly category.");
+      }
+    };
 
   const openCreateAssemblyModal = () => {
     setSelectedAssembly(null);
@@ -497,10 +604,28 @@ export default function AssembliesListPage() {
                       .includes(searchTerm.toLowerCase()),
                 );
 
+                const isDropTarget = dragOverCategoryId === category.id;
+
                 return (
-                  <div key={category.id} className="space-y-4">
+                  <div
+                    key={category.id}
+                    className={`space-y-4 rounded-xl transition-colors ${
+                      isDropTarget ? "bg-blue-50/40 dark:bg-blue-900/10" : ""
+                    }`}
+                    onDragOver={handleCategoryDragOver(category.id)}
+                    onDragLeave={handleCategoryDragLeave}
+                    onDrop={handleCategoryDrop(category.id)}
+                  >
                     {/* Category Header */}
-                    <div className="flex items-center justify-between gap-4 pb-3 border-b-2 border-gray-200 dark:border-gray-700">
+                    <div
+                      className={`flex items-center justify-between gap-4 pb-3 border-b-2 transition-colors ${
+                        isDropTarget
+                          ? "border-blue-400 bg-blue-50/60 dark:bg-blue-900/20"
+                          : "border-gray-200 dark:border-gray-700"
+                      } ${isDragActive ? "rounded-xl px-2 py-2 -mx-2" : ""}`}
+                      onDragOver={handleCategoryDragOver(category.id)}
+                      onDrop={handleCategoryDrop(category.id)}
+                    >
                       <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30">
                           <FolderTree className="w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -552,6 +677,7 @@ export default function AssembliesListPage() {
                           <table className="min-w-full divide-y divide-gray-200/50 dark:divide-gray-700/50">
                             <thead className="bg-gray-50/50 dark:bg-gray-800/50">
                               <tr>
+                                <th className="px-2 py-3" aria-hidden="true" />
                                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
                                   Thumbnail
                                 </th>
@@ -576,8 +702,26 @@ export default function AssembliesListPage() {
                               {filteredInCategory.map((assembly) => (
                                 <tr
                                   key={assembly.id}
-                                  className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
+                                  className={`hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors ${
+                                    draggedAssemblyId === assembly.id
+                                      ? "opacity-60"
+                                      : ""
+                                  }`}
                                 >
+                                  <td className="px-2 py-4 whitespace-nowrap">
+                                    <button
+                                      type="button"
+                                      className="inline-flex items-center justify-center w-6 h-6 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing"
+                                      aria-label={`Drag ${assembly.id}`}
+                                      draggable
+                                      onDragStart={handleAssemblyDragStart(
+                                        assembly.id,
+                                      )}
+                                      onDragEnd={handleAssemblyDragEnd}
+                                    >
+                                      <GripVertical className="w-4 h-4" />
+                                    </button>
+                                  </td>
                                   <td className="px-4 py-4 whitespace-nowrap">
                                     <div className="w-14 h-14 relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
                                       {assembly.image ? (
@@ -645,6 +789,9 @@ export default function AssembliesListPage() {
                               key={assembly.id}
                               className="bg-white/50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200/50 dark:border-gray-700/50 
                                 hover:shadow-lg hover:border-gray-300/50 dark:hover:border-gray-600/50 transition-all duration-300"
+                              draggable
+                              onDragStart={handleAssemblyDragStart(assembly.id)}
+                              onDragEnd={handleAssemblyDragEnd}
                             >
                               <div className="flex gap-4">
                                 <div className="w-16 h-16 flex-shrink-0 relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
