@@ -1719,7 +1719,9 @@ export default function StepAuthoringPage() {
       return;
     }
 
-    audio.src = audioUrl;
+    const cacheBustedUrl =
+      audioUrl + (audioUrl.includes("?") ? "&" : "?") + "v=" + Date.now();
+    audio.src = cacheBustedUrl;
     audio.load();
     audio.currentTime = 0;
 

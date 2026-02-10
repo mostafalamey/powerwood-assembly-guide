@@ -45,6 +45,35 @@ function verifyAuth() {
     return $token;
 }
 
+function normalizeUploadPath($publicPath) {
+    if (!$publicPath) {
+        return null;
+    }
+
+    $publicPath = trim($publicPath);
+    if ($publicPath === '') {
+        return null;
+    }
+
+    if (strpos($publicPath, '..') !== false) {
+        return null;
+    }
+
+    if ($publicPath[0] === '/') {
+        $publicPath = substr($publicPath, 1);
+    }
+
+    $fullPath = UPLOAD_DIR . '/' . $publicPath;
+    $normalizedFullPath = str_replace('\\', '/', $fullPath);
+    $normalizedRoot = str_replace('\\', '/', UPLOAD_DIR);
+
+    if (strpos($normalizedFullPath, $normalizedRoot) !== 0) {
+        return null;
+    }
+
+    return $fullPath;
+}
+
 verifyAuth();
 
 // POST /api/upload
@@ -53,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get directory from POST data (matches client FormData field name)
         $directory = isset($_POST['directory']) ? $_POST['directory'] : 'uploads';
         $requestedFilename = isset($_POST['filename']) ? $_POST['filename'] : null;
+        $replacePath = isset($_POST['replacePath']) ? $_POST['replacePath'] : null;
         
         if (empty($_FILES['file'])) {
             sendError('No file uploaded', 400);
@@ -98,6 +128,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         $targetPath = $fullTargetDir . '/' . $uploadFilename;
+        $publicPath = '/' . $directory . '/' . $uploadFilename;
+
+        if ($replacePath && $replacePath !== $publicPath) {
+            $existingPath = normalizeUploadPath($replacePath);
+            if ($existingPath && file_exists($existingPath)) {
+                if (!unlink($existingPath)) {
+                    sendError('Failed to delete existing file', 500);
+                }
+            }
+        }
         
         // Move uploaded file
         if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
@@ -105,8 +145,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Return public path (matches Next.js API format)
-        $publicPath = '/' . $directory . '/' . $uploadFilename;
-        
         sendJSON([
             'message' => 'File uploaded successfully',
             'path' => $publicPath,

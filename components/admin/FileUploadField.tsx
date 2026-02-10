@@ -32,6 +32,9 @@ export default function FileUploadField({
     const formData = new FormData();
     formData.append("file", file);
     formData.append("directory", directory);
+    if (value) {
+      formData.append("replacePath", value);
+    }
 
     try {
       const token = localStorage.getItem("admin_token");
