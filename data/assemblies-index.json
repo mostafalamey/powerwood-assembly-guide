@@ -28,7 +28,7 @@
         "en": "Some desctiption 123",
         "ar": "خزانة ارضية بابين"
       },
-      "stepCount": 3,
+      "stepCount": 4,
       "image": "/images/cabinets/BC-003.png",
       "model": "/models/BC_003.glb"
     },
@@ -44,7 +44,7 @@
         "en": "",
         "ar": ""
       },
-      "model": "/models/BaseUnit_1D_600-1770671787115.glb",
+      "model": "/models/BaseUnit_1D_600-1770747178862.glb",
       "image": "/images/assemblies/BaseUnit_1D_600-1770646387877.png",
       "stepCount": 3
     }

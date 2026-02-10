@@ -225,6 +225,17 @@ const AuthoringSceneViewer = forwardRef<
         if (object) {
           applyAnnotationColor(object, color);
           object.userData.annotationColor = color;
+          object.traverse((child: any) => {
+            const originalMaterial = child.userData?.originalMaterial;
+            if (child instanceof THREE.Mesh && originalMaterial) {
+              if (originalMaterial.color) {
+                originalMaterial.color.set(color);
+              }
+              if (originalMaterial.emissive) {
+                originalMaterial.emissive.set(color).multiplyScalar(0.2);
+              }
+            }
+          });
         }
       },
 

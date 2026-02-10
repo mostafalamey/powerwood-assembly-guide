@@ -50,6 +50,7 @@ import {
   LightingSettings,
 } from "../../../../../types/animation";
 import {
+  applyAnnotationColor,
   isAnnotationObjectId,
   ANNOTATION_COLORS,
 } from "../../../../../lib/annotations";
@@ -1613,6 +1614,13 @@ export default function StepAuthoringPage() {
           }
         });
       }
+
+      if (targetObj.userData?.isAnnotation) {
+        const annotationColor = targetObj.userData.annotationColor;
+        if (annotationColor) {
+          applyAnnotationColor(targetObj, annotationColor);
+        }
+      }
     });
 
     // Apply camera transforms
@@ -2414,7 +2422,7 @@ export default function StepAuthoringPage() {
                             className="relative aspect-square w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-slate-50 to-slate-200 dark:from-gray-800 dark:to-gray-900 shadow-inner cursor-crosshair"
                           >
                             <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.15)_1px,transparent_1px)] bg-[length:20px_20px]" />
-                            <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 shadow" />
+                            <div className="absolute left-1/2 top-1/2 h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 shadow" />
                             <div
                               className="absolute h-3 w-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/40 border border-white"
                               style={{
@@ -2479,7 +2487,7 @@ export default function StepAuthoringPage() {
                             className="relative aspect-square w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-slate-50 to-slate-200 dark:from-gray-800 dark:to-gray-900 shadow-inner cursor-crosshair"
                           >
                             <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.15)_1px,transparent_1px)] bg-[length:20px_20px]" />
-                            <div className="absolute left-1/2 bottom-2 h-3 w-3 -translate-x-1/2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 shadow" />
+                            <div className="absolute left-1/2 bottom-2 h-7 w-5 -translate-x-1/2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 shadow" />
                             <div
                               className="absolute h-3 w-3 rounded-full bg-indigo-500 shadow-lg shadow-indigo-500/40 border border-white"
                               style={{
@@ -2996,413 +3004,419 @@ export default function StepAuthoringPage() {
                       {objectKf?.transform && (
                         <div className="flex flex-wrap items-center gap-4">
                           {/* Position */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col gap-2">
                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
                               Position:
                             </label>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                x
-                              </label>
-                              <input
-                                key={`pos-x-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  objectKf.transform.position.x,
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              position: {
-                                                ...kf.transform.position,
-                                                x: value,
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  x
+                                </label>
+                                <input
+                                  key={`pos-x-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    objectKf.transform.position.x,
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                position: {
+                                                  ...kf.transform.position,
+                                                  x: value,
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                y
-                              </label>
-                              <input
-                                key={`pos-y-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  objectKf.transform.position.y,
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              position: {
-                                                ...kf.transform.position,
-                                                y: value,
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  y
+                                </label>
+                                <input
+                                  key={`pos-y-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    objectKf.transform.position.y,
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                position: {
+                                                  ...kf.transform.position,
+                                                  y: value,
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                z
-                              </label>
-                              <input
-                                key={`pos-z-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  objectKf.transform.position.z,
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              position: {
-                                                ...kf.transform.position,
-                                                z: value,
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  z
+                                </label>
+                                <input
+                                  key={`pos-z-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    objectKf.transform.position.z,
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                position: {
+                                                  ...kf.transform.position,
+                                                  z: value,
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
                             </div>
                           </div>
 
                           {/* Rotation */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col gap-2">
                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
                               Rotation:
                             </label>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                x
-                              </label>
-                              <input
-                                key={`rot-x-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  THREE.MathUtils.radToDeg(
-                                    objectKf.transform.rotation.x,
-                                  ),
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              rotation: {
-                                                ...kf.transform.rotation,
-                                                x: THREE.MathUtils.degToRad(
-                                                  value,
-                                                ),
-                                              },
-                                            },
-                                          }
-                                        : kf,
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  x
+                                </label>
+                                <input
+                                  key={`rot-x-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    THREE.MathUtils.radToDeg(
+                                      objectKf.transform.rotation.x,
                                     ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                y
-                              </label>
-                              <input
-                                key={`rot-y-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  THREE.MathUtils.radToDeg(
-                                    objectKf.transform.rotation.y,
-                                  ),
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              rotation: {
-                                                ...kf.transform.rotation,
-                                                y: THREE.MathUtils.degToRad(
-                                                  value,
-                                                ),
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                rotation: {
+                                                  ...kf.transform.rotation,
+                                                  x: THREE.MathUtils.degToRad(
+                                                    value,
+                                                  ),
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  y
+                                </label>
+                                <input
+                                  key={`rot-y-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    THREE.MathUtils.radToDeg(
+                                      objectKf.transform.rotation.y,
                                     ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                z
-                              </label>
-                              <input
-                                key={`rot-z-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  THREE.MathUtils.radToDeg(
-                                    objectKf.transform.rotation.z,
-                                  ),
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              rotation: {
-                                                ...kf.transform.rotation,
-                                                z: THREE.MathUtils.degToRad(
-                                                  value,
-                                                ),
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                rotation: {
+                                                  ...kf.transform.rotation,
+                                                  y: THREE.MathUtils.degToRad(
+                                                    value,
+                                                  ),
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  z
+                                </label>
+                                <input
+                                  key={`rot-z-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    THREE.MathUtils.radToDeg(
+                                      objectKf.transform.rotation.z,
                                     ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                rotation: {
+                                                  ...kf.transform.rotation,
+                                                  z: THREE.MathUtils.degToRad(
+                                                    value,
+                                                  ),
+                                                },
+                                              },
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
                             </div>
                           </div>
 
                           {/* Scale */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col gap-2">
                             <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
                               Scale:
                             </label>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                x
-                              </label>
-                              <input
-                                key={`scale-x-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  objectKf.transform.scale.x,
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              scale: {
-                                                ...kf.transform.scale,
-                                                x: value,
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  x
+                                </label>
+                                <input
+                                  key={`scale-x-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    objectKf.transform.scale.x,
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                scale: {
+                                                  ...kf.transform.scale,
+                                                  x: value,
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                y
-                              </label>
-                              <input
-                                key={`scale-y-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  objectKf.transform.scale.y,
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              scale: {
-                                                ...kf.transform.scale,
-                                                y: value,
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  y
+                                </label>
+                                <input
+                                  key={`scale-y-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    objectKf.transform.scale.y,
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                scale: {
+                                                  ...kf.transform.scale,
+                                                  y: value,
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                z
-                              </label>
-                              <input
-                                key={`scale-z-${selectedKeyframeTime}-${objectKf.objectId}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(
-                                  objectKf.transform.scale.z,
-                                )}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setObjectKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime &&
-                                      kf.objectId === objectKf.objectId
-                                        ? {
-                                            ...kf,
-                                            transform: {
-                                              ...kf.transform,
-                                              scale: {
-                                                ...kf.transform.scale,
-                                                z: value,
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  z
+                                </label>
+                                <input
+                                  key={`scale-z-${selectedKeyframeTime}-${objectKf.objectId}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(
+                                    objectKf.transform.scale.z,
+                                  )}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setObjectKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime &&
+                                        kf.objectId === objectKf.objectId
+                                          ? {
+                                              ...kf,
+                                              transform: {
+                                                ...kf.transform,
+                                                scale: {
+                                                  ...kf.transform.scale,
+                                                  z: value,
+                                                },
                                               },
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -3437,232 +3451,236 @@ export default function StepAuthoringPage() {
                       {/* Camera Position */}
                       {cameraKf?.position && (
                         <>
-                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-16 shrink-0">
+                          <div className="flex flex-col gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
                               Camera Position:
                             </label>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                x
-                              </label>
-                              <input
-                                key={`cam-pos-x-${selectedKeyframeTime}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(cameraKf.position.x)}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setCameraKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime
-                                        ? {
-                                            ...kf,
-                                            position: {
-                                              ...kf.position,
-                                              x: value,
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                y
-                              </label>
-                              <input
-                                key={`cam-pos-y-${selectedKeyframeTime}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(cameraKf.position.y)}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setCameraKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime
-                                        ? {
-                                            ...kf,
-                                            position: {
-                                              ...kf.position,
-                                              y: value,
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                z
-                              </label>
-                              <input
-                                key={`cam-pos-z-${selectedKeyframeTime}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(cameraKf.position.z)}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setCameraKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime
-                                        ? {
-                                            ...kf,
-                                            position: {
-                                              ...kf.position,
-                                              z: value,
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  x
+                                </label>
+                                <input
+                                  key={`cam-pos-x-${selectedKeyframeTime}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(cameraKf.position.x)}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setCameraKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime
+                                          ? {
+                                              ...kf,
+                                              position: {
+                                                ...kf.position,
+                                                x: value,
+                                              },
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  y
+                                </label>
+                                <input
+                                  key={`cam-pos-y-${selectedKeyframeTime}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(cameraKf.position.y)}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setCameraKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime
+                                          ? {
+                                              ...kf,
+                                              position: {
+                                                ...kf.position,
+                                                y: value,
+                                              },
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  z
+                                </label>
+                                <input
+                                  key={`cam-pos-z-${selectedKeyframeTime}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(cameraKf.position.z)}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setCameraKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime
+                                          ? {
+                                              ...kf,
+                                              position: {
+                                                ...kf.position,
+                                                z: value,
+                                              },
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
                             </div>
                           </div>
 
                           {/* Camera Target */}
-                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 w-16 shrink-0">
+                          <div className="flex flex-col gap-2">
+                            <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
                               Camera Target:
                             </label>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                x
-                              </label>
-                              <input
-                                key={`cam-target-x-${selectedKeyframeTime}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(cameraKf.target.x)}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setCameraKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime
-                                        ? {
-                                            ...kf,
-                                            target: {
-                                              ...kf.target,
-                                              x: value,
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                y
-                              </label>
-                              <input
-                                key={`cam-target-y-${selectedKeyframeTime}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(cameraKf.target.y)}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setCameraKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime
-                                        ? {
-                                            ...kf,
-                                            target: {
-                                              ...kf.target,
-                                              y: value,
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <label className="text-xs text-gray-500 dark:text-gray-500">
-                                z
-                              </label>
-                              <input
-                                key={`cam-target-z-${selectedKeyframeTime}`}
-                                type="number"
-                                step="0.001"
-                                defaultValue={roundTo3(cameraKf.target.z)}
-                                onFocus={handleBeginEdit}
-                                onBlur={(e) => {
-                                  const value = roundTo3(
-                                    Number(e.target.value),
-                                  );
-                                  setCameraKeyframes((prev) =>
-                                    prev.map((kf) =>
-                                      kf.time === selectedKeyframeTime
-                                        ? {
-                                            ...kf,
-                                            target: {
-                                              ...kf.target,
-                                              z: value,
-                                            },
-                                          }
-                                        : kf,
-                                    ),
-                                  );
-                                }}
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") {
-                                    (e.target as HTMLInputElement).blur();
-                                  }
-                                }}
-                                className="w-14 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                              />
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  x
+                                </label>
+                                <input
+                                  key={`cam-target-x-${selectedKeyframeTime}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(cameraKf.target.x)}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setCameraKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime
+                                          ? {
+                                              ...kf,
+                                              target: {
+                                                ...kf.target,
+                                                x: value,
+                                              },
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  y
+                                </label>
+                                <input
+                                  key={`cam-target-y-${selectedKeyframeTime}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(cameraKf.target.y)}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setCameraKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime
+                                          ? {
+                                              ...kf,
+                                              target: {
+                                                ...kf.target,
+                                                y: value,
+                                              },
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <label className="text-xs text-gray-500 dark:text-gray-500">
+                                  z
+                                </label>
+                                <input
+                                  key={`cam-target-z-${selectedKeyframeTime}`}
+                                  type="number"
+                                  step="0.001"
+                                  defaultValue={roundTo3(cameraKf.target.z)}
+                                  onFocus={handleBeginEdit}
+                                  onBlur={(e) => {
+                                    const value = roundTo3(
+                                      Number(e.target.value),
+                                    );
+                                    setCameraKeyframes((prev) =>
+                                      prev.map((kf) =>
+                                        kf.time === selectedKeyframeTime
+                                          ? {
+                                              ...kf,
+                                              target: {
+                                                ...kf.target,
+                                                z: value,
+                                              },
+                                            }
+                                          : kf,
+                                      ),
+                                    );
+                                  }}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      (e.target as HTMLInputElement).blur();
+                                    }
+                                  }}
+                                  className="w-20 px-2 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                />
+                              </div>
                             </div>
                           </div>
                         </>
