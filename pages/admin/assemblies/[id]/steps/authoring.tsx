@@ -47,11 +47,13 @@ import {
   CameraKeyframe,
   StepAnimation,
   AnnotationInstance,
+  LightingSettings,
 } from "../../../../../types/animation";
 import {
   isAnnotationObjectId,
   ANNOTATION_COLORS,
 } from "../../../../../lib/annotations";
+import { normalizeLightingSettings } from "../../../../../lib/lighting";
 
 export default function StepAuthoringPage() {
   const toast = useToast();
@@ -83,6 +85,9 @@ export default function StepAuthoringPage() {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [useAudioSync, setUseAudioSync] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [lightingSettings, setLightingSettings] = useState<LightingSettings>(
+    () => normalizeLightingSettings(),
+  );
   const [selectedKeyframeTime, setSelectedKeyframeTime] = useState<
     number | null
   >(null);
@@ -351,6 +356,7 @@ export default function StepAuthoringPage() {
         cameraKeyframes,
         annotationInstances:
           annotationInstances.length > 0 ? annotationInstances : undefined,
+        lightingSettings: normalizeLightingSettings(lightingSettings),
       };
 
       // Save to the step in the assembly JSON
@@ -380,6 +386,7 @@ export default function StepAuthoringPage() {
     objectKeyframes,
     cameraKeyframes,
     annotationInstances,
+    lightingSettings,
     toast,
   ]);
 
@@ -393,6 +400,9 @@ export default function StepAuthoringPage() {
       setDuration(animationData.duration);
       setObjectKeyframes(animationData.objectKeyframes || []);
       setCameraKeyframes(animationData.cameraKeyframes || []);
+      setLightingSettings(
+        normalizeLightingSettings(animationData.lightingSettings),
+      );
       setCurrentTime(0);
       setIsPlaying(false);
 
@@ -433,6 +443,8 @@ export default function StepAuthoringPage() {
     // Load existing animation if present (using loadAnimation to include annotations)
     if (stepData?.animation) {
       loadAnimation(stepData.animation);
+    } else {
+      setLightingSettings(normalizeLightingSettings());
     }
   }, [step, assembly, modelLoaded, loadAnimation]);
 
@@ -453,6 +465,9 @@ export default function StepAuthoringPage() {
           setDuration(animation.duration);
           setObjectKeyframes(animation.objectKeyframes);
           setCameraKeyframes(animation.cameraKeyframes);
+          setLightingSettings(
+            normalizeLightingSettings(animation.lightingSettings),
+          );
           setCurrentTime(0);
           setIsPlaying(false);
 
@@ -1804,6 +1819,88 @@ export default function StepAuthoringPage() {
   };
 
   const hasObjectSelection = selectedObjects.length > 0;
+  const resolvedLightingSettings = useMemo(
+    () => normalizeLightingSettings(lightingSettings),
+    [lightingSettings],
+  );
+  const mainLightBounds = useMemo(
+    () => ({
+      x: { min: -20, max: 20 },
+      y: { min: 0, max: 20 },
+      z: { min: -20, max: 20 },
+    }),
+    [],
+  );
+
+  const updateLightingSettings = useCallback(
+    (updater: (settings: LightingSettings) => LightingSettings) => {
+      setLightingSettings((prev) => updater(normalizeLightingSettings(prev)));
+    },
+    [],
+  );
+
+  const clampValue = useCallback(
+    (value: number, min: number, max: number) =>
+      Math.min(max, Math.max(min, value)),
+    [],
+  );
+
+  const getPercentFromValue = useCallback(
+    (value: number, min: number, max: number) => (value - min) / (max - min),
+    [],
+  );
+
+  const getValueFromPercent = useCallback(
+    (percent: number, min: number, max: number) => min + percent * (max - min),
+    [],
+  );
+
+  const handleMainLightPadPointer = useCallback(
+    (
+      event: React.PointerEvent<HTMLDivElement>,
+      axes: { x: "x" | "z"; y: "y" | "z" },
+    ) => {
+      const target = event.currentTarget;
+      const rect = target.getBoundingClientRect();
+      const relativeX = clampValue(
+        (event.clientX - rect.left) / rect.width,
+        0,
+        1,
+      );
+      const relativeY = clampValue(
+        (event.clientY - rect.top) / rect.height,
+        0,
+        1,
+      );
+
+      const axisXBounds = mainLightBounds[axes.x];
+      const axisYBounds = mainLightBounds[axes.y];
+
+      const nextX = getValueFromPercent(
+        relativeX,
+        axisXBounds.min,
+        axisXBounds.max,
+      );
+      const nextY = getValueFromPercent(
+        1 - relativeY,
+        axisYBounds.min,
+        axisYBounds.max,
+      );
+
+      updateLightingSettings((prev) => ({
+        ...prev,
+        main: {
+          ...prev.main,
+          position: {
+            ...prev.main.position,
+            [axes.x]: nextX,
+            [axes.y]: nextY,
+          },
+        },
+      }));
+    },
+    [clampValue, getValueFromPercent, mainLightBounds, updateLightingSettings],
+  );
 
   return (
     <AuthGuard>
@@ -2203,6 +2300,7 @@ export default function StepAuthoringPage() {
                   modelPath={modelPath}
                   selectedObject={selectedObject}
                   selectedObjects={selectedObjects}
+                  lightingSettings={lightingSettings}
                   transformMode={transformMode}
                   translationSnap={
                     translationSnapEnabled ? translationSnapValue : null
@@ -2266,6 +2364,266 @@ export default function StepAuthoringPage() {
 
             {/* Right column: Keyframe Properties Editor */}
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-t md:border-t-0 md:border-l border-white/50 dark:border-gray-700/50 px-4 py-3 min-h-0 overflow-y-auto">
+              {selectedKeyframeTime === null && (
+                <div className="mb-4 rounded-xl border border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm px-3 py-3">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Lighting
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                        Main light position
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                              Top view (X / Z)
+                            </span>
+                            <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                              X{" "}
+                              {resolvedLightingSettings.main.position.x.toFixed(
+                                1,
+                              )}
+                              , Z{" "}
+                              {resolvedLightingSettings.main.position.z.toFixed(
+                                1,
+                              )}
+                            </span>
+                          </div>
+                          <div
+                            role="slider"
+                            tabIndex={0}
+                            aria-label="Main light position top view"
+                            onPointerDown={(event) => {
+                              event.currentTarget.setPointerCapture(
+                                event.pointerId,
+                              );
+                              handleMainLightPadPointer(event, {
+                                x: "x",
+                                y: "z",
+                              });
+                            }}
+                            onPointerMove={(event) => {
+                              if (event.buttons === 0) return;
+                              handleMainLightPadPointer(event, {
+                                x: "x",
+                                y: "z",
+                              });
+                            }}
+                            className="relative aspect-square w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-slate-50 to-slate-200 dark:from-gray-800 dark:to-gray-900 shadow-inner cursor-crosshair"
+                          >
+                            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.15)_1px,transparent_1px)] bg-[length:20px_20px]" />
+                            <div className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 shadow" />
+                            <div
+                              className="absolute h-3 w-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/40 border border-white"
+                              style={{
+                                left: `${
+                                  getPercentFromValue(
+                                    resolvedLightingSettings.main.position.x,
+                                    mainLightBounds.x.min,
+                                    mainLightBounds.x.max,
+                                  ) * 100
+                                }%`,
+                                top: `${
+                                  (1 -
+                                    getPercentFromValue(
+                                      resolvedLightingSettings.main.position.z,
+                                      mainLightBounds.z.min,
+                                      mainLightBounds.z.max,
+                                    )) *
+                                  100
+                                }%`,
+                                transform: "translate(-50%, -50%)",
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                              Side view (Z / Y)
+                            </span>
+                            <span className="text-[11px] text-gray-400 dark:text-gray-500">
+                              Z{" "}
+                              {resolvedLightingSettings.main.position.z.toFixed(
+                                1,
+                              )}
+                              , Y{" "}
+                              {resolvedLightingSettings.main.position.y.toFixed(
+                                1,
+                              )}
+                            </span>
+                          </div>
+                          <div
+                            role="slider"
+                            tabIndex={0}
+                            aria-label="Main light position side view"
+                            onPointerDown={(event) => {
+                              event.currentTarget.setPointerCapture(
+                                event.pointerId,
+                              );
+                              handleMainLightPadPointer(event, {
+                                x: "z",
+                                y: "y",
+                              });
+                            }}
+                            onPointerMove={(event) => {
+                              if (event.buttons === 0) return;
+                              handleMainLightPadPointer(event, {
+                                x: "z",
+                                y: "y",
+                              });
+                            }}
+                            className="relative aspect-square w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-slate-50 to-slate-200 dark:from-gray-800 dark:to-gray-900 shadow-inner cursor-crosshair"
+                          >
+                            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(148,163,184,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.15)_1px,transparent_1px)] bg-[length:20px_20px]" />
+                            <div className="absolute left-1/2 bottom-2 h-3 w-3 -translate-x-1/2 rounded-sm border border-gray-300 dark:border-gray-600 bg-white/80 dark:bg-gray-700/80 shadow" />
+                            <div
+                              className="absolute h-3 w-3 rounded-full bg-indigo-500 shadow-lg shadow-indigo-500/40 border border-white"
+                              style={{
+                                left: `${
+                                  getPercentFromValue(
+                                    resolvedLightingSettings.main.position.z,
+                                    mainLightBounds.z.min,
+                                    mainLightBounds.z.max,
+                                  ) * 100
+                                }%`,
+                                top: `${
+                                  (1 -
+                                    getPercentFromValue(
+                                      resolvedLightingSettings.main.position.y,
+                                      mainLightBounds.y.min,
+                                      mainLightBounds.y.max,
+                                    )) *
+                                  100
+                                }%`,
+                                transform: "translate(-50%, -50%)",
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                          Hemisphere
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="color"
+                            value={resolvedLightingSettings.hemisphere.skyColor}
+                            onChange={(e) =>
+                              updateLightingSettings((prev) => ({
+                                ...prev,
+                                hemisphere: {
+                                  ...prev.hemisphere,
+                                  skyColor: e.target.value,
+                                },
+                              }))
+                            }
+                            title="Sky color"
+                            className="h-7 w-7 rounded border border-gray-200 dark:border-gray-600"
+                          />
+                          <input
+                            type="color"
+                            value={
+                              resolvedLightingSettings.hemisphere.groundColor
+                            }
+                            onChange={(e) =>
+                              updateLightingSettings((prev) => ({
+                                ...prev,
+                                hemisphere: {
+                                  ...prev.hemisphere,
+                                  groundColor: e.target.value,
+                                },
+                              }))
+                            }
+                            title="Ground color"
+                            className="h-7 w-7 rounded border border-gray-200 dark:border-gray-600"
+                          />
+                          <input
+                            type="number"
+                            step="0.1"
+                            min="0"
+                            value={
+                              resolvedLightingSettings.hemisphere.intensity
+                            }
+                            onChange={(e) => {
+                              const value = Number(e.target.value);
+                              if (Number.isNaN(value)) return;
+                              updateLightingSettings((prev) => ({
+                                ...prev,
+                                hemisphere: {
+                                  ...prev.hemisphere,
+                                  intensity: Math.max(0, value),
+                                },
+                              }));
+                            }}
+                            className="w-20 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          />
+                        </div>
+                      </div>
+
+                      {(
+                        [
+                          { key: "main", label: "Main" },
+                          { key: "fill", label: "Fill" },
+                          { key: "rim", label: "Rim" },
+                        ] as const
+                      ).map((light) => (
+                        <div
+                          key={light.key}
+                          className="flex items-center justify-between gap-3"
+                        >
+                          <div className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            {light.label} light
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="color"
+                              value={resolvedLightingSettings[light.key].color}
+                              onChange={(e) =>
+                                updateLightingSettings((prev) => ({
+                                  ...prev,
+                                  [light.key]: {
+                                    ...prev[light.key],
+                                    color: e.target.value,
+                                  },
+                                }))
+                              }
+                              className="h-7 w-7 rounded border border-gray-200 dark:border-gray-600"
+                            />
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              value={
+                                resolvedLightingSettings[light.key].intensity
+                              }
+                              onChange={(e) => {
+                                const value = Number(e.target.value);
+                                if (Number.isNaN(value)) return;
+                                updateLightingSettings((prev) => ({
+                                  ...prev,
+                                  [light.key]: {
+                                    ...prev[light.key],
+                                    intensity: Math.max(0, value),
+                                  },
+                                }));
+                              }}
+                              className="w-20 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
               {(() => {
                 const hasSelection = selectedKeyframeTime !== null;
                 // Find the selected keyframe(s)

@@ -2925,7 +2925,7 @@
         "ar": "/audio/arb/BaseCabinets/BU_1D-600/step3.mp3"
       },
       "animation": {
-        "duration": 5,
+        "duration": 36.022813,
         "isOffset": true,
         "objectKeyframes": [
           {
@@ -3185,7 +3185,31 @@
               "z": 0
             }
           }
-        ]
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 0.8
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 1,
+            "position": {
+              "x": -8.612099644128113,
+              "y": 9.323843416370108,
+              "z": 16.298932384341633
+            }
+          },
+          "fill": {
+            "color": "#345cfe",
+            "intensity": 0.5
+          },
+          "rim": {
+            "color": "#ffc64d",
+            "intensity": 0.3
+          }
+        }
       }
     }
   ]

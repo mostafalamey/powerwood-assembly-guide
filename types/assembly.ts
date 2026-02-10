@@ -1,5 +1,5 @@
 // Animation data structures - Unified format for editor and viewer
-import { AnnotationInstance } from "./animation";
+import { AnnotationInstance, LightingSettings } from "./animation";
 
 export interface ObjectKeyframe {
   time: number; // Time in seconds from start
@@ -27,6 +27,7 @@ export interface StepAnimation {
   objectKeyframes: ObjectKeyframe[];
   cameraKeyframes: CameraKeyframe[];
   annotationInstances?: AnnotationInstance[]; // Annotations in this step
+  lightingSettings?: LightingSettings;
 }
 
 export interface Step {

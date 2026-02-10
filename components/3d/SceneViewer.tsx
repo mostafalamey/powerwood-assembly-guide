@@ -8,6 +8,7 @@ import {
   ObjectKeyframe,
   CameraKeyframe,
 } from "@/types/assembly";
+import { normalizeLightingSettings } from "@/lib/lighting";
 import { AnnotationInstance } from "@/types/animation";
 import {
   loadAnnotationModel,
@@ -221,6 +222,10 @@ export default function SceneViewer({
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const controlsRef = useRef<OrbitControls | null>(null);
   const modelRef = useRef<THREE.Group | null>(null);
+  const hemisphereLightRef = useRef<THREE.HemisphereLight | null>(null);
+  const mainLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const fillLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const rimLightRef = useRef<THREE.DirectionalLight | null>(null);
   const annotationsGroupRef = useRef<THREE.Group | null>(null);
   const currentAnimationRef = useRef<StepAnimation | null>(null);
   const objectLookupRef = useRef<Map<string, THREE.Object3D>>(new Map());
@@ -783,13 +788,29 @@ export default function SceneViewer({
 
     // Lighting - Enhanced for better visual quality
     // Hemisphere light for natural ambient lighting
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
+    const resolvedLighting = normalizeLightingSettings(
+      currentStep?.animation?.lightingSettings,
+    );
+
+    const hemisphereLight = new THREE.HemisphereLight(
+      new THREE.Color(resolvedLighting.hemisphere.skyColor),
+      new THREE.Color(resolvedLighting.hemisphere.groundColor),
+      resolvedLighting.hemisphere.intensity,
+    );
     hemisphereLight.position.set(0, 0, 0);
     scene.add(hemisphereLight);
+    hemisphereLightRef.current = hemisphereLight;
 
     // Main directional light (sun) with improved shadows
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    mainLight.position.set(5, 10, 7.5);
+    const mainLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.main.color),
+      resolvedLighting.main.intensity,
+    );
+    mainLight.position.set(
+      resolvedLighting.main.position.x,
+      resolvedLighting.main.position.y,
+      resolvedLighting.main.position.z,
+    );
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
@@ -803,16 +824,25 @@ export default function SceneViewer({
     mainLight.shadow.normalBias = 0.02;
     mainLight.shadow.radius = 2;
     scene.add(mainLight);
+    mainLightRef.current = mainLight;
 
     // Fill light from the side
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const fillLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.fill.color),
+      resolvedLighting.fill.intensity,
+    );
     fillLight.position.set(-5, 5, -5);
     scene.add(fillLight);
+    fillLightRef.current = fillLight;
 
     // Rim light for edge highlighting
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    const rimLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.rim.color),
+      resolvedLighting.rim.intensity,
+    );
     rimLight.position.set(0, 5, -10);
     scene.add(rimLight);
+    rimLightRef.current = rimLight;
 
     // Ground plane for shadows
     const groundGeometry = new THREE.PlaneGeometry(50, 50);
@@ -975,8 +1005,46 @@ export default function SceneViewer({
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
+      hemisphereLightRef.current = null;
+      mainLightRef.current = null;
+      fillLightRef.current = null;
+      rimLightRef.current = null;
     };
   }, [modelUrl]);
+
+  useEffect(() => {
+    const resolved = normalizeLightingSettings(
+      currentStep?.animation?.lightingSettings,
+    );
+
+    if (hemisphereLightRef.current) {
+      hemisphereLightRef.current.color.set(resolved.hemisphere.skyColor);
+      hemisphereLightRef.current.groundColor.set(
+        resolved.hemisphere.groundColor,
+      );
+      hemisphereLightRef.current.intensity = resolved.hemisphere.intensity;
+    }
+
+    if (mainLightRef.current) {
+      mainLightRef.current.color.set(resolved.main.color);
+      mainLightRef.current.intensity = resolved.main.intensity;
+      mainLightRef.current.position.set(
+        resolved.main.position.x,
+        resolved.main.position.y,
+        resolved.main.position.z,
+      );
+    }
+
+    if (fillLightRef.current) {
+      fillLightRef.current.color.set(resolved.fill.color);
+      fillLightRef.current.intensity = resolved.fill.intensity;
+    }
+
+    if (rimLightRef.current) {
+      rimLightRef.current.color.set(resolved.rim.color);
+      rimLightRef.current.intensity = resolved.rim.intensity;
+    }
+  }, [currentStep?.animation?.lightingSettings]);
 
   // Update camera position when prop changes
   useEffect(() => {

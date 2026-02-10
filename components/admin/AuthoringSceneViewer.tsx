@@ -9,7 +9,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { AnnotationInstance } from "@/types/animation";
+import { AnnotationInstance, LightingSettings } from "@/types/animation";
+import { normalizeLightingSettings } from "@/lib/lighting";
 import {
   loadAnnotationModel,
   applyAnnotationColor,
@@ -36,6 +37,7 @@ interface AuthoringSceneViewerProps {
   rotationSnap?: number | null;
   scaleSnap?: number | null;
   annotationInstances?: AnnotationInstance[];
+  lightingSettings?: LightingSettings;
   onSceneReady?: (scene: THREE.Scene, camera: THREE.Camera) => void;
   onModelLoaded?: (model: THREE.Group) => void;
   onLoadProgress?: (progress: number) => void;
@@ -64,6 +66,7 @@ const AuthoringSceneViewer = forwardRef<
     rotationSnap = THREE.MathUtils.degToRad(15),
     scaleSnap = null,
     annotationInstances = [],
+    lightingSettings,
     onSceneReady,
     onModelLoaded,
     onLoadProgress,
@@ -89,6 +92,10 @@ const AuthoringSceneViewer = forwardRef<
   const currentSelectionRef = useRef<THREE.Object3D | null>(null);
   const selectedObjectsRef = useRef<THREE.Object3D[]>([]);
   const selectionPivotRef = useRef<THREE.Object3D | null>(null);
+  const hemisphereLightRef = useRef<THREE.HemisphereLight | null>(null);
+  const mainLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const fillLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const rimLightRef = useRef<THREE.DirectionalLight | null>(null);
   const multiSelectionStateRef = useRef<{
     pivotStartPosition: THREE.Vector3;
     pivotStartQuaternion: THREE.Quaternion;
@@ -298,7 +305,11 @@ const AuthoringSceneViewer = forwardRef<
     cameraRef.current = camera;
 
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
     renderer.setSize(
       mountRef.current.clientWidth,
       mountRef.current.clientHeight,
@@ -315,13 +326,27 @@ const AuthoringSceneViewer = forwardRef<
 
     // Lighting - Enhanced for better visual quality
     // Hemisphere light for natural ambient lighting
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
+    const resolvedLighting = normalizeLightingSettings(lightingSettings);
+
+    const hemisphereLight = new THREE.HemisphereLight(
+      new THREE.Color(resolvedLighting.hemisphere.skyColor),
+      new THREE.Color(resolvedLighting.hemisphere.groundColor),
+      resolvedLighting.hemisphere.intensity,
+    );
     hemisphereLight.position.set(0, 0, 0);
     scene.add(hemisphereLight);
+    hemisphereLightRef.current = hemisphereLight;
 
     // Main directional light (sun) with improved shadows
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    mainLight.position.set(5, 10, 7.5);
+    const mainLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.main.color),
+      resolvedLighting.main.intensity,
+    );
+    mainLight.position.set(
+      resolvedLighting.main.position.x,
+      resolvedLighting.main.position.y,
+      resolvedLighting.main.position.z,
+    );
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
@@ -335,16 +360,25 @@ const AuthoringSceneViewer = forwardRef<
     mainLight.shadow.normalBias = 0.02;
     mainLight.shadow.radius = 2;
     scene.add(mainLight);
+    mainLightRef.current = mainLight;
 
     // Fill light from the side
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const fillLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.fill.color),
+      resolvedLighting.fill.intensity,
+    );
     fillLight.position.set(-5, 5, -5);
     scene.add(fillLight);
+    fillLightRef.current = fillLight;
 
     // Rim light for edge highlighting
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    const rimLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.rim.color),
+      resolvedLighting.rim.intensity,
+    );
     rimLight.position.set(0, 5, -10);
     scene.add(rimLight);
+    rimLightRef.current = rimLight;
 
     // Grid helper
     const gridHelper = new THREE.GridHelper(10, 10, 0xcccccc, 0xeeeeee);
@@ -850,9 +884,45 @@ const AuthoringSceneViewer = forwardRef<
       transformControlsRef.current = null;
       annotationsGroupRef.current = null;
       selectionPivotRef.current = null;
+      hemisphereLightRef.current = null;
+      mainLightRef.current = null;
+      fillLightRef.current = null;
+      rimLightRef.current = null;
       annotationObjectsRef.current.clear();
     };
   }, [onSceneReady]);
+
+  useEffect(() => {
+    const resolved = normalizeLightingSettings(lightingSettings);
+
+    if (hemisphereLightRef.current) {
+      hemisphereLightRef.current.color.set(resolved.hemisphere.skyColor);
+      hemisphereLightRef.current.groundColor.set(
+        resolved.hemisphere.groundColor,
+      );
+      hemisphereLightRef.current.intensity = resolved.hemisphere.intensity;
+    }
+
+    if (mainLightRef.current) {
+      mainLightRef.current.color.set(resolved.main.color);
+      mainLightRef.current.intensity = resolved.main.intensity;
+      mainLightRef.current.position.set(
+        resolved.main.position.x,
+        resolved.main.position.y,
+        resolved.main.position.z,
+      );
+    }
+
+    if (fillLightRef.current) {
+      fillLightRef.current.color.set(resolved.fill.color);
+      fillLightRef.current.intensity = resolved.fill.intensity;
+    }
+
+    if (rimLightRef.current) {
+      rimLightRef.current.color.set(resolved.rim.color);
+      rimLightRef.current.intensity = resolved.rim.intensity;
+    }
+  }, [lightingSettings]);
 
   // Update transform mode when it changes
   useEffect(() => {
