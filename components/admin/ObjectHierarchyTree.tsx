@@ -30,8 +30,11 @@ interface TreeNode {
 
 interface ObjectHierarchyTreeProps {
   model: THREE.Group | null;
-  selectedObject: THREE.Object3D | null;
-  onSelectObject: (object: THREE.Object3D) => void;
+  selectedObjects: THREE.Object3D[];
+  onSelectObject: (
+    object: THREE.Object3D,
+    options?: { toggle?: boolean },
+  ) => void;
   annotations?: AnnotationInstance[];
   annotationObjects?: Map<string, THREE.Object3D>;
   onRemoveAnnotation?: (annotationId: string) => void;
@@ -40,7 +43,7 @@ interface ObjectHierarchyTreeProps {
 
 export default function ObjectHierarchyTree({
   model,
-  selectedObject,
+  selectedObjects,
   onSelectObject,
   annotations = [],
   annotationObjects,
@@ -81,9 +84,17 @@ export default function ObjectHierarchyTree({
 
   const toggleVisibility = (object: THREE.Object3D, e: React.MouseEvent) => {
     e.stopPropagation();
-    object.visible = !object.visible;
-    object.traverse((child) => {
-      child.visible = object.visible;
+    const shouldToggleSelection =
+      selectedObjects.length > 1 && selectedObjects.includes(object);
+    const targets = shouldToggleSelection ? selectedObjects : [object];
+    const uniqueTargets = new Set(targets);
+    const nextVisible = !object.visible;
+
+    uniqueTargets.forEach((target) => {
+      target.visible = nextVisible;
+      target.traverse((child) => {
+        child.visible = nextVisible;
+      });
     });
     // Force re-render without creating new Set
     forceUpdate();
@@ -91,7 +102,7 @@ export default function ObjectHierarchyTree({
 
   const renderTree = (node: TreeNode, level = 0): JSX.Element => {
     const isExpanded = expandedNodes.has(node.id);
-    const isSelected = selectedObject === node.object;
+    const isSelected = selectedObjects.includes(node.object);
     const hasChildren = node.children.length > 0;
     const indent = level * 16;
 
@@ -104,7 +115,9 @@ export default function ObjectHierarchyTree({
               : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-l-2 border-transparent"
           }`}
           style={{ paddingLeft: `${indent + 8}px` }}
-          onClick={() => onSelectObject(node.object)}
+          onClick={(event) =>
+            onSelectObject(node.object, { toggle: event.ctrlKey })
+          }
         >
           {/* Expand/Collapse Icon */}
           {hasChildren && (
@@ -189,7 +202,7 @@ export default function ObjectHierarchyTree({
 
   const renderAnnotationItem = (annotation: AnnotationInstance) => {
     const annotationObj = annotationObjects?.get(annotation.id);
-    const isSelected = annotationObj && selectedObject === annotationObj;
+    const isSelected = annotationObj && selectedObjects.includes(annotationObj);
 
     return (
       <div
@@ -200,7 +213,10 @@ export default function ObjectHierarchyTree({
             : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-l-2 border-transparent"
         }`}
         style={{ paddingLeft: "24px" }}
-        onClick={() => annotationObj && onSelectObject(annotationObj)}
+        onClick={(event) =>
+          annotationObj &&
+          onSelectObject(annotationObj, { toggle: event.ctrlKey })
+        }
       >
         {/* Annotation Type Icon */}
         <div

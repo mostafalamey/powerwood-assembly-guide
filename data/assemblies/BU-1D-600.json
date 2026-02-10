@@ -2025,6 +2025,28 @@
             "visible": false
           },
           {
+            "time": 0,
+            "objectId": "annotation-1770735722061-rltkgq7qz",
+            "transform": {
+              "position": {
+                "x": 0.1818869011997975,
+                "y": -0.30000000000000004,
+                "z": 0.14783119545186924
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
             "time": 8.6,
             "objectId": "BasePanel",
             "transform": {
@@ -2146,8 +2168,8 @@
                 "z": 0.2
               },
               "rotation": {
-                "x": 0,
-                "y": 0,
+                "x": 8.715763992105247e-33,
+                "y": 0.7853981633974484,
                 "z": -3.141592653589793
               },
               "scale": {
@@ -2168,8 +2190,8 @@
                 "z": 0.2
               },
               "rotation": {
-                "x": 0,
-                "y": 0,
+                "x": 8.715763992105247e-33,
+                "y": 0.7853981633974484,
                 "z": -3.141592653589793
               },
               "scale": {
@@ -2212,8 +2234,8 @@
                 "z": 0.2
               },
               "rotation": {
-                "x": 0,
-                "y": 0,
+                "x": 8.715763992105247e-33,
+                "y": 0.7853981633974484,
                 "z": -3.141592653589793
               },
               "scale": {
@@ -2256,8 +2278,8 @@
                 "z": 0.2
               },
               "rotation": {
-                "x": 0,
-                "y": 0,
+                "x": 8.715763992105247e-33,
+                "y": 0.7853981633974484,
                 "z": -3.141592653589793
               },
               "scale": {
@@ -2278,8 +2300,8 @@
                 "z": 0.2
               },
               "rotation": {
-                "x": 0,
-                "y": 0,
+                "x": 8.715763992105247e-33,
+                "y": 0.7853981633974484,
                 "z": -3.141592653589793
               },
               "scale": {
@@ -2334,6 +2356,72 @@
             },
             "visible": true,
             "easing": "easeInQuart"
+          },
+          {
+            "time": 18,
+            "objectId": "annotation-1770735722061-rltkgq7qz",
+            "transform": {
+              "position": {
+                "x": 0.1818869011997975,
+                "y": -0.30000000000000004,
+                "z": 0.14783119545186924
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 18.6,
+            "objectId": "annotation-1770735722061-rltkgq7qz",
+            "transform": {
+              "position": {
+                "x": 0.1818869011997975,
+                "y": -0.30000000000000004,
+                "z": 0.14783119545186924
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 19,
+            "objectId": "annotation-1770735722061-rltkgq7qz",
+            "transform": {
+              "position": {
+                "x": 0.1818869011997975,
+                "y": -0.30000000000000004,
+                "z": 0.14783119545186924
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
           },
           {
             "time": 19,
@@ -2424,7 +2512,7 @@
             "visible": true
           },
           {
-            "time": 19.77,
+            "time": 19.7,
             "objectId": "BasePanel/Leg_FR",
             "transform": {
               "position": {
@@ -2446,7 +2534,7 @@
             "visible": true
           },
           {
-            "time": 19.77,
+            "time": 19.9,
             "objectId": "BasePanel/Leg_BL",
             "transform": {
               "position": {
@@ -2473,7 +2561,29 @@
             "transform": {
               "position": {
                 "x": 0,
-                "y": -1.3877787807814457e-17,
+                "y": -0.010000000000000009,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 20.5,
+            "objectId": "BasePanel/Leg_FR",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.010000000000000009,
                 "z": 0
               },
               "rotation": {
@@ -2495,6 +2605,94 @@
             "transform": {
               "position": {
                 "x": 0,
+                "y": -0.010000000000000009,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 20.9,
+            "objectId": "BasePanel/Leg_BL",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.010000000000000009,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 20.9,
+            "objectId": "BasePanel/Leg_FR",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.010000000000000009,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 20.9,
+            "objectId": "BasePanel/Leg_BR",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.010000000000000009,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 21,
+            "objectId": "BasePanel/Leg_BL",
+            "transform": {
+              "position": {
+                "x": 0,
                 "y": -1.3877787807814457e-17,
                 "z": 0
               },
@@ -2512,7 +2710,29 @@
             "visible": true
           },
           {
-            "time": 20.5,
+            "time": 21,
+            "objectId": "BasePanel/Leg_BR",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -1.3877787807814457e-17,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 21,
             "objectId": "BasePanel/Leg_FR",
             "transform": {
               "position": {
@@ -2675,6 +2895,295 @@
             "type": "anno_arrow_move_single",
             "color": "#ef4444",
             "name": "Anno Arrow Move Single"
+          },
+          {
+            "id": "annotation-1770735722061-rltkgq7qz",
+            "type": "text",
+            "color": "#ef4444",
+            "name": "Text",
+            "text": {
+              "en": "Click",
+              "ar": "Click"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Attach the side panels to the base panel",
+        "ar": "تثبيت الألواح الجانبية في اللوح السفلي"
+      },
+      "description": {
+        "en": "Decide which side you want the door to open from; this will determine which side panel you need to attach first.\nTake the side panel that has the hinge clips on it, this is the panel that will hold the door.\nAlign it with the edge of the base panel, that corresponds to your desired door opening direction.\nPush the side panel down onto the base panel, until you hear a click.\nMake sure the groove on the side panel. matches the groove on the base panel.\nTake the other side panel and attach it to the opposite edge of the base panel the same way.",
+        "ar": "حدد الجهة التي ترغب أن يُفتح منها الباب؛ فهذا سيحدد أي لوح جانبي يجب تثبيته أولًا.\nخذ اللوح الجانبي الذي يحتوي على مشابك المفصلات، فهذا هو اللوح المخصص لحمل الباب.\nقم بمحاذاته مع الحافة المناسبة في اللوح السفلي، والتي تتوافق مع اتجاه فتح الباب الذي اخترته.\nاضغط اللوح الجانبي إلى الأسفل فوق اللوح السفلي حتى تسمع صوت النقرة الذي يؤكد تثبيته.\nتأكد من أن الأخدود في اللوح الجانبي يتطابق مع الأخدود في اللوح السفلي.\nبعد ذلك، خذ اللوح الجانبي الآخر وثبته في الحافة المقابلة للوح السفلي بنفس الطريقة."
+      },
+      "duration": 5,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BU_1D-600/step3.mp3",
+        "ar": "/audio/arb/BaseCabinets/BU_1D-600/step3.mp3"
+      },
+      "animation": {
+        "duration": 5,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L001",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": -1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_01",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_02",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_03",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_04",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
           }
         ]
       }

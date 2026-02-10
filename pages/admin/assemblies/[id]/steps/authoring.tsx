@@ -63,7 +63,11 @@ export default function StepAuthoringPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [assembly, setAssembly] = useState<any>(null);
   const loadedModelRef = useRef<any>(null);
-  const [selectedObject, setSelectedObject] = useState<any>(null);
+  const [selectedObject, setSelectedObject] = useState<THREE.Object3D | null>(
+    null,
+  );
+  const [selectedObjects, setSelectedObjects] = useState<THREE.Object3D[]>([]);
+  const selectedObjectsRef = useRef<THREE.Object3D[]>([]);
   const [transformMode, setTransformMode] = useState<
     "translate" | "rotate" | "scale"
   >("translate");
@@ -138,6 +142,10 @@ export default function StepAuthoringPage() {
   >([]);
   const [showAnnotationToolbar, setShowAnnotationToolbar] = useState(false);
   const sceneViewerRef = useRef<AuthoringSceneViewerRef>(null);
+
+  useEffect(() => {
+    selectedObjectsRef.current = selectedObjects;
+  }, [selectedObjects]);
 
   const objectKeyframesById = useMemo(() => {
     const map = new Map<string, ObjectKeyframe[]>();
@@ -230,9 +238,36 @@ export default function StepAuthoringPage() {
     setModelLoaded(false);
   }, []);
 
-  const handleSelectObject = useCallback((object: any) => {
-    setSelectedObject(object);
-  }, []);
+  const handleSelectObject = useCallback(
+    (object: THREE.Object3D | null, options?: { toggle?: boolean }) => {
+      if (!object) {
+        if (!options?.toggle) {
+          selectedObjectsRef.current = [];
+          setSelectedObjects([]);
+          setSelectedObject(null);
+        }
+        return;
+      }
+
+      if (options?.toggle) {
+        const previous = selectedObjectsRef.current;
+        const exists = previous.includes(object);
+        const next = exists
+          ? previous.filter((item) => item !== object)
+          : [...previous, object];
+
+        selectedObjectsRef.current = next;
+        setSelectedObjects(next);
+        setSelectedObject(next.length > 0 ? next[next.length - 1] : null);
+        return;
+      }
+
+      selectedObjectsRef.current = [object];
+      setSelectedObjects([object]);
+      setSelectedObject(object);
+    },
+    [],
+  );
 
   const handleFrameSelected = useCallback(() => {
     if (!selectedObject) return;
@@ -280,7 +315,7 @@ export default function StepAuthoringPage() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Only handle shortcuts if an object is selected and not typing in an input
-      if (!selectedObject) return;
+      if (selectedObjects.length === 0) return;
       if (
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
@@ -303,7 +338,7 @@ export default function StepAuthoringPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedObject]);
+  }, [selectedObjects.length]);
 
   // Convert editor keyframes to production format
   // Save animation to assembly JSON file
@@ -492,6 +527,8 @@ export default function StepAuthoringPage() {
           });
 
           // Select the new annotation
+          selectedObjectsRef.current = [obj];
+          setSelectedObjects([obj]);
           setSelectedObject(obj);
 
           toast.success(
@@ -511,10 +548,21 @@ export default function StepAuthoringPage() {
     (annotationId: string) => {
       if (!sceneViewerRef.current) return;
 
+      const removedObject = objectLookupRef.current.get(annotationId) || null;
+
       sceneViewerRef.current.removeAnnotation(annotationId);
       setAnnotationInstances((prev) =>
         prev.filter((a) => a.id !== annotationId),
       );
+
+      if (removedObject) {
+        setSelectedObjects((prev) => {
+          const next = prev.filter((item) => item !== removedObject);
+          selectedObjectsRef.current = next;
+          setSelectedObject(next.length > 0 ? next[next.length - 1] : null);
+          return next;
+        });
+      }
 
       // Remove from lookup
       objectLookupRef.current.delete(annotationId);
@@ -956,61 +1004,71 @@ export default function StepAuthoringPage() {
     return () => window.removeEventListener("keydown", handleHistoryKeys);
   }, [handleUndo, handleRedo]);
 
-  // Record keyframe for selected object
+  // Record keyframe for selected objects
   const handleRecordKeyframe = useCallback(() => {
-    if (!selectedObject) return;
+    const targets =
+      selectedObjects.length > 0
+        ? selectedObjects
+        : selectedObject
+          ? [selectedObject]
+          : [];
+
+    if (targets.length === 0) return;
 
     pushHistory();
 
     const recordTime = Math.round(currentTime * 100) / 100;
+    const targetIds = new Set<string>();
 
-    const objectId = getObjectId(selectedObject);
-    const original = originalTransformsRef.current.get(objectId);
-    const newKeyframe: ObjectKeyframe = {
-      time: recordTime,
-      objectId,
-      transform: {
-        position: {
-          x: original
-            ? selectedObject.position.x - original.position.x
-            : selectedObject.position.x,
-          y: original
-            ? selectedObject.position.y - original.position.y
-            : selectedObject.position.y,
-          z: original
-            ? selectedObject.position.z - original.position.z
-            : selectedObject.position.z,
+    const newKeyframes: ObjectKeyframe[] = targets.map((target) => {
+      const objectId = getObjectId(target);
+      targetIds.add(objectId);
+      const original = originalTransformsRef.current.get(objectId);
+
+      return {
+        time: recordTime,
+        objectId,
+        transform: {
+          position: {
+            x: original
+              ? target.position.x - original.position.x
+              : target.position.x,
+            y: original
+              ? target.position.y - original.position.y
+              : target.position.y,
+            z: original
+              ? target.position.z - original.position.z
+              : target.position.z,
+          },
+          rotation: {
+            x: original
+              ? target.rotation.x - original.rotation.x
+              : target.rotation.x,
+            y: original
+              ? target.rotation.y - original.rotation.y
+              : target.rotation.y,
+            z: original
+              ? target.rotation.z - original.rotation.z
+              : target.rotation.z,
+          },
+          scale: {
+            x: target.scale.x,
+            y: target.scale.y,
+            z: target.scale.z,
+          },
         },
-        rotation: {
-          x: original
-            ? selectedObject.rotation.x - original.rotation.x
-            : selectedObject.rotation.x,
-          y: original
-            ? selectedObject.rotation.y - original.rotation.y
-            : selectedObject.rotation.y,
-          z: original
-            ? selectedObject.rotation.z - original.rotation.z
-            : selectedObject.rotation.z,
-        },
-        scale: {
-          x: selectedObject.scale.x,
-          y: selectedObject.scale.y,
-          z: selectedObject.scale.z,
-        },
-      },
-      visible: selectedObject.visible,
-    };
+        visible: target.visible,
+      };
+    });
 
     setObjectKeyframes((prev) => {
-      // Remove existing keyframe at same time for same object
       const filtered = prev.filter(
-        (kf) => !(kf.time === recordTime && kf.objectId === objectId),
+        (kf) => !(kf.time === recordTime && targetIds.has(kf.objectId)),
       );
-      // Add new keyframe and sort by time
-      return [...filtered, newKeyframe].sort((a, b) => a.time - b.time);
+      return [...filtered, ...newKeyframes].sort((a, b) => a.time - b.time);
     });
     setIsOffsetAnimation(true);
-  }, [selectedObject, currentTime, pushHistory]);
+  }, [selectedObject, selectedObjects, currentTime, pushHistory]);
 
   // Record camera keyframe
   const handleRecordCameraKeyframe = useCallback(() => {
@@ -1743,6 +1801,8 @@ export default function StepAuthoringPage() {
     setLoadError(null);
   };
 
+  const hasObjectSelection = selectedObjects.length > 0;
+
   return (
     <AuthGuard>
       <Head>
@@ -1807,10 +1867,10 @@ export default function StepAuthoringPage() {
               <div className="hidden md:flex gap-1 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl p-1 border border-gray-200/50 dark:border-gray-600/50">
                 <button
                   onClick={() => setTransformMode("translate")}
-                  disabled={!selectedObject}
+                  disabled={!hasObjectSelection}
                   title="Move (W)"
                   className={`px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed ${
-                    transformMode === "translate" && selectedObject
+                    transformMode === "translate" && hasObjectSelection
                       ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
                       : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
@@ -1819,10 +1879,10 @@ export default function StepAuthoringPage() {
                 </button>
                 <button
                   onClick={() => setTransformMode("rotate")}
-                  disabled={!selectedObject}
+                  disabled={!hasObjectSelection}
                   title="Rotate (E)"
                   className={`px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed ${
-                    transformMode === "rotate" && selectedObject
+                    transformMode === "rotate" && hasObjectSelection
                       ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
                       : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
@@ -1831,10 +1891,10 @@ export default function StepAuthoringPage() {
                 </button>
                 <button
                   onClick={() => setTransformMode("scale")}
-                  disabled={!selectedObject}
+                  disabled={!hasObjectSelection}
                   title="Scale (R)"
                   className={`px-2 sm:px-3 py-1.5 text-sm rounded-lg transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed ${
-                    transformMode === "scale" && selectedObject
+                    transformMode === "scale" && hasObjectSelection
                       ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
                       : "hover:bg-white dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                   }`}
@@ -1842,10 +1902,9 @@ export default function StepAuthoringPage() {
                   <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
-
               <button
                 onClick={handleFrameSelected}
-                disabled={!selectedObject}
+                disabled={!hasObjectSelection}
                 className="px-3 py-1.5 text-sm bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-xl hover:bg-white dark:hover:bg-gray-600 transition-all duration-200 border border-gray-200/50 dark:border-gray-600/50 flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
                 title="Frame selected object"
               >
@@ -2062,7 +2121,7 @@ export default function StepAuthoringPage() {
                 <div className="flex-1 overflow-hidden">
                   <ObjectHierarchyTree
                     model={loadedModelRef.current}
-                    selectedObject={selectedObject}
+                    selectedObjects={selectedObjects}
                     onSelectObject={handleSelectObject}
                     annotations={annotationInstances}
                     annotationObjects={
@@ -2141,6 +2200,7 @@ export default function StepAuthoringPage() {
                   ref={sceneViewerRef}
                   modelPath={modelPath}
                   selectedObject={selectedObject}
+                  selectedObjects={selectedObjects}
                   transformMode={transformMode}
                   translationSnap={
                     translationSnapEnabled ? translationSnapValue : null
@@ -2182,15 +2242,17 @@ export default function StepAuthoringPage() {
                     (kf) => kf.time === currentTime,
                   )}
                   hasObjectKeyframeAtCurrentTime={
-                    selectedObject
-                      ? objectKeyframes.some(
-                          (kf) =>
-                            kf.time === currentTime &&
-                            kf.objectId === getObjectId(selectedObject),
+                    hasObjectSelection
+                      ? objectKeyframes.some((kf) =>
+                          selectedObjects.some(
+                            (obj) =>
+                              kf.time === currentTime &&
+                              kf.objectId === getObjectId(obj),
+                          ),
                         )
                       : false
                   }
-                  canRecordObjectKeyframe={!!selectedObject}
+                  canRecordObjectKeyframe={hasObjectSelection}
                   onKeyframeMoved={handleKeyframeMoved}
                   onKeyframeSelect={handleKeyframeSelect}
                   onKeyframeDuplicate={handleKeyframeDuplicated}
