@@ -56,6 +56,7 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const isProduction =
     process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ||
     (typeof window !== "undefined" &&
@@ -118,6 +119,9 @@ export default function AdminDashboard() {
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+        setFetchError(
+          "Failed to load dashboard data. Please try refreshing the page.",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -196,6 +200,28 @@ export default function AdminDashboard() {
     <AuthGuard>
       <AdminLayout title="Dashboard">
         <div className="p-4 md:p-6 space-y-6">
+          {/* Error Banner */}
+          {fetchError && (
+            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-500 dark:text-red-400 flex-shrink-0" />
+                <p className="text-red-700 dark:text-red-300 text-sm">
+                  {fetchError}
+                </p>
+                <button
+                  onClick={() => {
+                    setFetchError(null);
+                    setIsLoading(true);
+                    window.location.reload();
+                  }}
+                  className="ms-auto px-3 py-1 text-xs font-medium rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Welcome Header */}
           <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 rounded-2xl p-6 text-white shadow-xl shadow-blue-500/20">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

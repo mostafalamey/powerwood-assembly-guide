@@ -227,6 +227,11 @@ const ConfirmDialog: React.FC<{
   useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => setIsVisible(true));
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") handleCancel();
+      };
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     } else {
       setIsVisible(false);
     }
@@ -249,11 +254,14 @@ const ConfirmDialog: React.FC<{
   return (
     <div
       className={`
-        fixed inset-0 z-[100] flex items-center justify-center p-4
+        fixed inset-0 z-[9999] flex items-center justify-center p-4
         transition-all duration-200
         ${isVisible ? "bg-black/50 backdrop-blur-sm" : "bg-transparent"}
       `}
       onClick={handleCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-label={options?.title || "Confirmation"}
     >
       <div
         className={`
@@ -388,7 +396,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
 
       {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-50 flex w-[360px] max-w-[90vw] flex-col gap-2">
+      <div
+        className="fixed top-4 right-4 z-[9999] flex w-[360px] max-w-[90vw] flex-col gap-2"
+        role="status"
+        aria-live="polite"
+        aria-label="Notifications"
+      >
         {toasts.map((toast) => (
           <ToastItemComponent
             key={toast.id}

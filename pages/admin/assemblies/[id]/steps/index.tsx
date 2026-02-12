@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
+import LoadingSpinner from "../../../../../components/admin/LoadingSpinner";
 import { useToast } from "../../../../../components/admin/ToastProvider";
 
 interface Step {
@@ -92,10 +93,10 @@ export default function StepManagementPage() {
         setCabinet(data);
         setSteps(data.steps || []);
       } else {
-        setError("Failed to load cabinet");
+        setError("Failed to load assembly");
       }
     } catch (err) {
-      setError("Error loading cabinet");
+      setError("Error loading assembly");
       console.error(err);
     } finally {
       setLoading(false);
@@ -220,7 +221,7 @@ export default function StepManagementPage() {
         setCabinetIndex(data || []);
       }
     } catch (err) {
-      console.error("Error loading cabinet list:", err);
+      console.error("Error loading assembly list:", err);
     }
   };
 
@@ -326,30 +327,7 @@ export default function StepManagementPage() {
           <title>Manage Steps - Admin Panel</title>
         </Head>
         <AdminLayout title="Manage Steps">
-          <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
-              <svg
-                className="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-            </div>
-            <p className="text-gray-600 dark:text-gray-400">Loading steps...</p>
-          </div>
+          <LoadingSpinner size="lg" message="Loading steps..." centered />
         </AdminLayout>
       </AuthGuard>
     );
@@ -367,7 +345,7 @@ export default function StepManagementPage() {
               <div className="flex items-center gap-3">
                 <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />
                 <p className="text-red-700 dark:text-red-300">
-                  {error || "Cabinet not found"}
+                  {error || "Assembly not found"}
                 </p>
               </div>
             </div>
@@ -700,28 +678,11 @@ export default function StepManagementPage() {
                   <div className="max-h-[50vh] overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
                     {copyLoading && (
                       <div className="p-8 text-center">
-                        <svg
-                          className="animate-spin h-6 w-6 mx-auto text-blue-600 dark:text-blue-400"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                            fill="none"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                          />
-                        </svg>
-                        <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                          Loading steps...
-                        </p>
+                        <LoadingSpinner
+                          size="md"
+                          message="Loading steps..."
+                          centered
+                        />
                       </div>
                     )}
                     {!copyLoading && !sourceCabinetId && (

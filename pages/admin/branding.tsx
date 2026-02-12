@@ -4,6 +4,7 @@ import AuthGuard from "@/components/admin/AuthGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { useToast } from "@/components/admin/ToastProvider";
 import FileUploadField from "@/components/admin/FileUploadField";
+import LoadingSpinner from "@/components/admin/LoadingSpinner";
 import {
   Palette,
   Save,
@@ -113,12 +114,7 @@ export default function BrandingPage() {
           <title>Branding - Admin Panel</title>
         </Head>
         <AdminLayout title="Branding">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="w-12 h-12 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-gray-600 dark:text-gray-400">Loading...</p>
-            </div>
-          </div>
+          <LoadingSpinner size="lg" message="Loading..." centered />
         </AdminLayout>
       </AuthGuard>
     );

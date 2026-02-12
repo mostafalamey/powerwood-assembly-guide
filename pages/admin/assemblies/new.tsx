@@ -6,6 +6,7 @@ import AdminLayout from "../../../components/admin/AdminLayout";
 import AuthGuard from "../../../components/admin/AuthGuard";
 import FileUploadField from "../../../components/admin/FileUploadField";
 import { ArrowLeft, AlertCircle, Clock, Plus } from "lucide-react";
+import LoadingSpinner from "../../../components/admin/LoadingSpinner";
 
 interface AssemblyFormData {
   id: string;
@@ -28,14 +29,36 @@ export default function NewAssemblyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
   const [formData, setFormData] = useState<AssemblyFormData>({
     id: "",
     name: { en: "", ar: "" },
-    category: "base",
+    category: "",
     estimatedTime: 0,
     description: { en: "", ar: "" },
     steps: [],
   });
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        if (response.ok) {
+          const data = await response.json();
+          const cats = data.categories || [];
+          setCategories(cats);
+          if (cats.length > 0 && !formData.category) {
+            setFormData((prev) => ({ ...prev, category: cats[0].id }));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -207,13 +230,11 @@ export default function NewAssemblyPage() {
                     transition-all duration-200"
                   required
                 >
-                  <option value="base">Base Cabinets</option>
-                  <option value="wall">Wall Cabinets</option>
-                  <option value="high">High Cabinets</option>
-                  <option value="tall">Tall Cabinets</option>
-                  <option value="corner-base">Corner Base</option>
-                  <option value="corner-wall">Corner Wall</option>
-                  <option value="filler">Fillers</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -303,7 +324,7 @@ export default function NewAssemblyPage() {
 
             {/* Image Upload */}
             <FileUploadField
-              label="Cabinet Image"
+              label="Assembly Image"
               value={formData.image || ""}
               onChange={(path) => handleChange("image", path)}
               accept="image/*,.png,.jpg,.jpeg,.webp"
@@ -316,7 +337,7 @@ export default function NewAssemblyPage() {
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 type="button"
-                onClick={() => router.push("/admin/cabinets")}
+                onClick={() => router.push("/admin/assemblies")}
                 className="px-6 py-2.5 rounded-xl text-sm font-medium
                   border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300
                   hover:bg-gray-50 dark:hover:bg-gray-700/50
@@ -339,28 +360,13 @@ export default function NewAssemblyPage() {
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
+                    <LoadingSpinner size="sm" />
                     Creating...
                   </>
                 ) : (
                   <>
                     <Plus className="w-5 h-5" />
-                    Create Cabinet
+                    Create Assembly
                   </>
                 )}
               </button>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import LoadingSpinner from "../../../../../../components/admin/LoadingSpinner";
 import {
   AlertCircle,
   ArrowLeft,
@@ -43,7 +44,7 @@ interface Cabinet {
 
 export default function EditStepPage() {
   const router = useRouter();
-  const { id, stepId } = router.query; // cabinet ID and step ID
+  const { id, stepId } = router.query; // assembly ID and step ID
   const [assembly, setCabinet] = useState<Cabinet | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -102,10 +103,10 @@ export default function EditStepPage() {
           setError("Step not found");
         }
       } else {
-        setError("Failed to load cabinet");
+        setError("Failed to load assembly");
       }
     } catch (err) {
-      setError("Error loading cabinet");
+      setError("Error loading assembly");
       console.error(err);
     } finally {
       setLoading(false);
@@ -366,32 +367,7 @@ export default function EditStepPage() {
           <title>Edit Step - Admin Panel</title>
         </Head>
         <AdminLayout title="Edit Step">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <svg
-                className="animate-spin h-10 w-10 mx-auto text-blue-600 dark:text-blue-400"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">
-                Loading step data...
-              </p>
-            </div>
-          </div>
+          <LoadingSpinner size="lg" message="Loading step data..." centered />
         </AdminLayout>
       </AuthGuard>
     );

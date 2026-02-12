@@ -14,6 +14,7 @@ import {
   Upload,
   Save,
 } from "lucide-react";
+import LoadingSpinner from "../../../../components/admin/LoadingSpinner";
 
 interface AssemblyFormData {
   id: string;
@@ -38,6 +39,9 @@ export default function EditAssemblyPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState<
+    Array<{ id: string; name: string }>
+  >([]);
   const [formData, setFormData] = useState<AssemblyFormData>({
     id: "",
     name: { en: "", ar: "" },
@@ -52,6 +56,21 @@ export default function EditAssemblyPage() {
       fetchAssembly();
     }
   }, [id]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data.categories || []);
+        }
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const fetchAssembly = async () => {
     try {
@@ -139,25 +158,7 @@ export default function EditAssemblyPage() {
         <AdminLayout title="Edit Assembly">
           <div className="p-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
-              <svg
-                className="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
+              <LoadingSpinner size="md" />
             </div>
             <p className="text-gray-600 dark:text-gray-400">
               Loading assembly...
@@ -200,10 +201,10 @@ export default function EditAssemblyPage() {
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] items-start">
               {/* Left Column - Cabinet Details */}
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 space-y-5">
-                {/* Cabinet ID (Read-only) */}
+                {/* Assembly ID (Read-only) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Cabinet ID
+                    Assembly ID
                   </label>
                   <input
                     type="text"
@@ -214,14 +215,14 @@ export default function EditAssemblyPage() {
                     disabled
                   />
                   <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                    Cabinet ID cannot be changed
+                    Assembly ID cannot be changed
                   </p>
                 </div>
 
                 {/* Name (English & Arabic) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Cabinet Name <span className="text-red-500">*</span>
+                    Assembly Name <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -282,13 +283,11 @@ export default function EditAssemblyPage() {
                         transition-all duration-200"
                       required
                     >
-                      <option value="base">Base Cabinets</option>
-                      <option value="wall">Wall Cabinets</option>
-                      <option value="high">High Cabinets</option>
-                      <option value="tall">Tall Cabinets</option>
-                      <option value="corner-base">Corner Base</option>
-                      <option value="corner-wall">Corner Wall</option>
-                      <option value="filler">Fillers</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -403,7 +402,7 @@ export default function EditAssemblyPage() {
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                        Cabinet Assets
+                        Assembly Assets
                       </h3>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
                         3D model and preview image
@@ -425,7 +424,7 @@ export default function EditAssemblyPage() {
 
                     {/* Image Upload */}
                     <FileUploadField
-                      label="Cabinet Image"
+                      label="Assembly Image"
                       value={formData.image || ""}
                       onChange={(path) => handleChange("image", path)}
                       accept="image/*,.png,.jpg,.jpeg,.webp"
@@ -441,7 +440,7 @@ export default function EditAssemblyPage() {
             {/* Actions */}
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
               <Link
-                href="/admin/cabinets"
+                href="/admin/assemblies"
                 className="px-6 py-2.5 rounded-xl text-sm font-medium text-center
                   border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300
                   hover:bg-gray-50 dark:hover:bg-gray-700/50
@@ -463,28 +462,13 @@ export default function EditAssemblyPage() {
               >
                 {saving ? (
                   <>
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                      />
-                    </svg>
+                    <LoadingSpinner size="sm" />
                     Updating...
                   </>
                 ) : (
                   <>
                     <Save className="w-5 h-5" />
-                    Update Cabinet
+                    Update Assembly
                   </>
                 )}
               </button>

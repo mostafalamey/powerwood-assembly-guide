@@ -1916,7 +1916,44 @@ export default function StepAuthoringPage() {
         <title>Visual Step Editor - Admin Panel</title>
       </Head>
       <AdminLayout title="Visual Step Editor">
-        <div className="h-[calc(100vh-140px)] min-h-0 flex flex-col overflow-hidden rounded-xl">
+        {/* Mobile warning overlay */}
+        <div className="lg:hidden flex flex-col items-center justify-center p-8 text-center min-h-[60vh]">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 flex items-center justify-center mb-4">
+            <svg
+              className="w-8 h-8 text-amber-600 dark:text-amber-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Desktop Recommended
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 max-w-sm mb-6">
+            The Visual Step Editor requires a larger screen for the best
+            experience. Please use a desktop or laptop computer.
+          </p>
+          <Link
+            href={`/admin/assemblies/${id}/steps`}
+            className="inline-flex items-center gap-2 px-5 py-2.5 
+              bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium
+              hover:from-blue-600 hover:to-indigo-700 
+              shadow-lg shadow-blue-500/30 hover:shadow-xl
+              transition-all duration-200"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Steps
+          </Link>
+        </div>
+
+        <div className="hidden lg:flex h-[calc(100vh-140px)] min-h-0 flex-col overflow-hidden rounded-xl">
           <audio ref={audioRef} className="hidden" preload="auto" />
           {/* Top toolbar */}
           <div className="relative z-20 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-b border-white/50 dark:border-gray-700/50 px-2 sm:px-4 py-2 sm:py-3 flex flex-wrap items-center gap-2 sm:gap-4 shadow-sm">
@@ -2400,7 +2437,7 @@ export default function StepAuthoringPage() {
                             </span>
                           </div>
                           <div
-                            role="slider"
+                            role="application"
                             tabIndex={0}
                             aria-label="Main light position top view"
                             onPointerDown={(event) => {
@@ -2465,7 +2502,7 @@ export default function StepAuthoringPage() {
                             </span>
                           </div>
                           <div
-                            role="slider"
+                            role="application"
                             tabIndex={0}
                             aria-label="Main light position side view"
                             onPointerDown={(event) => {

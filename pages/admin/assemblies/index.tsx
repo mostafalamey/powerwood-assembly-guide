@@ -33,6 +33,7 @@ import {
   FolderTree,
   GripVertical,
 } from "lucide-react";
+import LoadingSpinner from "../../../components/admin/LoadingSpinner";
 
 interface Assembly {
   id: string;
@@ -550,30 +551,11 @@ export default function AssembliesListPage() {
           {/* Loading State */}
           {loading && (
             <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
-                <svg
-                  className="animate-spin h-6 w-6 text-blue-600 dark:text-blue-400"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
-                </svg>
-              </div>
-              <p className="text-gray-600 dark:text-gray-400">
-                Loading assemblies...
-              </p>
+              <LoadingSpinner
+                size="lg"
+                message="Loading assemblies..."
+                centered
+              />
             </div>
           )}
 

@@ -9,6 +9,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### ✨ Added - Admin UI/UX Overhaul (2026-02-13)
+
+Comprehensive UI/UX audit and improvement pass across all admin panel pages.
+
+**Accessibility:**
+
+- Added focus trap (Tab/Shift+Tab cycling) to `AssemblyFormModal` and `CategoryFormModal`
+- Added ESC key to close all modals and confirm dialogs
+- Added `role="dialog"`, `aria-modal="true"`, `aria-label` to all modal/dialog components
+- Added `aria-live="polite"` and `role="status"` to toast notification container
+- Fixed ARIA roles on light position pads in authoring tool (`role="slider"` → `role="application"`)
+- Fixed toast and confirm dialog `z-index` from `z-50`/`z-[100]` to `z-[9999]` for proper stacking
+
+**Design Consistency:**
+
+- Unified `CategoryFormModal` to match glassmorphism design system (rounded-2xl, gradient header, backdrop-blur)
+- Unified categories page with glassmorphic cards, gradient button, and consistent spacing
+- Updated `FileUploadField` styling (rounded-xl, gradient upload button, smaller icon)
+- Created shared `LoadingSpinner` component (`components/admin/LoadingSpinner.tsx`) with sm/md/lg sizes
+- Replaced 10+ identical inline SVG spinners across admin pages with `LoadingSpinner`
+
+**Functionality:**
+
+- Replaced hardcoded category `<option>` elements with dynamic API-fetched categories in assembly new/edit forms
+- Added XHR-based upload progress bar with gradient fill to `FileUploadField`
+- Added client-side file size validation with auto-inferred limits (GLB: 50MB, audio: 5MB, image: 2MB)
+- Added success state (checkmark) display after file upload completion
+- Added error banner with retry button to admin dashboard instead of silent `console.error`
+
+**Responsive & Mobile:**
+
+- Fixed `grid-cols-2` → `grid-cols-1 sm:grid-cols-2` in `AssemblyFormModal` for mobile form layout
+- Added desktop-recommended overlay on authoring tool for mobile/tablet screens (`lg:hidden`)
+- Main authoring editor content now wrapped in `hidden lg:flex` to prevent unusable mobile experience
+
+**Security:**
+
+- Removed default credentials hint (`admin`/`admin123`) from login page
+- Replaced with neutral "Contact your administrator" message
+
+**Dark Mode:**
+
+- Fixed AuthGuard loading screen white flash by adding `dark:bg-gray-900` and dark border/text variants
+
+**Terminology & Code Quality:**
+
+- Fixed 22+ instances of outdated "cabinet" terminology → "assembly" across 6 admin pages
+- Fixed 4 dead route links from `/admin/cabinets` → `/admin/assemblies`
+- Fixed variable naming in QR codes page (`setCabinets` → `setAssemblies`, `fetchAssemblys` → `fetchAssemblies`, `Cabinet` interface → `Assembly`)
+- Fixed "cabinet assembly guides" → "assembly guides" in QR page description
+
+**Files added:**
+
+- `components/admin/LoadingSpinner.tsx` - Reusable loading spinner (sm/md/lg, message, centered)
+
+**Files modified (18):**
+
+- `components/admin/AssemblyFormModal.tsx` - Focus trap, ESC key, ARIA, responsive grid
+- `components/admin/CategoryFormModal.tsx` - Focus trap, ESC key, ARIA, glassmorphism redesign
+- `components/admin/FileUploadField.tsx` - Progress bar, file size validation, design update
+- `components/admin/ToastProvider.tsx` - ARIA attributes, z-index, ESC key on confirm
+- `components/admin/AuthGuard.tsx` - Dark mode loading state
+- `pages/admin/login.tsx` - Removed credentials, LoadingSpinner
+- `pages/admin/index.tsx` - Error banner with retry
+- `pages/admin/branding.tsx` - LoadingSpinner
+- `pages/admin/qr-codes.tsx` - Terminology, naming, LoadingSpinner
+- `pages/admin/categories/index.tsx` - Design unification, LoadingSpinner
+- `pages/admin/assemblies/index.tsx` - LoadingSpinner
+- `pages/admin/assemblies/new.tsx` - Dynamic categories, terminology, LoadingSpinner
+- `pages/admin/assemblies/[id]/edit.tsx` - Dynamic categories, terminology, LoadingSpinner
+- `pages/admin/assemblies/[id]/steps/index.tsx` - Terminology, LoadingSpinner
+- `pages/admin/assemblies/[id]/steps/new.tsx` - Terminology, LoadingSpinner
+- `pages/admin/assemblies/[id]/steps/[stepId]/edit.tsx` - Terminology, LoadingSpinner
+- `pages/admin/assemblies/[id]/steps/authoring.tsx` - Mobile overlay, ARIA fix
+
 ### ⚡ Changed - Icon Library Migration (2026-02-06)
 
 **Migrated from Material Symbols to Lucide React icons**

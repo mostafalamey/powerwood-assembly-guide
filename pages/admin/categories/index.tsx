@@ -7,6 +7,7 @@ import {
 } from "@/components/admin/CategoryFormModal";
 import { useToast } from "@/components/admin/ToastProvider";
 import { Plus, Edit2, Trash2, FolderOpen } from "lucide-react";
+import LoadingSpinner from "@/components/admin/LoadingSpinner";
 
 interface Category {
   id: string;
@@ -144,7 +145,7 @@ export default function CategoriesPage() {
   return (
     <AuthGuard>
       <AdminLayout title="Manage Categories">
-        <div className="space-y-6 p-8">
+        <div className="space-y-6 p-4 sm:p-6">
           {/* Header */}
           <div className="flex justify-between items-center">
             <div>
@@ -157,7 +158,11 @@ export default function CategoriesPage() {
             </div>
             <button
               onClick={openCreateModal}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 
+                bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-medium
+                hover:from-amber-600 hover:to-orange-700
+                shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40
+                transition-all duration-300"
             >
               <Plus className="w-4 h-4" />
               Add Category
@@ -167,16 +172,17 @@ export default function CategoriesPage() {
           {/* Loading State */}
           {loading && (
             <div className="text-center py-12">
-              <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
-              <p className="text-gray-600 dark:text-gray-400 mt-4">
-                Loading categories...
-              </p>
+              <LoadingSpinner
+                size="lg"
+                message="Loading categories..."
+                centered
+              />
             </div>
           )}
 
           {/* Categories Grid */}
           {!loading && categories.length === 0 && (
-            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
+            <div className="text-center py-12 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
               <FolderOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                 No categories yet
@@ -186,7 +192,11 @@ export default function CategoriesPage() {
               </p>
               <button
                 onClick={openCreateModal}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="inline-flex items-center gap-2 px-4 py-2.5 
+                  bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-medium
+                  hover:from-amber-600 hover:to-orange-700
+                  shadow-lg shadow-amber-500/30 hover:shadow-xl
+                  transition-all duration-300"
               >
                 <Plus className="w-4 h-4" />
                 Create Category
@@ -199,7 +209,7 @@ export default function CategoriesPage() {
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-shadow"
+                  className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-5 hover:shadow-2xl transition-all duration-300"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
+import LoadingSpinner from "../../../../../components/admin/LoadingSpinner";
 
 interface StepFormData {
   id: string;
@@ -230,7 +231,7 @@ export default function NewStepPage() {
         setError("Failed to load cabinet");
       }
     } catch (err) {
-      setError("Error loading cabinet");
+      setError("Error loading assembly");
       console.error(err);
     } finally {
       setLoading(false);
@@ -328,30 +329,11 @@ export default function NewStepPage() {
         </Head>
         <AdminLayout title="Add Step">
           <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <svg
-                className="animate-spin h-10 w-10 mx-auto text-blue-600 dark:text-blue-400"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  fill="none"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">
-                Loading cabinet data...
-              </p>
-            </div>
+            <LoadingSpinner
+              size="lg"
+              message="Loading assembly data..."
+              centered
+            />
           </div>
         </AdminLayout>
       </AuthGuard>
@@ -371,20 +353,20 @@ export default function NewStepPage() {
                 <AlertCircle className="w-6 h-6 text-red-500" />
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white">
-                    Cabinet Not Found
+                    Assembly Not Found
                   </h3>
                   <p className="text-red-600 dark:text-red-400 mt-1">
-                    The cabinet you're looking for doesn't exist.
+                    The assembly you're looking for doesn't exist.
                   </p>
                 </div>
               </div>
             </div>
             <Link
-              href="/admin/cabinets"
+              href="/admin/assemblies"
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Cabinets
+              Back to Assemblies
             </Link>
           </div>
         </AdminLayout>

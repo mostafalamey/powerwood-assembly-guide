@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { X, Package, Clock } from "lucide-react";
 import FileUploadField from "./FileUploadField";
@@ -48,10 +48,52 @@ export function AssemblyFormModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Focus trap and ESC key handler
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isSubmitting) {
+        onClose();
+        return;
+      }
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [isSubmitting, onClose],
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      // Focus the modal on open
+      setTimeout(
+        () =>
+          modalRef.current
+            ?.querySelector<HTMLElement>("input, button")
+            ?.focus(),
+        50,
+      );
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isOpen, handleKeyDown]);
 
   useEffect(() => {
     if (assembly && mode === "edit") {
@@ -133,8 +175,14 @@ export function AssemblyFormModal({
     <div
       className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={
+        mode === "create" ? "Add New Assembly" : `Edit Assembly: ${formData.id}`
+      }
     >
       <div
+        ref={modalRef}
         className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
@@ -215,7 +263,7 @@ export function AssemblyFormModal({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Assembly Name <span className="text-red-500">*</span>
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                     English
@@ -255,7 +303,7 @@ export function AssemblyFormModal({
             </div>
 
             {/* Category & Estimated Time - Side by Side */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Category <span className="text-red-500">*</span>
@@ -309,7 +357,7 @@ export function AssemblyFormModal({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Description
               </label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
                     English
@@ -351,7 +399,7 @@ export function AssemblyFormModal({
             </div>
 
             {/* 3D Model & Image - Side by Side */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FileUploadField
                 label="3D Model (GLB)"
                 value={formData.model || ""}

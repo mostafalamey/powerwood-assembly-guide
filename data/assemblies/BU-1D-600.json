@@ -6140,6 +6140,353 @@
           }
         }
       }
+    },
+    {
+      "id": "7",
+      "title": {
+        "en": "Install the shelf inside the cabinet",
+        "ar": "تركيب الرف داخل الخزانة"
+      },
+      "description": {
+        "en": "Take the four shelf holders, which are small plastic pieces with metal pins on them.\nDecide how high you want the shelf to be inside the cabinet; there are several vertical holed on the side panels for you to choose from.\nInsert one shelf holder into each hole, making sure they are all at the same level.\nThe flat edge of the holder should be facing upwards.\nTake the shelf and place it on top of the self-holders.",
+        "ar": "خذ الحوامل الأربعة الخاصة بالرف، وهي قطع بلاستيكية صغيرة مزودة بدبابيس معدنية.\nحدد الارتفاع الذي ترغب أن يكون عليه الرف داخل الخزانة؛ حيث توجد عدة ثقوب رأسية في الألواح الجانبية يمكنك الاختيار من بينها.\nأدخل حاملًا واحدًا في كل ثقب، مع التأكد من أن جميع الحوامل مثبتة على نفس المستوى.\nيجب أن تكون الحافة المستوية للحامل متجهة إلى الأعلى.\nبعد ذلك، خذ الرف وضعه فوق الحوامل بحيث يستقر عليها بشكل محكم."
+      },
+      "duration": 3,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BU_1D-600/step7.mp3",
+        "ar": "/audio/arb/BaseCabinets/BU_1D-600/step7.mp3"
+      },
+      "animation": {
+        "duration": 30.093063,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L001",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": -1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel/Latch_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel/Leg_BR",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel/Leg_BL",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel/Leg_FL",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel/Leg_FR",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          }
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 1.5
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 2,
+            "position": {
+              "x": -8.650519031141869,
+              "y": 8.581314878892734,
+              "z": 8.096885813148788
+            }
+          },
+          "fill": {
+            "color": "#ffffff",
+            "intensity": 1
+          },
+          "rim": {
+            "color": "#ffffff",
+            "intensity": 0.7
+          }
+        }
+      }
     }
   ]
 }

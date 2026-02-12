@@ -13,8 +13,9 @@ import {
   ExternalLink,
   ArrowRight,
 } from "lucide-react";
+import LoadingSpinner from "../../components/admin/LoadingSpinner";
 
-interface Cabinet {
+interface Assembly {
   id: string;
   name: {
     en: string;
@@ -26,9 +27,9 @@ interface Cabinet {
 }
 
 export default function QRCodesPage() {
-  const [assemblies, setCabinets] = useState<Cabinet[]>([]);
+  const [assemblies, setAssemblies] = useState<Assembly[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCabinets, setSelectedCabinets] = useState<Set<string>>(
+  const [selectedAssemblies, setSelectedAssemblies] = useState<Set<string>>(
     new Set(),
   );
   const [baseUrl, setBaseUrl] = useState("");
@@ -38,10 +39,10 @@ export default function QRCodesPage() {
     if (typeof window !== "undefined") {
       setBaseUrl(window.location.origin);
     }
-    fetchAssemblys();
+    fetchAssemblies();
   }, []);
 
-  const fetchAssemblys = async () => {
+  const fetchAssemblies = async () => {
     try {
       const token = localStorage.getItem("admin_token");
       const response = await fetch("/api/assemblies", {
@@ -52,9 +53,9 @@ export default function QRCodesPage() {
 
       if (response.ok) {
         const data = await response.json();
-        setCabinets(data);
+        setAssemblies(data);
         // Select all by default
-        setSelectedCabinets(new Set(data.map((c: Cabinet) => c.id)));
+        setSelectedAssemblies(new Set(data.map((c: Assembly) => c.id)));
       }
     } catch (err) {
       console.error(err);
@@ -63,32 +64,32 @@ export default function QRCodesPage() {
     }
   };
 
-  const toggleCabinet = (id: string) => {
-    const newSelected = new Set(selectedCabinets);
+  const toggleAssembly = (id: string) => {
+    const newSelected = new Set(selectedAssemblies);
     if (newSelected.has(id)) {
       newSelected.delete(id);
     } else {
       newSelected.add(id);
     }
-    setSelectedCabinets(newSelected);
+    setSelectedAssemblies(newSelected);
   };
 
   const toggleAll = () => {
-    if (selectedCabinets.size === assemblies.length) {
-      setSelectedCabinets(new Set());
+    if (selectedAssemblies.size === assemblies.length) {
+      setSelectedAssemblies(new Set());
     } else {
-      setSelectedCabinets(new Set(assemblies.map((c) => c.id)));
+      setSelectedAssemblies(new Set(assemblies.map((c) => c.id)));
     }
   };
 
-  const downloadQRCode = (assemblyId: string, cabinetName: string) => {
+  const downloadQRCode = (assemblyId: string, assemblyName: string) => {
     const canvas = document.getElementById(
       `qr-${assemblyId}`,
     ) as HTMLCanvasElement;
     if (canvas) {
       const url = canvas.toDataURL("image/png");
       const link = document.createElement("a");
-      link.download = `QR-${assemblyId}-${cabinetName.replace(/\s+/g, "-")}.png`;
+      link.download = `QR-${assemblyId}-${assemblyName.replace(/\s+/g, "-")}.png`;
       link.href = url;
       link.click();
     }
@@ -98,8 +99,8 @@ export default function QRCodesPage() {
     window.print();
   };
 
-  const selectedCabinetsList = assemblies.filter((c) =>
-    selectedCabinets.has(c.id),
+  const selectedAssembliesList = assemblies.filter((c) =>
+    selectedAssemblies.has(c.id),
   );
 
   return (
@@ -117,7 +118,7 @@ export default function QRCodesPage() {
 
         {/* Print QR Codes Grid */}
         <div className="grid grid-cols-2 gap-8 px-8">
-          {selectedCabinetsList.map((assembly) => {
+          {selectedAssembliesList.map((assembly) => {
             const url = `${baseUrl}/assembly/${assembly.id}`;
             return (
               <div
@@ -158,9 +159,9 @@ export default function QRCodesPage() {
                     QR Code Generator
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 mt-1">
-                    Generate and print QR codes for cabinet assembly guides.
-                    Users can scan these codes to access instructions directly
-                    on their mobile devices.
+                    Generate and print QR codes for assembly guides. Users can
+                    scan these codes to access instructions directly on their
+                    mobile devices.
                   </p>
                 </div>
               </div>
@@ -168,28 +169,11 @@ export default function QRCodesPage() {
 
             {loading ? (
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-12 text-center">
-                <svg
-                  className="animate-spin h-10 w-10 mx-auto text-blue-600 dark:text-blue-400"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
-                </svg>
-                <p className="mt-4 text-gray-600 dark:text-gray-400">
-                  Loading assemblies...
-                </p>
+                <LoadingSpinner
+                  size="lg"
+                  message="Loading assemblies..."
+                  centered
+                />
               </div>
             ) : (
               <>
@@ -200,20 +184,21 @@ export default function QRCodesPage() {
                       onClick={toggleAll}
                       className="px-4 py-2 rounded-xl text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                     >
-                      {selectedCabinets.size === assemblies.length
+                      {selectedAssemblies.size === assemblies.length
                         ? "Deselect All"
                         : "Select All"}
                     </button>
                     <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-700/50">
                       <CheckSquare className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {selectedCabinets.size} of {assemblies.length} selected
+                        {selectedAssemblies.size} of {assemblies.length}{" "}
+                        selected
                       </span>
                     </div>
                   </div>
                   <button
                     onClick={printSelected}
-                    disabled={selectedCabinets.size === 0}
+                    disabled={selectedAssemblies.size === 0}
                     className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium
                       hover:from-blue-600 hover:to-indigo-700 
                       disabled:opacity-50 disabled:cursor-not-allowed 
@@ -229,7 +214,7 @@ export default function QRCodesPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {assemblies.map((assembly) => {
                     const url = `${baseUrl}/assembly/${assembly.id}`;
-                    const isSelected = selectedCabinets.has(assembly.id);
+                    const isSelected = selectedAssemblies.has(assembly.id);
 
                     return (
                       <div
@@ -257,7 +242,7 @@ export default function QRCodesPage() {
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              onChange={() => toggleCabinet(assembly.id)}
+                              onChange={() => toggleAssembly(assembly.id)}
                               className="sr-only"
                             />
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -326,13 +311,13 @@ export default function QRCodesPage() {
                       <QrCode className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      No cabinets yet
+                      No assemblies yet
                     </h3>
                     <p className="mt-2 text-gray-500 dark:text-gray-400">
-                      Create cabinets to generate QR codes.
+                      Create assemblies to generate QR codes.
                     </p>
                     <Link
-                      href="/admin/cabinets"
+                      href="/admin/assemblies"
                       className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 
                         bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium
                         hover:from-blue-600 hover:to-indigo-700 
@@ -340,7 +325,7 @@ export default function QRCodesPage() {
                         transition-all duration-200"
                     >
                       <ArrowRight className="w-5 h-5" />
-                      Go to Cabinets
+                      Go to Assemblies
                     </Link>
                   </div>
                 )}
