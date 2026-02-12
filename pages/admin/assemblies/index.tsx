@@ -374,6 +374,7 @@ export default function AssembliesListPage() {
         await handleUpdateAssembly({
           ...fullAssembly,
           category: categoryId,
+          description: fullAssembly.description ?? { en: "", ar: "" },
         });
       } catch (error: any) {
         toast.error(error.message || "Failed to update assembly category.");
