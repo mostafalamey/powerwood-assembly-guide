@@ -1063,46 +1063,12 @@ const AuthoringSceneViewer = forwardRef<
         model.position.y = 0; // Place on ground level
         model.position.z = -center.z;
 
-        // Enable shadows and customize materials
+        // Enable shadows
         model.traverse((child: THREE.Object3D) => {
           if (child instanceof THREE.Mesh) {
             // Only cast shadows if visible
             child.castShadow = child.visible;
             child.receiveShadow = true;
-
-            // Customize materials based on name
-            if (child.material) {
-              const materials = Array.isArray(child.material)
-                ? child.material
-                : [child.material];
-
-              materials.forEach((mat: any) => {
-                // Check both material name and mesh name
-                const meshName = child.name?.toLowerCase() || "";
-                const matName = mat.name?.toLowerCase() || "";
-
-                if (meshName.includes("leg") || matName.includes("leg")) {
-                  // Make legs darker grey
-                  if (mat.color) {
-                    mat.color.setRGB(0.8, 0.8, 0.8); // Dark grey
-                  }
-                } else if (
-                  meshName.includes("panel") ||
-                  matName.includes("panel")
-                ) {
-                  // Keep panels lighter - brighten by 20%
-                  if (mat.color) {
-                    mat.color.multiplyScalar(1.2);
-                  }
-                } else {
-                  // Default: lighten other materials
-                  if (mat.color) {
-                    mat.color.multiplyScalar(1.4);
-                  }
-                }
-                mat.needsUpdate = true;
-              });
-            }
           }
         });
 

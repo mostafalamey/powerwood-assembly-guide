@@ -1643,8 +1643,8 @@
       },
       "duration": 3,
       "audioUrl": {
-        "en": "/audio/eng/BaseCabinets/BC_003/step4.mp3",
-        "ar": "/audio/arb/BaseCabinets/BC_003/step4.mp3"
+        "en": "/audio/eng/BaseCabinets/BC_003/step2.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_003/step2.mp3"
       },
       "animation": {
         "duration": 31.190188,
@@ -3786,6 +3786,1246 @@
     {
       "id": "4",
       "title": {
+        "en": "Adjust the side panels if needed",
+        "ar": "تعديل الألواح الجانبية عند الحاجة"
+      },
+      "description": {
+        "en": "If you change your mind about the door opening direction, you can easily detach the side panels and switch them around.\nTo detach the side panel, push it slightly towards the back of the cabinet, and then lift it up gently, until it comes off the base panel.\nBe careful not to damage the clips or the grooves.\nTo reattach the side panel, follow the instructions in step 3",
+        "ar": "إذا غيّرت رأيك بشأن اتجاه فتح الباب، يمكنك بسهولة فصل الألواح الجانبية وإعادة تبديلها.\nلفصل اللوح الجانبي، ادفعه قليلًا باتجاه الجزء الخلفي من الخزانة، ثم ارفعه برفق حتى ينفصل عن اللوح السفلي.\nاحرص على عدم إتلاف المشابك أو الأخاديد أثناء عملية الفصل.\nلإعادة تثبيت اللوح الجانبي، اتبع التعليمات الواردة في الخطوة الثالثة."
+      },
+      "duration": 3,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_003/step4.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_003/step4.mp3"
+      },
+      "animation": {
+        "duration": 25.208125,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_01",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_02",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_03",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_04",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L001",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": -1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948963,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 12,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 12.5,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 12.9,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 13,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 13.5,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.38000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 13.5,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "easing": "easeInQuart"
+          },
+          {
+            "time": 14,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 14.5,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 15.2,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 15.2,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 15.7,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.34,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 16,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 22,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 24,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0.5800000000000001,
+                "y": 0.7900000000000001,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": -3.141592653589793
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 10,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 11.5,
+            "position": {
+              "x": 0.47663349033410934,
+              "y": 0.4904376091361412,
+              "z": 0.6360325823666029
+            },
+            "target": {
+              "x": 0.005600694079458255,
+              "y": 0.2758560019534669,
+              "z": 0.060325831388696335
+            }
+          },
+          {
+            "time": 16.97,
+            "position": {
+              "x": 0.47663349033410934,
+              "y": 0.4904376091361412,
+              "z": 0.6360325823666029
+            },
+            "target": {
+              "x": 0.005600694079458255,
+              "y": 0.2758560019534669,
+              "z": 0.060325831388696335
+            }
+          },
+          {
+            "time": 18.14,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          }
+        ],
+        "annotationInstances": [
+          {
+            "id": "annotation-1770759217919-zxwjjujx4",
+            "type": "anno_arrow_move_single",
+            "color": "#ef4444",
+            "name": "Anno Arrow Move Single"
+          },
+          {
+            "id": "annotation-1770759554540-573l6mah0",
+            "type": "anno_arrow_move_single",
+            "color": "#ef4444",
+            "name": "Anno Arrow Move Single"
+          }
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 0.8
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 1,
+            "position": {
+              "x": -8.650519031141869,
+              "y": 8.581314878892734,
+              "z": 8.096885813148788
+            }
+          },
+          "fill": {
+            "color": "#ffffff",
+            "intensity": 0.5
+          },
+          "rim": {
+            "color": "#ffffff",
+            "intensity": 0.3
+          }
+        }
+      }
+    },
+    {
+      "id": "5",
+      "title": {
+        "en": "Slide the back panel into place",
+        "ar": "إدخال اللوح الخلفي في مكانه"
+      },
+      "description": {
+        "en": "Take the back panel which is a thin and flat piece of wood.\nSlide the back panel into the grooves of the side panels and the base panel.\nMake sure the back panel is flush with the edges of the other panels.\nDo not apply any sideways force to the side panels, as this could damage the clips.",
+        "ar": "خذ اللوح الخلفي، وهو قطعة خشبية رقيقة ومسطحة.\nقم بإدخال اللوح الخلفي في الأخاديد الموجودة في الألواح الجانبية واللوح السفلي.\nتأكد من أن اللوح الخلفي مستوٍ ومتطابق مع حواف الألواح الأخرى.\nتجنب ممارسة أي ضغط جانبي على الألواح الجانبية، إذ قد يؤدي ذلك إلى إتلاف المشابك."
+      },
+      "duration": 3,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_003/step5.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_003/step5.mp3"
+      },
+      "animation": {
+        "duration": 21.733875,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_01",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_02",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_03",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_04",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          }
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 0.8
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 1,
+            "position": {
+              "x": -8.650519031141869,
+              "y": 8.442906574394463,
+              "z": 8.096885813148788
+            }
+          },
+          "fill": {
+            "color": "#ffffff",
+            "intensity": 0.5
+          },
+          "rim": {
+            "color": "#ffffff",
+            "intensity": 0.3
+          }
+        }
+      }
+    },
+    {
+      "id": "6",
+      "title": {
+        "en": "Slide the back panel into place",
+        "ar": "إدخال اللوح الخلفي في مكانه"
+      },
+      "description": {
+        "en": "Take the back panel which is a thin and flat piece of wood.\nSlide the back panel into the grooves of the side panels and the base panel.\nMake sure the back panel is flush with the edges of the other panels.\nDo not apply any sideways force to the side panels, as this could damage the clips.",
+        "ar": "خذ اللوح الخلفي، وهو قطعة خشبية رقيقة ومسطحة.\nقم بإدخال اللوح الخلفي في الأخاديد الموجودة في الألواح الجانبية واللوح السفلي.\nتأكد من أن اللوح الخلفي مستوٍ ومتطابق مع حواف الألواح الأخرى.\nتجنب ممارسة أي ضغط جانبي على الألواح الجانبية، إذ قد يؤدي ذلك إلى إتلاف المشابك."
+      },
+      "duration": 3,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BC_003/step7.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_003/step7.mp3"
+      },
+      "animation": {
+        "duration": 21.733875,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_01",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_02",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_03",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_04",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          }
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 0.8
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 1,
+            "position": {
+              "x": -8.650519031141869,
+              "y": 8.442906574394463,
+              "z": 8.096885813148788
+            }
+          },
+          "fill": {
+            "color": "#ffffff",
+            "intensity": 0.5
+          },
+          "rim": {
+            "color": "#ffffff",
+            "intensity": 0.3
+          }
+        }
+      }
+    },
+    {
+      "id": "7",
+      "title": {
         "en": "Reveal",
         "ar": "اظهار"
       },
@@ -3795,8 +5035,8 @@
       },
       "duration": 3,
       "audioUrl": {
-        "en": "/audio/eng/BaseCabinets/BC_003/step2.mp3",
-        "ar": "/audio/arb/BaseCabinets/BC_003/step2.mp3"
+        "en": "/audio/eng/BaseCabinets/BC_003/step6.mp3",
+        "ar": "/audio/arb/BaseCabinets/BC_003/step6.mp3"
       },
       "animation": {
         "duration": 6.191,

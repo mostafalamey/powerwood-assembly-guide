@@ -4,20 +4,20 @@ export const DEFAULT_LIGHTING_SETTINGS: LightingSettings = {
   hemisphere: {
     skyColor: "#ffffff",
     groundColor: "#444444",
-    intensity: 0.8,
+    intensity: 1.5,
   },
   main: {
     color: "#ffffff",
-    intensity: 1.0,
+    intensity: 2.0,
     position: { x: 5, y: 10, z: 7.5 },
   },
   fill: {
     color: "#ffffff",
-    intensity: 0.5,
+    intensity: 1.0,
   },
   rim: {
     color: "#ffffff",
-    intensity: 0.3,
+    intensity: 0.7,
   },
 };
 

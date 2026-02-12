@@ -1633,24 +1633,24 @@
           "hemisphere": {
             "skyColor": "#ffffff",
             "groundColor": "#444444",
-            "intensity": 0.5
+            "intensity": 1.5
           },
           "main": {
             "color": "#ffffff",
-            "intensity": 1,
+            "intensity": 2,
             "position": {
-              "x": -3.6678200692041543,
-              "y": 10.311418685121108,
-              "z": 10.449826989619378
+              "x": -8.650519031141869,
+              "y": 8.442906574394463,
+              "z": 8.235294117647058
             }
           },
           "fill": {
             "color": "#ffffff",
-            "intensity": 0.5
+            "intensity": 1
           },
           "rim": {
             "color": "#ffffff",
-            "intensity": 0.3
+            "intensity": 0.7
           }
         }
       }
@@ -2069,6 +2069,28 @@
               }
             },
             "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel/Latch_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": -3.1415928577980896,
+                "y": -1.5707963267948966,
+                "z": 3.1415925025939884
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
           },
           {
             "time": 8.6,
@@ -2935,24 +2957,24 @@
           "hemisphere": {
             "skyColor": "#ffffff",
             "groundColor": "#444444",
-            "intensity": 0.5
+            "intensity": 1.5
           },
           "main": {
             "color": "#ffffff",
-            "intensity": 1,
+            "intensity": 2,
             "position": {
-              "x": -9.204152249134946,
-              "y": 8.166089965397925,
-              "z": 7.820069204152247
+              "x": 5,
+              "y": 10,
+              "z": 7.5
             }
           },
           "fill": {
             "color": "#ffffff",
-            "intensity": 0.5
+            "intensity": 1
           },
           "rim": {
             "color": "#ffffff",
-            "intensity": 0.3
+            "intensity": 0.7
           }
         }
       }
@@ -3264,17 +3286,17 @@
           },
           {
             "time": 0,
-            "objectId": "annotation-1770755809075-emwjcrurm",
+            "objectId": "BasePanel/Latch_B",
             "transform": {
               "position": {
-                "x": -0.28,
-                "y": -0.17000000000000004,
-                "z": 0.39
+                "x": 0,
+                "y": 0,
+                "z": 0
               },
               "rotation": {
-                "x": -1.5707963267948966,
-                "y": 1.5707963267948966,
-                "z": 0
+                "x": -3.1415928577980896,
+                "y": -1.5707963267948966,
+                "z": 3.1415925025939884
               },
               "scale": {
                 "x": 1,
@@ -3282,7 +3304,7 @@
                 "z": 1
               }
             },
-            "visible": false
+            "visible": true
           },
           {
             "time": 11,
@@ -3327,138 +3349,6 @@
               }
             },
             "visible": true
-          },
-          {
-            "time": 11.73,
-            "objectId": "annotation-1770755809075-emwjcrurm",
-            "transform": {
-              "position": {
-                "x": -0.28,
-                "y": -0.17000000000000004,
-                "z": 0.39
-              },
-              "rotation": {
-                "x": -1.5707963267948966,
-                "y": 1.5707963267948966,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "visible": false
-          },
-          {
-            "time": 12.27,
-            "objectId": "annotation-1770755809075-emwjcrurm",
-            "transform": {
-              "position": {
-                "x": -0.28,
-                "y": -0.17000000000000004,
-                "z": 0.39
-              },
-              "rotation": {
-                "x": -1.5707963267948966,
-                "y": 1.5707963267948966,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "visible": true
-          },
-          {
-            "time": 12.62,
-            "objectId": "annotation-1770755809075-emwjcrurm",
-            "transform": {
-              "position": {
-                "x": -0.28,
-                "y": -0.17000000000000004,
-                "z": 0.39
-              },
-              "rotation": {
-                "x": -1.5707963267948966,
-                "y": 1.5707963267948966,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "visible": false
-          },
-          {
-            "time": 12.98,
-            "objectId": "annotation-1770755809075-emwjcrurm",
-            "transform": {
-              "position": {
-                "x": -0.28,
-                "y": -0.17000000000000004,
-                "z": 0.39
-              },
-              "rotation": {
-                "x": -1.5707963267948966,
-                "y": 1.5707963267948966,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "visible": true
-          },
-          {
-            "time": 13.48,
-            "objectId": "annotation-1770755809075-emwjcrurm",
-            "transform": {
-              "position": {
-                "x": -0.28,
-                "y": -0.17000000000000004,
-                "z": 0.39
-              },
-              "rotation": {
-                "x": -1.5707963267948966,
-                "y": 1.5707963267948966,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "visible": true
-          },
-          {
-            "time": 13.8,
-            "objectId": "annotation-1770755809075-emwjcrurm",
-            "transform": {
-              "position": {
-                "x": -0.28,
-                "y": -0.17000000000000004,
-                "z": 0.39
-              },
-              "rotation": {
-                "x": -1.5707963267948966,
-                "y": 1.5707963267948966,
-                "z": 0
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "visible": false
           },
           {
             "time": 21,
@@ -3957,11 +3847,727 @@
             "type": "anno_arrow_move_single",
             "color": "#ef4444",
             "name": "Anno Arrow Move Single"
+          }
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 1.5
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 2,
+            "position": {
+              "x": -8.927335640138407,
+              "y": 9.688581314878892,
+              "z": 11.003460207612456
+            }
+          },
+          "fill": {
+            "color": "#ffffff",
+            "intensity": 1
+          },
+          "rim": {
+            "color": "#ffffff",
+            "intensity": 0.7
+          }
+        }
+      }
+    },
+    {
+      "id": "4",
+      "title": {
+        "en": "Adjust the side panels if needed",
+        "ar": "تعديل الألواح الجانبية عند الحاجة"
+      },
+      "description": {
+        "en": "If you change your mind about the door opening direction, you can easily detach the side panels and switch them around.\nTo detach the side panel, push it slightly towards the back of the cabinet, and then lift it up gently, until it comes off the base panel.\nBe careful not to damage the clips or the grooves.\nTo reattach the side panel, follow the instructions in step 3",
+        "ar": "إذا غيّرت رأيك بشأن اتجاه فتح الباب، يمكنك بسهولة فصل الألواح الجانبية وإعادة تبديلها.\nلفصل اللوح الجانبي، ادفعه قليلًا باتجاه الجزء الخلفي من الخزانة، ثم ارفعه برفق حتى ينفصل عن اللوح السفلي.\nاحرص على عدم إتلاف المشابك أو الأخاديد أثناء عملية الفصل.\nلإعادة تثبيت اللوح الجانبي، اتبع التعليمات الواردة في الخطوة الثالثة."
+      },
+      "duration": 3,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BU_1D-600/step4.mp3",
+        "ar": "/audio/arb/BaseCabinets/BU_1D-600/step4.mp3"
+      },
+      "animation": {
+        "duration": 25.208125,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
           },
           {
-            "id": "annotation-1770755809075-emwjcrurm",
+            "time": 0,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_01",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_02",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_03",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_04",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L001",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": -1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948963,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 12,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 12.5,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 12.9,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.32000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 13,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 13.5,
+            "objectId": "annotation-1770759217919-zxwjjujx4",
+            "transform": {
+              "position": {
+                "x": -0.30000000000000004,
+                "y": -0.35000000000000003,
+                "z": -0.38000000000000006
+              },
+              "rotation": {
+                "x": -1.5707963267948966,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 13.5,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "easing": "easeInQuart"
+          },
+          {
+            "time": 14,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 14.5,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 15.2,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.4,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 15.2,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 15.7,
+            "objectId": "annotation-1770759554540-573l6mah0",
+            "transform": {
+              "position": {
+                "x": -0.3,
+                "y": -0.34,
+                "z": -0.4
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 16,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 22,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": -0.01999999999999999
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 24,
+            "objectId": "SidePanel_L",
+            "transform": {
+              "position": {
+                "x": 0.5800000000000001,
+                "y": 0.7900000000000001,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": -3.141592653589793
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 10,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 11.5,
+            "position": {
+              "x": 0.47663349033410934,
+              "y": 0.4904376091361412,
+              "z": 0.6360325823666029
+            },
+            "target": {
+              "x": 0.005600694079458255,
+              "y": 0.2758560019534669,
+              "z": 0.060325831388696335
+            }
+          },
+          {
+            "time": 16.97,
+            "position": {
+              "x": 0.47663349033410934,
+              "y": 0.4904376091361412,
+              "z": 0.6360325823666029
+            },
+            "target": {
+              "x": 0.005600694079458255,
+              "y": 0.2758560019534669,
+              "z": 0.060325831388696335
+            }
+          },
+          {
+            "time": 18.14,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          }
+        ],
+        "annotationInstances": [
+          {
+            "id": "annotation-1770759217919-zxwjjujx4",
             "type": "anno_arrow_move_single",
-            "color": "#3b82f6",
+            "color": "#ef4444",
+            "name": "Anno Arrow Move Single"
+          },
+          {
+            "id": "annotation-1770759554540-573l6mah0",
+            "type": "anno_arrow_move_single",
+            "color": "#ef4444",
             "name": "Anno Arrow Move Single"
           }
         ],
@@ -3969,24 +4575,1568 @@
           "hemisphere": {
             "skyColor": "#ffffff",
             "groundColor": "#444444",
-            "intensity": 0.7
+            "intensity": 1.5
           },
           "main": {
             "color": "#ffffff",
-            "intensity": 1,
+            "intensity": 2,
             "position": {
-              "x": -8.096885813148788,
-              "y": 8.996539792387544,
-              "z": 8.650519031141869
+              "x": -8.650519031141869,
+              "y": 8.581314878892734,
+              "z": 8.096885813148788
             }
           },
           "fill": {
             "color": "#ffffff",
-            "intensity": 0.5
+            "intensity": 1
           },
           "rim": {
             "color": "#ffffff",
-            "intensity": 0.5
+            "intensity": 0.7
+          }
+        }
+      }
+    },
+    {
+      "id": "5",
+      "title": {
+        "en": "Slide the back panel into place",
+        "ar": "إدخال اللوح الخلفي في مكانه"
+      },
+      "description": {
+        "en": "Take the back panel which is a thin and flat piece of wood.\nSlide the back panel into the grooves of the side panels and the base panel.\nMake sure the back panel is flush with the edges of the other panels.\nDo not apply any sideways force to the side panels, as this could damage the clips.",
+        "ar": "خذ اللوح الخلفي، وهو قطعة خشبية رقيقة ومسطحة.\nقم بإدخال اللوح الخلفي في الأخاديد الموجودة في الألواح الجانبية واللوح السفلي.\nتأكد من أن اللوح الخلفي مستوٍ ومتطابق مع حواف الألواح الأخرى.\nتجنب ممارسة أي ضغط جانبي على الألواح الجانبية، إذ قد يؤدي ذلك إلى إتلاف المشابك."
+      },
+      "duration": 3,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BU_1D-600/step5.mp3",
+        "ar": "/audio/arb/BaseCabinets/BU_1D-600/step5.mp3"
+      },
+      "animation": {
+        "duration": 21.733875,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.2,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_01",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_02",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_03",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_04",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "BasePanel/Latch_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": -3.1415928577980896,
+                "y": -1.5707963267948966,
+                "z": 3.1415925025939884
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770766963591-udy3265g7",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.2,
+                "z": -0.29000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 4,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.2,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 4.5,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.2,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 7.5,
+            "objectId": "annotation-1770766963591-udy3265g7",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.2,
+                "z": -0.29000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 8,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.2,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 8,
+            "objectId": "annotation-1770766963591-udy3265g7",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.2,
+                "z": -0.29000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 8.5,
+            "objectId": "annotation-1770766963591-udy3265g7",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.2,
+                "z": -0.29000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 9.5,
+            "objectId": "annotation-1770766963591-udy3265g7",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -0.38,
+                "z": -0.29000000000000004
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 3.141592653589793
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 10,
+            "objectId": "BackPanel",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": -1.3877787807814457e-17,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "easing": "easeInQuart"
+          },
+          {
+            "time": 12,
+            "objectId": "BasePanel/Latch_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": -3.1415928577980896,
+                "y": -1.5707963267948966,
+                "z": 3.1415925025939884
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 12.5,
+            "objectId": "BasePanel/Latch_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": -5.3212482864495314e-8,
+                "y": -3.925231145706417e-16,
+                "z": 7.993605777301127e-15
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 5,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 6,
+            "position": {
+              "x": 3.9706001450299544,
+              "y": 2.269999015616905,
+              "z": -5.968621119776487
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 6.5,
+            "position": {
+              "x": 3.9706001450299544,
+              "y": 2.269999015616905,
+              "z": -5.968621119776487
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 7,
+            "position": {
+              "x": 1.0561322366956536,
+              "y": 0.6679873309487219,
+              "z": -1.7732215483892844
+            },
+            "target": {
+              "x": -0.04527084257169965,
+              "y": 0.16313858092458938,
+              "z": -0.11758828384851747
+            }
+          },
+          {
+            "time": 10.5,
+            "position": {
+              "x": 1.0561322366956536,
+              "y": 0.6679873309487219,
+              "z": -1.7732215483892844
+            },
+            "target": {
+              "x": -0.04527084257169965,
+              "y": 0.16313858092458938,
+              "z": -0.11758828384851747
+            }
+          },
+          {
+            "time": 11.5,
+            "position": {
+              "x": 0.5950114143545926,
+              "y": 0.3995530386736559,
+              "z": -1.141710486837092
+            },
+            "target": {
+              "x": -0.06443929419366864,
+              "y": 0.09728144330588503,
+              "z": -0.15042169352470683
+            }
+          },
+          {
+            "time": 13,
+            "position": {
+              "x": 0.5950114143545926,
+              "y": 0.3995530386736559,
+              "z": -1.141710486837092
+            },
+            "target": {
+              "x": -0.06443929419366864,
+              "y": 0.09728144330588503,
+              "z": -0.15042169352470683
+            }
+          },
+          {
+            "time": 14.5,
+            "position": {
+              "x": 1.0561322366956536,
+              "y": 0.6679873309487219,
+              "z": -1.7732215483892844
+            },
+            "target": {
+              "x": -0.04527084257169965,
+              "y": 0.16313858092458938,
+              "z": -0.11758828384851747
+            }
+          },
+          {
+            "time": 15.5,
+            "position": {
+              "x": 1.0561322366956536,
+              "y": 0.6679873309487219,
+              "z": -1.7732215483892844
+            },
+            "target": {
+              "x": -0.04527084257169965,
+              "y": 0.16313858092458938,
+              "z": -0.11758828384851747
+            }
+          },
+          {
+            "time": 17,
+            "position": {
+              "x": 3.9706001450299544,
+              "y": 2.269999015616905,
+              "z": -5.968621119776487
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 18,
+            "position": {
+              "x": 3.9706001450299544,
+              "y": 2.269999015616905,
+              "z": -5.968621119776487
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 21,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          }
+        ],
+        "annotationInstances": [
+          {
+            "id": "annotation-1770766963591-udy3265g7",
+            "type": "anno_arrow_move_single",
+            "color": "#ef4444",
+            "name": "Anno Arrow Move Single"
+          }
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 1.5
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 2,
+            "position": {
+              "x": -8.650519031141869,
+              "y": 8.442906574394463,
+              "z": 8.096885813148788
+            }
+          },
+          "fill": {
+            "color": "#ffffff",
+            "intensity": 1
+          },
+          "rim": {
+            "color": "#ffffff",
+            "intensity": 0.7
+          }
+        }
+      }
+    },
+    {
+      "id": "6",
+      "title": {
+        "en": "Attach the top stretchers to the side panels",
+        "ar": "تثبيت الدعامات العلوية في الألواح الجانبية"
+      },
+      "description": {
+        "en": "Take one of the top stretchers and align it with the front side of the cabinet, on top of the side panels.\nMake sure the nook of the stretcher is facing to the back of the cabinet.\nPush firmly until you hear a click.\nTake the other top stretcher and align it with the back side of the cabinet.\nMake sure the nook of the stretcher is facing the back of the cabinet.\nPush firmly until you hear a click.\nRotate the latch at the back of the stretcher to secure the back panel.",
+        "ar": "خذ إحدى الدعامات العلوية وقم بمحاذاتها مع الجهة الأمامية للخزانة، أعلى الألواح الجانبية.\nتأكد من أن النُّقرة الموجودة في الدعامة متجهة نحو الجزء الخلفي من الخزانة.\nاضغط بقوة حتى تسمع صوت النقرة الذي يؤكد تثبيتها.\nبعد ذلك، خذ الدعامة العلوية الأخرى وقم بمحاذاتها مع الجهة الخلفية للخزانة.\nتأكد من أن النُّقرة الموجودة في الدعامة متجهة أيضًا نحو الجزء الخلفي من الخزانة.\nاضغط بقوة حتى تسمع صوت النقرة الذي يؤكد تثبيتها.\nقم بتدوير المزلاج الموجود في الجزء الخلفي من الدعامة لتثبيت اللوح الخلفي بإحكام."
+      },
+      "duration": 5,
+      "audioUrl": {
+        "en": "/audio/eng/BaseCabinets/BU_1D-600/step6.mp3",
+        "ar": "/audio/arb/BaseCabinets/BU_1D-600/step6.mp3"
+      },
+      "animation": {
+        "duration": 30.093063,
+        "isOffset": true,
+        "objectKeyframes": [
+          {
+            "time": 0,
+            "objectId": "Door",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "Shelf",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_01",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_02",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_03",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "ShelfClip_04",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.99999994,
+                "y": 1,
+                "z": 0.99999994
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.42,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 0,
+            "objectId": "annotation-1770768575570-yvuijwyjf",
+            "transform": {
+              "position": {
+                "x": 0.27999999999999997,
+                "y": 0.5,
+                "z": 0.22
+              },
+              "rotation": {
+                "x": 3.141592653589793,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 6.5,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 7,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 10,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.41999999999999993,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 10.5,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.42,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 11,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.42,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": true,
+            "easing": "easeInCubic"
+          },
+          {
+            "time": 11.5,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.42,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 12,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.42,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 12.5,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.42,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 13.2,
+            "objectId": "annotation-1770768176452-pcbbflwpk",
+            "transform": {
+              "position": {
+                "x": 0.30000000000000004,
+                "y": 0.42,
+                "z": 0.07
+              },
+              "rotation": {
+                "x": 1.5707963267948963,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.7,
+                "y": 0.7,
+                "z": 0.4
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 13.5,
+            "objectId": "annotation-1770768575570-yvuijwyjf",
+            "transform": {
+              "position": {
+                "x": 0.27999999999999997,
+                "y": 0.5,
+                "z": 0.22
+              },
+              "rotation": {
+                "x": 3.141592653589793,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 14,
+            "objectId": "annotation-1770768575570-yvuijwyjf",
+            "transform": {
+              "position": {
+                "x": 0.27999999999999997,
+                "y": 0.5,
+                "z": 0.22
+              },
+              "rotation": {
+                "x": 3.141592653589793,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 14.5,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.050000000000000044,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 14.5,
+            "objectId": "annotation-1770768575570-yvuijwyjf",
+            "transform": {
+              "position": {
+                "x": 0.27999999999999997,
+                "y": 0.5,
+                "z": 0.22
+              },
+              "rotation": {
+                "x": 3.141592653589793,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 15.42,
+            "objectId": "annotation-1770768575570-yvuijwyjf",
+            "transform": {
+              "position": {
+                "x": 0.27999999999999997,
+                "y": 0.43999999999999995,
+                "z": 0.22
+              },
+              "rotation": {
+                "x": 3.141592653589793,
+                "y": 1.5707963267948966,
+                "z": 0
+              },
+              "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 15.5,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.010000000000000009,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 16.3,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.010000000000000009,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 16.5,
+            "objectId": "TopRib_F",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "easing": "easeInCubic"
+          },
+          {
+            "time": 20,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": false
+          },
+          {
+            "time": 20.5,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.05,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 21.5,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.050000000000000044,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 22.5,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.01,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 23.3,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0.01,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true
+          },
+          {
+            "time": 23.5,
+            "objectId": "TopRib_B",
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "visible": true,
+            "easing": "easeInCubic"
+          }
+        ],
+        "cameraKeyframes": [
+          {
+            "time": 0,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 7.5,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          },
+          {
+            "time": 9.5,
+            "position": {
+              "x": 0.9718375217178614,
+              "y": 1.3142739781824295,
+              "z": -0.26339360794293637
+            },
+            "target": {
+              "x": 0.11971987964420387,
+              "y": 0.8401127418084636,
+              "z": 0.26393223199396704
+            }
+          },
+          {
+            "time": 17.5,
+            "position": {
+              "x": 0.9718375217178614,
+              "y": 1.3142739781824295,
+              "z": -0.26339360794293637
+            },
+            "target": {
+              "x": 0.11971987964420387,
+              "y": 0.8401127418084636,
+              "z": 0.26393223199396704
+            }
+          },
+          {
+            "time": 19.5,
+            "position": {
+              "x": 4.5,
+              "y": 2.5,
+              "z": 5.5
+            },
+            "target": {
+              "x": 0,
+              "y": 0.45,
+              "z": 0
+            }
+          }
+        ],
+        "annotationInstances": [
+          {
+            "id": "annotation-1770768176452-pcbbflwpk",
+            "type": "anno_arrow_move_single",
+            "color": "#ef4444",
+            "name": "Anno Arrow Move Single"
+          },
+          {
+            "id": "annotation-1770768575570-yvuijwyjf",
+            "type": "anno_arrow_move_single",
+            "color": "#ef4444",
+            "name": "Anno Arrow Move Single"
+          }
+        ],
+        "lightingSettings": {
+          "hemisphere": {
+            "skyColor": "#ffffff",
+            "groundColor": "#444444",
+            "intensity": 1.5
+          },
+          "main": {
+            "color": "#ffffff",
+            "intensity": 2,
+            "position": {
+              "x": -8.650519031141869,
+              "y": 8.442906574394463,
+              "z": 8.096885813148788
+            }
+          },
+          "fill": {
+            "color": "#ffffff",
+            "intensity": 1
+          },
+          "rim": {
+            "color": "#ffffff",
+            "intensity": 0.7
           }
         }
       }

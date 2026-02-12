@@ -54,13 +54,35 @@ export default async function handler(
     const requestedFilename = Array.isArray(fields.filename)
       ? fields.filename[0]
       : fields.filename;
+    const replacePath = Array.isArray(fields.replacePath)
+      ? fields.replacePath[0]
+      : fields.replacePath;
 
     if (!file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
+    const publicRoot = path.join(process.cwd(), "public");
+    const normalizePublicPath = (publicPath?: string) => {
+      if (!publicPath || typeof publicPath !== "string") return null;
+      if (publicPath.includes("..")) return null;
+      const trimmed = publicPath.startsWith("/")
+        ? publicPath.slice(1)
+        : publicPath;
+      const absolutePath = path.normalize(path.join(publicRoot, trimmed));
+      if (!absolutePath.startsWith(publicRoot)) return null;
+      return { absolutePath, trimmed };
+    };
+
+    const replaceTarget = normalizePublicPath(
+      typeof replacePath === "string" ? replacePath : undefined,
+    );
+
     // Determine target directory based on the directory parameter
-    let targetDir = path.join(process.cwd(), "public", directory);
+    let targetDir = path.join(publicRoot, directory);
+    if (replaceTarget) {
+      targetDir = path.dirname(replaceTarget.absolutePath);
+    }
 
     // Create directory if it doesn't exist
     if (!fs.existsSync(targetDir)) {
@@ -76,6 +98,10 @@ export default async function handler(
       const safeName = path.basename(String(requestedFilename));
       const hasExt = path.extname(safeName).length > 0;
       filename = hasExt ? safeName : `${safeName}${originalExt}`;
+    } else if (replaceTarget) {
+      const existingName = path.basename(replaceTarget.trimmed);
+      const hasExt = path.extname(existingName).length > 0;
+      filename = hasExt ? existingName : `${existingName}${originalExt}`;
     } else {
       const baseName = path.basename(originalName, originalExt);
       const timestamp = Date.now();
@@ -84,6 +110,12 @@ export default async function handler(
 
     const targetPath = path.join(targetDir, filename);
 
+    if (replaceTarget && replaceTarget.absolutePath !== targetPath) {
+      if (fs.existsSync(replaceTarget.absolutePath)) {
+        fs.unlinkSync(replaceTarget.absolutePath);
+      }
+    }
+
     // Move file to target directory
     fs.copyFileSync(file.filepath, targetPath);
 
@@ -91,7 +123,11 @@ export default async function handler(
     fs.unlinkSync(file.filepath);
 
     // Return the public path
-    const publicPath = `/${directory}/${filename}`;
+    const relativeDir = path
+      .relative(publicRoot, targetDir)
+      .split(path.sep)
+      .join("/");
+    const publicPath = `/${relativeDir}/${filename}`;
 
     return res.status(200).json({
       message: "File uploaded successfully",
