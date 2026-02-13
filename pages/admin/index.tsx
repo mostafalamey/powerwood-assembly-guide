@@ -5,6 +5,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import AdminLayout from "../../components/admin/AdminLayout";
 import AuthGuard from "../../components/admin/AuthGuard";
 import {
+  AssemblyFormModal,
+  AssemblyFormData,
+} from "../../components/admin/AssemblyFormModal";
+import { useToast } from "../../components/admin/ToastProvider";
+import {
   AlertTriangle,
   Info,
   Plus,
@@ -24,7 +29,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-interface CabinetIndex {
+interface AssemblyIndex {
   id: string;
   name: { en: string; ar: string };
   category: string;
@@ -41,21 +46,24 @@ interface Category {
 }
 
 interface DashboardStats {
-  totalCabinets: number;
+  totalAssemblies: number;
   totalSteps: number;
-  cabinetsWithModels: number;
-  cabinetsWithImages: number;
+  assembliesWithModels: number;
+  assembliesWithImages: number;
   categoryCounts: Record<string, number>;
-  recentCabinets: CabinetIndex[];
-  cabinetsNeedingAttention: CabinetIndex[];
+  recentAssemblies: AssemblyIndex[];
+  assembliesNeedingAttention: AssemblyIndex[];
 }
 
 export default function AdminDashboard() {
   const router = useRouter();
   const { isAuthenticated, loading } = useAuth();
+  const toast = useToast();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isAssemblyModalOpen, setIsAssemblyModalOpen] = useState(false);
   const isProduction =
     process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ||
     (typeof window !== "undefined" &&
@@ -64,16 +72,23 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch cabinets index
-        const cabinetsRes = await fetch("/api/cabinets");
-        const cabinetsData = await cabinetsRes.json();
+        // Add cache-busting to prevent stale cached responses
+        const cacheBuster = `_=${Date.now()}`;
+
+        // Fetch assemblies index
+        const assembliesRes = await fetch(`/api/assemblies?${cacheBuster}`, {
+          cache: "no-store",
+        });
+        const assembliesData = await assembliesRes.json();
         // API returns array directly, not wrapped in object
-        const cabinets: CabinetIndex[] = Array.isArray(cabinetsData)
-          ? cabinetsData
-          : cabinetsData.cabinets || [];
+        const assemblies: AssemblyIndex[] = Array.isArray(assembliesData)
+          ? assembliesData
+          : assembliesData.assemblies || [];
 
         // Fetch categories
-        const categoriesRes = await fetch("/api/categories");
+        const categoriesRes = await fetch(`/api/categories?${cacheBuster}`, {
+          cache: "no-store",
+        });
         const categoriesData = await categoriesRes.json();
         // Categories API also returns array directly
         const categoriesList = Array.isArray(categoriesData)
@@ -82,35 +97,38 @@ export default function AdminDashboard() {
         setCategories(categoriesList);
 
         // Calculate stats
-        const totalSteps = cabinets.reduce(
+        const totalSteps = assemblies.reduce(
           (sum, c) => sum + (c.stepCount || 0),
           0,
         );
-        const cabinetsWithModels = cabinets.filter((c) => c.model).length;
-        const cabinetsWithImages = cabinets.filter((c) => c.image).length;
+        const assembliesWithModels = assemblies.filter((c) => c.model).length;
+        const assembliesWithImages = assemblies.filter((c) => c.image).length;
 
         // Count by category
         const categoryCounts: Record<string, number> = {};
-        cabinets.forEach((c) => {
+        assemblies.forEach((c) => {
           categoryCounts[c.category] = (categoryCounts[c.category] || 0) + 1;
         });
 
-        // Cabinets needing attention (no steps or no model)
-        const cabinetsNeedingAttention = cabinets.filter(
+        // Assemblies needing attention (no steps or no model)
+        const assembliesNeedingAttention = assemblies.filter(
           (c) => !c.stepCount || c.stepCount === 0 || !c.model,
         );
 
         setStats({
-          totalCabinets: cabinets.length,
+          totalAssemblies: assemblies.length,
           totalSteps,
-          cabinetsWithModels,
-          cabinetsWithImages,
+          assembliesWithModels,
+          assembliesWithImages,
           categoryCounts,
-          recentCabinets: cabinets.slice(0, 5),
-          cabinetsNeedingAttention: cabinetsNeedingAttention.slice(0, 5),
+          recentAssemblies: assemblies.slice(0, 5),
+          assembliesNeedingAttention: assembliesNeedingAttention.slice(0, 5),
         });
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+        setFetchError(
+          "Failed to load dashboard data. Please try refreshing the page.",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -125,8 +143,8 @@ export default function AdminDashboard() {
     return (
       <AdminLayout>
         <div className="p-8">
-          <div className="max-w-2xl mx-auto bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-amber-200 dark:border-amber-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+          <div className="max-w-2xl mx-auto bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-amber-200 dark:border-amber-700/50 shadow-xl overflow-hidden">
+            <div className="bg-warning px-6 py-4">
               <div className="flex items-center gap-3">
                 <AlertTriangle className="text-white w-8 h-8" />
                 <h2 className="text-xl font-bold text-white">
@@ -135,37 +153,37 @@ export default function AdminDashboard() {
               </div>
             </div>
             <div className="p-6">
-              <p className="text-gray-700 dark:text-gray-300 mb-6">
+              <p className="text-charcoal dark:text-silver mb-6">
                 The admin panel requires a writable filesystem and is only
                 available when running locally.
               </p>
-              <div className="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5 mb-6 border border-gray-200 dark:border-gray-700">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
+              <div className="bg-neutral-100 dark:bg-neutral-800/50 rounded-xl p-5 mb-6 border border-silver/50 dark:border-stone/20">
+                <p className="text-sm font-medium text-charcoal dark:text-papyrus mb-3">
                   To use the admin panel:
                 </p>
-                <ol className="list-decimal list-inside text-sm text-gray-600 dark:text-gray-400 space-y-2">
+                <ol className="list-decimal list-inside text-sm text-stone dark:text-silver space-y-2">
                   <li>Clone the repository locally</li>
                   <li>
                     Run{" "}
-                    <code className="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-lg font-mono text-xs">
+                    <code className="bg-neutral-200 dark:bg-neutral-700 px-2 py-0.5 rounded-lg font-mono text-xs">
                       npm install
                     </code>
                   </li>
                   <li>
                     Run{" "}
-                    <code className="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-lg font-mono text-xs">
+                    <code className="bg-neutral-200 dark:bg-neutral-700 px-2 py-0.5 rounded-lg font-mono text-xs">
                       npm run dev
                     </code>
                   </li>
                   <li>
                     Access admin panel at{" "}
-                    <code className="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded-lg font-mono text-xs">
+                    <code className="bg-neutral-200 dark:bg-neutral-700 px-2 py-0.5 rounded-lg font-mono text-xs">
                       http://localhost:3001/admin
                     </code>
                   </li>
                 </ol>
               </div>
-              <div className="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex items-start gap-2 text-xs text-stone dark:text-silver">
                 <Info className="w-4 h-4" />
                 <p>
                   <strong>Note:</strong> For production content management,
@@ -180,6 +198,30 @@ export default function AdminDashboard() {
     );
   }
 
+  const handleCreateAssembly = async (formData: AssemblyFormData) => {
+    const token = localStorage.getItem("admin_token");
+    const response = await fetch("/api/assemblies", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(
+        error.error || error.message || "Failed to create assembly",
+      );
+    }
+
+    toast.success("Assembly created successfully");
+    setIsAssemblyModalOpen(false);
+    // Refresh dashboard data
+    window.location.reload();
+  };
+
   const getCategoryName = (categoryId: string) => {
     const category = categories.find((c) => c.id === categoryId);
     return category?.name || categoryId;
@@ -189,24 +231,46 @@ export default function AdminDashboard() {
     <AuthGuard>
       <AdminLayout title="Dashboard">
         <div className="p-4 md:p-6 space-y-6">
+          {/* Error Banner */}
+          {fetchError && (
+            <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
+              <div className="flex items-center gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-500 dark:text-red-400 flex-shrink-0" />
+                <p className="text-red-700 dark:text-red-300 text-sm">
+                  {fetchError}
+                </p>
+                <button
+                  onClick={() => {
+                    setFetchError(null);
+                    setIsLoading(true);
+                    window.location.reload();
+                  }}
+                  className="ms-auto px-3 py-1 text-xs font-medium rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Welcome Header */}
-          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 rounded-2xl p-6 text-white shadow-xl shadow-blue-500/20">
+          <div className="bg-gradient-to-r from-charcoal via-neutral-700 to-charcoal dark:from-neutral-800 dark:via-neutral-700 dark:to-neutral-800 rounded-2xl p-6 text-papyrus shadow-xl">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold mb-1">
-                  Welcome to PW Assembly Admin
+                  Welcome to ML Assemble Admin Panel
                 </h1>
-                <p className="text-blue-100 text-sm">
-                  Manage your cabinet assembly guides, 3D models, and animations
+                <p className="text-silver/80 text-sm">
+                  Manage your assembly guides, 3D models, and animations
                 </p>
               </div>
-              <Link
-                href="/admin/cabinets/new"
-                className="inline-flex items-center gap-2 px-4 py-2.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl text-sm font-medium transition-all duration-200"
+              <button
+                onClick={() => setIsAssemblyModalOpen(true)}
+                className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-xl text-sm font-medium transition-all duration-200 text-white shadow-lg shadow-emerald-500/30"
               >
                 <Plus className="w-5 h-5" />
-                Add New Cabinet
-              </Link>
+                Add New Assembly
+              </button>
             </div>
           </div>
 
@@ -215,10 +279,10 @@ export default function AdminDashboard() {
               {[...Array(4)].map((_, i) => (
                 <div
                   key={i}
-                  className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-5 border border-white/50 dark:border-gray-700/50 animate-pulse"
+                  className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl p-5 border border-silver/50 dark:border-stone/20 animate-pulse"
                 >
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-3"></div>
-                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
+                  <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2 mb-3"></div>
+                  <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
                 </div>
               ))}
             </div>
@@ -226,82 +290,82 @@ export default function AdminDashboard() {
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Total Cabinets */}
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-5 border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30">
+                {/* Total Assemblies */}
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl p-5 border border-silver/50 dark:border-stone/20 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Total Cabinets
+                      <p className="text-sm font-medium text-stone dark:text-silver">
+                        Total Assemblies
                       </p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                        {stats.totalCabinets}
+                      <p className="text-3xl font-bold text-charcoal dark:text-papyrus mt-1">
+                        {stats.totalAssemblies}
                       </p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                      <Package className="text-white w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-sky-500/15 dark:bg-sky-400/15 flex items-center justify-center">
+                      <Package className="text-sky-600 dark:text-sky-400 w-6 h-6" />
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
+                  <div className="mt-3 pt-3 border-t border-silver/30 dark:border-stone/20">
                     <Link
-                      href="/admin/cabinets"
-                      className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                      href="/admin/assemblies"
+                      className="text-xs text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus hover:underline flex items-center gap-1"
                     >
-                      View all cabinets
+                      View all assemblies
                       <ArrowRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
                 </div>
 
                 {/* Total Steps */}
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-5 border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30">
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl p-5 border border-silver/50 dark:border-stone/20 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      <p className="text-sm font-medium text-stone dark:text-silver">
                         Total Steps
                       </p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
+                      <p className="text-3xl font-bold text-charcoal dark:text-papyrus mt-1">
                         {stats.totalSteps}
                       </p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                      <ListOrdered className="text-white w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-violet-500/15 dark:bg-violet-400/15 flex items-center justify-center">
+                      <ListOrdered className="text-violet-600 dark:text-violet-400 w-6 h-6" />
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="mt-3 pt-3 border-t border-silver/30 dark:border-stone/20">
+                    <p className="text-xs text-stone dark:text-silver">
                       ~
                       {Math.round(
-                        stats.totalSteps / (stats.totalCabinets || 1),
+                        stats.totalSteps / (stats.totalAssemblies || 1),
                       )}{" "}
-                      steps per cabinet
+                      steps per assembly
                     </p>
                   </div>
                 </div>
 
                 {/* 3D Models */}
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-5 border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30">
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl p-5 border border-silver/50 dark:border-stone/20 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      <p className="text-sm font-medium text-stone dark:text-silver">
                         3D Models
                       </p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
-                        {stats.cabinetsWithModels}
-                        <span className="text-lg text-gray-400 dark:text-gray-500">
-                          /{stats.totalCabinets}
+                      <p className="text-3xl font-bold text-charcoal dark:text-papyrus mt-1">
+                        {stats.assembliesWithModels}
+                        <span className="text-lg text-pewter dark:text-stone">
+                          /{stats.totalAssemblies}
                         </span>
                       </p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
-                      <Box className="text-white w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/15 dark:bg-emerald-400/15 flex items-center justify-center">
+                      <Box className="text-emerald-600 dark:text-emerald-400 w-6 h-6" />
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <div className="mt-3 pt-3 border-t border-silver/30 dark:border-stone/20">
+                    <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-1.5">
                       <div
-                        className="bg-gradient-to-r from-violet-500 to-purple-600 h-1.5 rounded-full transition-all"
+                        className="bg-emerald-500 dark:bg-emerald-400 h-1.5 rounded-full transition-all"
                         style={{
-                          width: `${(stats.cabinetsWithModels / (stats.totalCabinets || 1)) * 100}%`,
+                          width: `${(stats.assembliesWithModels / (stats.totalAssemblies || 1)) * 100}%`,
                         }}
                       ></div>
                     </div>
@@ -309,22 +373,22 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Categories */}
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-5 border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30">
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl p-5 border border-silver/50 dark:border-stone/20 shadow-lg">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      <p className="text-sm font-medium text-stone dark:text-silver">
                         Categories
                       </p>
-                      <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
+                      <p className="text-3xl font-bold text-charcoal dark:text-papyrus mt-1">
                         {Object.keys(stats.categoryCounts).length}
                       </p>
                     </div>
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                      <FolderOpen className="text-white w-6 h-6" />
+                    <div className="w-12 h-12 rounded-xl bg-amber-500/15 dark:bg-amber-400/15 flex items-center justify-center">
+                      <FolderOpen className="text-amber-600 dark:text-amber-400 w-6 h-6" />
                     </div>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="mt-3 pt-3 border-t border-silver/30 dark:border-stone/20">
+                    <p className="text-xs text-stone dark:text-silver">
                       {categories.length} categories defined
                     </p>
                   </div>
@@ -334,11 +398,11 @@ export default function AdminDashboard() {
               {/* Two Column Layout */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Category Breakdown */}
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
-                  <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <PieChart className="text-amber-500 w-5 h-5" />
-                      Cabinets by Category
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl border border-silver/50 dark:border-stone/20 shadow-lg overflow-hidden">
+                  <div className="px-5 py-4 border-b border-silver/30 dark:border-stone/20">
+                    <h2 className="text-sm font-semibold text-charcoal dark:text-papyrus flex items-center gap-2">
+                      <PieChart className="text-sky-500 dark:text-sky-400 w-5 h-5" />
+                      Assemblies by Category
                     </h2>
                   </div>
                   <div className="p-5 space-y-3">
@@ -350,18 +414,18 @@ export default function AdminDashboard() {
                         >
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              <span className="text-sm font-medium text-charcoal dark:text-silver">
                                 {getCategoryName(categoryId)}
                               </span>
-                              <span className="text-sm text-gray-500 dark:text-gray-400">
+                              <span className="text-sm text-stone dark:text-silver">
                                 {count}
                               </span>
                             </div>
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2">
                               <div
-                                className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all"
+                                className="bg-sky-500 dark:bg-sky-400 h-2 rounded-full transition-all"
                                 style={{
-                                  width: `${(count / stats.totalCabinets) * 100}%`,
+                                  width: `${(count / stats.totalAssemblies) * 100}%`,
                                 }}
                               ></div>
                             </div>
@@ -370,52 +434,52 @@ export default function AdminDashboard() {
                       ),
                     )}
                     {Object.keys(stats.categoryCounts).length === 0 && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-                        No cabinets added yet
+                      <p className="text-sm text-stone dark:text-silver text-center py-4">
+                        No assemblies added yet
                       </p>
                     )}
                   </div>
                 </div>
 
                 {/* Needs Attention */}
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
-                  <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                      <AlertTriangle className="text-amber-500 w-5 h-5" />
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl border border-silver/50 dark:border-stone/20 shadow-lg overflow-hidden">
+                  <div className="px-5 py-4 border-b border-silver/30 dark:border-stone/20">
+                    <h2 className="text-sm font-semibold text-charcoal dark:text-papyrus flex items-center gap-2">
+                      <AlertTriangle className="text-warning w-5 h-5" />
                       Needs Attention
                     </h2>
                   </div>
-                  <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
-                    {stats.cabinetsNeedingAttention.length > 0 ? (
-                      stats.cabinetsNeedingAttention.map((cabinet) => (
+                  <div className="divide-y divide-silver/30 dark:divide-stone/20">
+                    {stats.assembliesNeedingAttention.length > 0 ? (
+                      stats.assembliesNeedingAttention.map((assembly) => (
                         <Link
-                          key={cabinet.id}
-                          href={`/admin/cabinets/${cabinet.id}/edit`}
-                          className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                          key={assembly.id}
+                          href={`/admin/assemblies/${assembly.id}/edit`}
+                          className="flex items-center gap-3 px-5 py-3 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/30 transition-colors"
                         >
                           <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                            {!cabinet.model ? (
+                            {!assembly.model ? (
                               <Box className="text-amber-600 dark:text-amber-400 w-5 h-5" />
                             ) : (
                               <ListOrdered className="text-amber-600 dark:text-amber-400 w-5 h-5" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                              {cabinet.name.en}
+                            <p className="text-sm font-medium text-charcoal dark:text-papyrus truncate">
+                              {assembly.name.en}
                             </p>
                             <p className="text-xs text-amber-600 dark:text-amber-400">
-                              {!cabinet.model && "Missing 3D model"}
-                              {!cabinet.model &&
-                                (!cabinet.stepCount ||
-                                  cabinet.stepCount === 0) &&
+                              {!assembly.model && "Missing 3D model"}
+                              {!assembly.model &&
+                                (!assembly.stepCount ||
+                                  assembly.stepCount === 0) &&
                                 " • "}
-                              {(!cabinet.stepCount ||
-                                cabinet.stepCount === 0) &&
+                              {(!assembly.stepCount ||
+                                assembly.stepCount === 0) &&
                                 "No steps"}
                             </p>
                           </div>
-                          <ChevronRight className="text-gray-400 w-5 h-5" />
+                          <ChevronRight className="text-silver w-5 h-5" />
                         </Link>
                       ))
                     ) : (
@@ -423,8 +487,8 @@ export default function AdminDashboard() {
                         <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-3">
                           <CheckCircle className="text-green-600 dark:text-green-400 w-6 h-6" />
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          All cabinets are complete!
+                        <p className="text-sm text-stone dark:text-silver">
+                          All assemblies are complete!
                         </p>
                       </div>
                     )}
@@ -433,60 +497,60 @@ export default function AdminDashboard() {
               </div>
 
               {/* Quick Actions */}
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                  <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Zap className="text-blue-500 w-5 h-5" />
+              <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl border border-silver/50 dark:border-stone/20 shadow-lg overflow-hidden">
+                <div className="px-5 py-4 border-b border-silver/30 dark:border-stone/20">
+                  <h2 className="text-sm font-semibold text-charcoal dark:text-papyrus flex items-center gap-2">
+                    <Zap className="text-amber-500 dark:text-amber-400 w-5 h-5" />
                     Quick Actions
                   </h2>
                 </div>
                 <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <Link
-                    href="/admin/cabinets/new"
-                    className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200/50 dark:border-blue-700/30 hover:shadow-md transition-all group"
+                  <button
+                    onClick={() => setIsAssemblyModalOpen(true)}
+                    className="flex items-center gap-3 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800/50 border border-silver/30 dark:border-stone/20 hover:shadow-md transition-all group w-full text-left"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
-                      <Plus className="text-white w-5 h-5" />
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500/15 dark:bg-emerald-400/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Plus className="text-emerald-600 dark:text-emerald-400 w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Add Cabinet
+                      <p className="text-sm font-medium text-charcoal dark:text-papyrus">
+                        Add Assembly
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Create new cabinet
+                      <p className="text-xs text-stone dark:text-silver">
+                        Create new assembly
                       </p>
                     </div>
-                  </Link>
+                  </button>
 
                   <Link
-                    href="/admin/cabinets"
-                    className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-700/30 hover:shadow-md transition-all group"
+                    href="/admin/assemblies"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800/50 border border-silver/30 dark:border-stone/20 hover:shadow-md transition-all group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform">
-                      <List className="text-white w-5 h-5" />
+                    <div className="w-10 h-10 rounded-lg bg-sky-500/15 dark:bg-sky-400/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <List className="text-sky-600 dark:text-sky-400 w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        Manage Cabinets
+                      <p className="text-sm font-medium text-charcoal dark:text-papyrus">
+                        Manage Assemblies
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        View all cabinets
+                      <p className="text-xs text-stone dark:text-silver">
+                        View all assemblies
                       </p>
                     </div>
                   </Link>
 
                   <Link
                     href="/admin/qr-codes"
-                    className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-200/50 dark:border-violet-700/30 hover:shadow-md transition-all group"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800/50 border border-silver/30 dark:border-stone/20 hover:shadow-md transition-all group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/30 group-hover:scale-110 transition-transform">
-                      <QrCode className="text-white w-5 h-5" />
+                    <div className="w-10 h-10 rounded-lg bg-violet-500/15 dark:bg-violet-400/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <QrCode className="text-violet-600 dark:text-violet-400 w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-charcoal dark:text-papyrus">
                         QR Codes
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-stone dark:text-silver">
                         Generate QR codes
                       </p>
                     </div>
@@ -496,16 +560,16 @@ export default function AdminDashboard() {
                     href="/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200/50 dark:border-amber-700/30 hover:shadow-md transition-all group"
+                    className="flex items-center gap-3 p-4 rounded-xl bg-neutral-100 dark:bg-neutral-800/50 border border-silver/30 dark:border-stone/20 hover:shadow-md transition-all group"
                   >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:scale-110 transition-transform">
-                      <ExternalLink className="text-white w-5 h-5" />
+                    <div className="w-10 h-10 rounded-lg bg-amber-500/15 dark:bg-amber-400/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <ExternalLink className="text-amber-600 dark:text-amber-400 w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-charcoal dark:text-papyrus">
                         View Site
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-stone dark:text-silver">
                         Open public site
                       </p>
                     </div>
@@ -513,66 +577,66 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Recent Cabinets */}
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 overflow-hidden">
-                <div className="px-5 py-4 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between">
-                  <h2 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                    <Clock className="text-blue-500 w-5 h-5" />
-                    Recent Cabinets
+              {/* Recent Assemblies */}
+              <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl border border-silver/50 dark:border-stone/20 shadow-lg overflow-hidden">
+                <div className="px-5 py-4 border-b border-silver/30 dark:border-stone/20 flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-charcoal dark:text-papyrus flex items-center gap-2">
+                    <Clock className="text-stone dark:text-silver w-5 h-5" />
+                    Recent Assemblies
                   </h2>
                   <Link
-                    href="/admin/cabinets"
-                    className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                    href="/admin/assemblies"
+                    className="text-xs text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus hover:underline"
                   >
                     View all
                   </Link>
                 </div>
-                <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
-                  {stats.recentCabinets.map((cabinet) => (
+                <div className="divide-y divide-silver/30 dark:divide-stone/20">
+                  {stats.recentAssemblies.map((assembly) => (
                     <Link
-                      key={cabinet.id}
-                      href={`/admin/cabinets/${cabinet.id}/steps`}
-                      className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors"
+                      key={assembly.id}
+                      href={`/admin/assemblies/${assembly.id}/steps`}
+                      className="flex items-center gap-4 px-5 py-3 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/30 transition-colors"
                     >
-                      <div className="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                        {cabinet.image ? (
+                      <div className="w-12 h-12 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center overflow-hidden">
+                        {assembly.image ? (
                           <img
-                            src={cabinet.image}
-                            alt={cabinet.name.en}
+                            src={assembly.image}
+                            alt={assembly.name.en}
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <Package className="text-gray-400 w-5 h-5" />
+                          <Package className="text-silver w-5 h-5" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                          {cabinet.name.en}
+                        <p className="text-sm font-medium text-charcoal dark:text-papyrus truncate">
+                          {assembly.name.en}
                         </p>
                         <div className="flex items-center gap-3 mt-1">
-                          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                          <span className="text-xs text-stone dark:text-silver flex items-center gap-1">
                             <Folder className="w-3 h-3" />
-                            {getCategoryName(cabinet.category)}
+                            {getCategoryName(assembly.category)}
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                          <span className="text-xs text-stone dark:text-silver flex items-center gap-1">
                             <ListOrdered className="w-3 h-3" />
-                            {cabinet.stepCount || 0} steps
+                            {assembly.stepCount || 0} steps
                           </span>
                         </div>
                       </div>
-                      <ChevronRight className="text-gray-400 w-5 h-5" />
+                      <ChevronRight className="text-silver w-5 h-5" />
                     </Link>
                   ))}
-                  {stats.recentCabinets.length === 0 && (
+                  {stats.recentAssemblies.length === 0 && (
                     <div className="px-5 py-8 text-center">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        No cabinets yet.{" "}
-                        <Link
-                          href="/admin/cabinets/new"
-                          className="text-blue-600 dark:text-blue-400 hover:underline"
+                      <p className="text-sm text-stone dark:text-silver">
+                        No assemblies yet.{" "}
+                        <button
+                          onClick={() => setIsAssemblyModalOpen(true)}
+                          className="text-charcoal dark:text-papyrus hover:underline font-medium"
                         >
-                          Add your first cabinet
-                        </Link>
+                          Add your first assembly
+                        </button>
                       </p>
                     </div>
                   )}
@@ -581,12 +645,21 @@ export default function AdminDashboard() {
             </>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-stone dark:text-silver">
                 Failed to load dashboard data
               </p>
             </div>
           )}
         </div>
+
+        {/* Assembly Form Modal */}
+        <AssemblyFormModal
+          isOpen={isAssemblyModalOpen}
+          onClose={() => setIsAssemblyModalOpen(false)}
+          onSubmit={handleCreateAssembly}
+          categories={categories}
+          mode="create"
+        />
       </AdminLayout>
     </AuthGuard>
   );

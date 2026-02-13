@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { I18nProvider } from "@/lib/i18n";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { BrandingProvider } from "@/contexts/BrandingContext";
 import { ToastProvider } from "@/components/admin/ToastProvider";
 
 function App({ Component, pageProps }: AppProps) {
@@ -40,11 +41,13 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <I18nProvider>
-          <ToastProvider>
-            <Component {...pageProps} />
-          </ToastProvider>
-        </I18nProvider>
+        <BrandingProvider>
+          <I18nProvider>
+            <ToastProvider>
+              <Component {...pageProps} />
+            </ToastProvider>
+          </I18nProvider>
+        </BrandingProvider>
       </AuthProvider>
     </ThemeProvider>
   );

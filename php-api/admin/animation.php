@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Define paths
 define('DATA_DIR', __DIR__ . '/../../data');
-define('CABINETS_DIR', DATA_DIR . '/cabinets');
+define('ASSEMBLIES_DIR', DATA_DIR . '/assemblies');
 
 // Helper functions
 function readJSON($filepath) {
@@ -81,18 +81,18 @@ function getRequestBody() {
 
 verifyAuth();
 
-// PUT /api/admin/cabinets/{id}/steps/{stepId}/animation
+// PUT /api/admin/assemblies/{id}/steps/{stepId}/animation
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    // Parse URL to get cabinet ID and step ID
+    // Parse URL to get assembly ID and step ID
     $uri = $_SERVER['REQUEST_URI'];
-    preg_match('/\/cabinets\/([^\/]+)\/steps\/([^\/]+)\/animation/', $uri, $matches);
+    preg_match('/\/assemblies\/([^\/]+)\/steps\/([^\/]+)\/animation/', $uri, $matches);
     
-    $cabinetId = null;
+    $assemblyId = null;
     $stepId = null;
     if (isset($matches[1])) {
-        $cabinetId = $matches[1];
-    } elseif (isset($_GET['cabinetId'])) {
-        $cabinetId = $_GET['cabinetId'];
+        $assemblyId = $matches[1];
+    } elseif (isset($_GET['assemblyId'])) {
+        $assemblyId = $_GET['assemblyId'];
     }
 
     if (isset($matches[2])) {
@@ -101,35 +101,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $stepId = $_GET['stepId'];
     }
     
-    if (!$cabinetId || !$stepId) {
-        sendError('Cabinet ID and Step ID required', 400);
+    if (!$assemblyId || !$stepId) {
+        sendError('Assembly ID and Step ID required', 400);
     }
     
     $animationData = getRequestBody();
     
     // Log for debugging
     $logFile = __DIR__ . '/animation_save.log';
-    $logEntry = date('Y-m-d H:i:s') . " - Cabinet: $cabinetId, Step: $stepId\n";
+    $logEntry = date('Y-m-d H:i:s') . " - Assembly: $assemblyId, Step: $stepId\n";
     $logEntry .= "Data size: " . strlen(json_encode($animationData)) . " bytes\n";
     
-    // Load cabinet file
-    $cabinetFile = CABINETS_DIR . '/' . $cabinetId . '.json';
-    $logEntry .= "File path: $cabinetFile\n";
-    $logEntry .= "File exists: " . (file_exists($cabinetFile) ? 'YES' : 'NO') . "\n";
-    $logEntry .= "File writable: " . (is_writable($cabinetFile) ? 'YES' : 'NO') . "\n";
+    // Load assembly file
+    $assemblyFile = ASSEMBLIES_DIR . '/' . $assemblyId . '.json';
+    $logEntry .= "File path: $assemblyFile\n";
+    $logEntry .= "File exists: " . (file_exists($assemblyFile) ? 'YES' : 'NO') . "\n";
+    $logEntry .= "File writable: " . (is_writable($assemblyFile) ? 'YES' : 'NO') . "\n";
     
-    $cabinetData = readJSON($cabinetFile);
+    $assemblyData = readJSON($assemblyFile);
     
-    if (!$cabinetData) {
-        sendError('Cabinet not found', 404);
+    if (!$assemblyData) {
+        sendError('Assembly not found', 404);
     }
     
-    $logEntry .= "Steps count: " . count($cabinetData['steps']) . "\n";
+    $logEntry .= "Steps count: " . count($assemblyData['steps']) . "\n";
     $logEntry .= "Looking for step ID: '" . $stepId . "' (type: " . gettype($stepId) . ")\n";
     
     // Find and update the step
     $stepFound = false;
-    foreach ($cabinetData['steps'] as $index => &$step) {
+    foreach ($assemblyData['steps'] as $index => &$step) {
         $logEntry .= "Checking step $index: ID='" . $step['id'] . "' (type: " . gettype($step['id']) . ")\n";
         if ($step['id'] == $stepId || $step['id'] === (int)$stepId || (string)$step['id'] === (string)$stepId) {
             $step['animation'] = $animationData;
@@ -144,14 +144,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         sendError('Step not found - Step ID: ' . $stepId, 404);
     }
     
-    // Save updated cabinet file
-    $result = writeJSON($cabinetFile, $cabinetData);
+    // Save updated assembly file
+    $result = writeJSON($assemblyFile, $assemblyData);
     $logEntry .= "Write result: " . ($result === false ? 'FALSE' : $result . ' bytes') . "\n";
     $logEntry .= "---\n";
     file_put_contents($logFile, $logEntry, FILE_APPEND);
     
     // Read back the file to verify it was written
-    $verifyData = readJSON($cabinetFile);
+    $verifyData = readJSON($assemblyFile);
     $verifyStep = null;
     foreach ($verifyData['steps'] as $s) {
         if ($s['id'] == $stepId) {
@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     }
     
     if ($result === false) {
-        sendError('Failed to write file - check permissions on data/cabinets folder', 500);
+        sendError('Failed to write file - check permissions on data/assemblies folder', 500);
     } elseif ($result === 0) {
         sendError('File written but empty - check data', 500);
     } else {
@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             'success' => true, 
             'bytesWritten' => $result,
             'debug' => [
-                'cabinetFile' => $cabinetFile,
+                'assemblyFile' => $assemblyFile,
                 'stepId' => $stepId,
                 'stepFound' => $stepFound,
                 'animationSaved' => isset($verifyStep['animation']),

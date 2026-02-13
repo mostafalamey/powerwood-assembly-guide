@@ -30,8 +30,11 @@ interface TreeNode {
 
 interface ObjectHierarchyTreeProps {
   model: THREE.Group | null;
-  selectedObject: THREE.Object3D | null;
-  onSelectObject: (object: THREE.Object3D) => void;
+  selectedObjects: THREE.Object3D[];
+  onSelectObject: (
+    object: THREE.Object3D,
+    options?: { toggle?: boolean },
+  ) => void;
   annotations?: AnnotationInstance[];
   annotationObjects?: Map<string, THREE.Object3D>;
   onRemoveAnnotation?: (annotationId: string) => void;
@@ -40,7 +43,7 @@ interface ObjectHierarchyTreeProps {
 
 export default function ObjectHierarchyTree({
   model,
-  selectedObject,
+  selectedObjects,
   onSelectObject,
   annotations = [],
   annotationObjects,
@@ -81,9 +84,17 @@ export default function ObjectHierarchyTree({
 
   const toggleVisibility = (object: THREE.Object3D, e: React.MouseEvent) => {
     e.stopPropagation();
-    object.visible = !object.visible;
-    object.traverse((child) => {
-      child.visible = object.visible;
+    const shouldToggleSelection =
+      selectedObjects.length > 1 && selectedObjects.includes(object);
+    const targets = shouldToggleSelection ? selectedObjects : [object];
+    const uniqueTargets = new Set(targets);
+    const nextVisible = !object.visible;
+
+    uniqueTargets.forEach((target) => {
+      target.visible = nextVisible;
+      target.traverse((child) => {
+        child.visible = nextVisible;
+      });
     });
     // Force re-render without creating new Set
     forceUpdate();
@@ -91,7 +102,7 @@ export default function ObjectHierarchyTree({
 
   const renderTree = (node: TreeNode, level = 0): JSX.Element => {
     const isExpanded = expandedNodes.has(node.id);
-    const isSelected = selectedObject === node.object;
+    const isSelected = selectedObjects.includes(node.object);
     const hasChildren = node.children.length > 0;
     const indent = level * 16;
 
@@ -104,7 +115,9 @@ export default function ObjectHierarchyTree({
               : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-l-2 border-transparent"
           }`}
           style={{ paddingLeft: `${indent + 8}px` }}
-          onClick={() => onSelectObject(node.object)}
+          onClick={(event) =>
+            onSelectObject(node.object, { toggle: event.ctrlKey })
+          }
         >
           {/* Expand/Collapse Icon */}
           {hasChildren && (
@@ -189,7 +202,7 @@ export default function ObjectHierarchyTree({
 
   const renderAnnotationItem = (annotation: AnnotationInstance) => {
     const annotationObj = annotationObjects?.get(annotation.id);
-    const isSelected = annotationObj && selectedObject === annotationObj;
+    const isSelected = annotationObj && selectedObjects.includes(annotationObj);
 
     return (
       <div
@@ -200,7 +213,10 @@ export default function ObjectHierarchyTree({
             : "hover:bg-gray-50 dark:hover:bg-gray-700/50 border-l-2 border-transparent"
         }`}
         style={{ paddingLeft: "24px" }}
-        onClick={() => annotationObj && onSelectObject(annotationObj)}
+        onClick={(event) =>
+          annotationObj &&
+          onSelectObject(annotationObj, { toggle: event.ctrlKey })
+        }
       >
         {/* Annotation Type Icon */}
         <div
@@ -284,8 +300,8 @@ export default function ObjectHierarchyTree({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="p-3 border-b border-gray-200/50 dark:border-gray-700/50">
+    <div className="flex flex-col h-full max-h-full">
+      <div className="p-3 border-b border-gray-200/50 dark:border-gray-700/50 flex-shrink-0">
         <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
           <GitBranch className="w-4 h-4 text-indigo-500" />
           Object Hierarchy
@@ -294,7 +310,7 @@ export default function ObjectHierarchyTree({
           Click to select • Toggle visibility
         </p>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {renderTree(tree)}
 
         {/* Annotations Section */}
@@ -323,7 +339,7 @@ export default function ObjectHierarchyTree({
           </div>
         )}
       </div>
-      <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+      <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 flex-shrink-0">
         <Package className="w-3 h-3" />
         {tree.children.length} object(s)
         {annotations.length > 0 && ` • ${annotations.length} annotation(s)`}

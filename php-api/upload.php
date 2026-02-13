@@ -11,8 +11,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-// Define paths
-define('UPLOAD_DIR', __DIR__ . '/../public');
+// Define paths - use DOCUMENT_ROOT on Hostinger, fall back to ../public for local dev
+$uploadRoot = isset($_SERVER['DOCUMENT_ROOT']) && is_dir($_SERVER['DOCUMENT_ROOT'])
+    ? $_SERVER['DOCUMENT_ROOT']
+    : __DIR__ . '/..';
+// On Hostinger static export, assets live in the web root (not in a /public subfolder)
+// In local dev, DOCUMENT_ROOT points to the project root where /public exists
+if (is_dir($uploadRoot . '/public')) {
+    $uploadRoot = $uploadRoot . '/public';
+}
+define('UPLOAD_DIR', $uploadRoot);
 
 // Helper functions
 function sendJSON($data, $statusCode = 200) {
@@ -37,6 +45,35 @@ function verifyAuth() {
     return $token;
 }
 
+function normalizeUploadPath($publicPath) {
+    if (!$publicPath) {
+        return null;
+    }
+
+    $publicPath = trim($publicPath);
+    if ($publicPath === '') {
+        return null;
+    }
+
+    if (strpos($publicPath, '..') !== false) {
+        return null;
+    }
+
+    if ($publicPath[0] === '/') {
+        $publicPath = substr($publicPath, 1);
+    }
+
+    $fullPath = UPLOAD_DIR . '/' . $publicPath;
+    $normalizedFullPath = str_replace('\\', '/', $fullPath);
+    $normalizedRoot = str_replace('\\', '/', UPLOAD_DIR);
+
+    if (strpos($normalizedFullPath, $normalizedRoot) !== 0) {
+        return null;
+    }
+
+    return $fullPath;
+}
+
 verifyAuth();
 
 // POST /api/upload
@@ -45,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Get directory from POST data (matches client FormData field name)
         $directory = isset($_POST['directory']) ? $_POST['directory'] : 'uploads';
         $requestedFilename = isset($_POST['filename']) ? $_POST['filename'] : null;
+        $replacePath = isset($_POST['replacePath']) ? $_POST['replacePath'] : null;
         
         if (empty($_FILES['file'])) {
             sendError('No file uploaded', 400);
@@ -71,25 +109,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $originalName = basename($file['name']);
         $originalExt = pathinfo($originalName, PATHINFO_EXTENSION);
         
-        if ($requestedFilename) {
-            $safeName = basename($requestedFilename);
-            $hasExt = pathinfo($safeName, PATHINFO_EXTENSION) !== '';
-            $uploadFilename = $hasExt ? $safeName : $safeName . '.' . $originalExt;
+        // Determine target directory and filename
+        $uploadFilename = '';
+        $fullTargetDir = '';
+        
+        if ($replacePath) {
+            // When replacePath is provided, use it to determine the directory and filename
+            $normalizedReplacePath = normalizeUploadPath($replacePath);
+            if (!$normalizedReplacePath) {
+                sendError('Invalid replacePath', 400);
+            }
+            
+            $fullTargetDir = dirname($normalizedReplacePath);
+            $existingFilename = basename($normalizedReplacePath);
+            $hasExt = pathinfo($existingFilename, PATHINFO_EXTENSION) !== '';
+            $uploadFilename = $hasExt ? $existingFilename : $existingFilename . '.' . $originalExt;
+            
+            // Delete existing file if it exists
+            if (file_exists($normalizedReplacePath)) {
+                if (!unlink($normalizedReplacePath)) {
+                    sendError('Failed to delete existing file', 500);
+                }
+            }
         } else {
-            $baseName = pathinfo($originalName, PATHINFO_FILENAME);
-            $timestamp = time();
-            $uploadFilename = $baseName . '-' . $timestamp . '.' . $originalExt;
+            // Use directory parameter for target location
+            if ($requestedFilename) {
+                $safeName = basename($requestedFilename);
+                $hasExt = pathinfo($safeName, PATHINFO_EXTENSION) !== '';
+                $uploadFilename = $hasExt ? $safeName : $safeName . '.' . $originalExt;
+            } else {
+                $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+                $timestamp = time();
+                $uploadFilename = $baseName . '-' . $timestamp . '.' . $originalExt;
+            }
+            
+            // Create target directory (in public folder)
+            $fullTargetDir = UPLOAD_DIR . '/' . $directory;
         }
         
-        // Create target directory (in public folder)
-        $fullTargetDir = UPLOAD_DIR . '/' . $directory;
+        // Create target directory if it doesn't exist
         if (!is_dir($fullTargetDir)) {
             if (!mkdir($fullTargetDir, 0755, true)) {
-                sendError('Failed to create directory: ' . $directory, 500);
+                sendError('Failed to create directory', 500);
             }
         }
         
         $targetPath = $fullTargetDir . '/' . $uploadFilename;
+        
+        // Calculate public path relative to UPLOAD_DIR
+        $relativePath = str_replace(UPLOAD_DIR, '', $targetPath);
+        $publicPath = '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
         
         // Move uploaded file
         if (!move_uploaded_file($file['tmp_name'], $targetPath)) {
@@ -97,8 +166,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Return public path (matches Next.js API format)
-        $publicPath = '/' . $directory . '/' . $uploadFilename;
-        
         sendJSON([
             'message' => 'File uploaded successfully',
             'path' => $publicPath,

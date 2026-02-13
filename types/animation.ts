@@ -41,10 +41,32 @@ export interface AnnotationCatalogItem {
   thumbnail?: string; // Path to thumbnail image (e.g., "/models/annotations/arrow.png")
 }
 
+export interface LightingSettings {
+  hemisphere: {
+    skyColor: string;
+    groundColor: string;
+    intensity: number;
+  };
+  main: {
+    color: string;
+    intensity: number;
+    position: { x: number; y: number; z: number };
+  };
+  fill: {
+    color: string;
+    intensity: number;
+  };
+  rim: {
+    color: string;
+    intensity: number;
+  };
+}
+
 export interface StepAnimation {
   duration: number;
   isOffset?: boolean;
   objectKeyframes: ObjectKeyframe[];
   cameraKeyframes: CameraKeyframe[];
   annotationInstances?: AnnotationInstance[]; // Annotations in this step
+  lightingSettings?: LightingSettings;
 }

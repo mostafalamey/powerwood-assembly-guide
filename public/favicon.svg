@@ -1,4 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#0ea5e9"/>
-  <text x="50" y="70" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="white" text-anchor="middle">PW</text>
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+	<defs>
+		<linearGradient id="g1" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(256,-147.802,147.802,256,-0.19,202.471)">
+			<stop offset="0" stop-color="#313840"/>
+			<stop offset="1" stop-color="#6b6e72"/>
+		</linearGradient>
+	</defs>
+	<style>
+		.s0 { fill: url(#g1) } 
+		.s1 { fill: #f6f3ee } 
+		.s2 { fill: none;stroke: #313840;stroke-miterlimit:100;stroke-width: 5 } 
+	</style>
+	<path id="Shape 4" fill-rule="evenodd" class="s0" d="m127.81 256.57c-70.78 0-128-57.22-128-128 0-70.79 57.22-128 128-128 70.79 0 128 57.21 128 128 0 70.78-57.21 128-128 128z"/>
+	<path id="Shape 5" class="s1" d="m61 199l-23-40 64-107h53l65 107-24 41h-25l-41-72c0 0-18.67 28.72-22 33-2.64-11.48-20.51-15.16-26.81-5.15-6.31 10.01 0.94 21.97 15.81 24.15-2.56 4.03-11.19 19.22-11.19 19.22z"/>
+	<g id="Folder 1">
+		<path id="Shape 3" fill-rule="evenodd" class="s2" d="m101.67 49.45l37 63.18-15.1 24.66"/>
+		<path id="Shape 1" class="s2" d="m68.74 105.87l-31.96 52.74 24.02 40.98 24.72 0.37c0 0 13.64-21.89 13.1-21.5-15.32 1.87-24.47-10.86-16.83-22.54 8.56-13.09 26.81-3.1 27.02 6.97 0.16 0.33 14.35-24.6 14.35-24.6 0 0-20.21-11.45-19.26-12.01 17.27-4.72 14.05-20.78 6.34-25.35-7.42-4.4-22.78-5.25-21.64 16.32 0.49 0.66-19.86-11.38-19.86-11.38z"/>
+		<path id="Shape 2" fill-rule="evenodd" class="s2" d="m67.92 105.88l33.75-55.42 53.07-0.04 40.64 68c0 0-19.96 11.83-18.45 11.07 16.36 2.52 15.35 21.14 4.53 27.18-9.9 5.53-25.17-1-21.14-17.11 0.25-1.01-18.88 11.33-18.88 11.33l28.8 48.7 25.52-0.13 23.74-40.35-23.3-40.74"/>
+	</g>
 </svg>

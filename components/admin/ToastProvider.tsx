@@ -113,27 +113,25 @@ const getConfirmStyles = (type: ConfirmOptions["type"]) => {
     case "danger":
       return {
         icon: <AlertTriangle className="w-8 h-8" />,
-        iconColor: "text-red-500",
-        iconBg: "bg-red-100 dark:bg-red-900/50",
-        confirmBtn:
-          "bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-lg shadow-red-500/30",
+        iconColor: "text-error",
+        iconBg: "bg-error-bg dark:bg-red-900/50",
+        confirmBtn: "bg-error hover:bg-error-dark shadow-lg",
       };
     case "warning":
       return {
         icon: <HelpCircle className="w-8 h-8" />,
-        iconColor: "text-amber-500",
-        iconBg: "bg-amber-100 dark:bg-amber-900/50",
-        confirmBtn:
-          "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-lg shadow-amber-500/30",
+        iconColor: "text-warning",
+        iconBg: "bg-warning-bg dark:bg-amber-900/50",
+        confirmBtn: "bg-warning hover:bg-warning-dark shadow-lg",
       };
     case "info":
     default:
       return {
         icon: <HelpCircle className="w-8 h-8" />,
-        iconColor: "text-blue-500",
-        iconBg: "bg-blue-100 dark:bg-blue-900/50",
+        iconColor: "text-charcoal dark:text-papyrus",
+        iconBg: "bg-neutral-100 dark:bg-neutral-800",
         confirmBtn:
-          "bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg shadow-blue-500/30",
+          "bg-charcoal dark:bg-papyrus dark:text-charcoal hover:bg-neutral-800 dark:hover:bg-white shadow-lg",
       };
   }
 };
@@ -227,6 +225,11 @@ const ConfirmDialog: React.FC<{
   useEffect(() => {
     if (isOpen) {
       requestAnimationFrame(() => setIsVisible(true));
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") handleCancel();
+      };
+      document.addEventListener("keydown", handleKeyDown);
+      return () => document.removeEventListener("keydown", handleKeyDown);
     } else {
       setIsVisible(false);
     }
@@ -249,17 +252,20 @@ const ConfirmDialog: React.FC<{
   return (
     <div
       className={`
-        fixed inset-0 z-[100] flex items-center justify-center p-4
+        fixed inset-0 z-[9999] flex items-center justify-center p-4
         transition-all duration-200
         ${isVisible ? "bg-black/50 backdrop-blur-sm" : "bg-transparent"}
       `}
       onClick={handleCancel}
+      role="dialog"
+      aria-modal="true"
+      aria-label={options?.title || "Confirmation"}
     >
       <div
         className={`
-          w-full max-w-sm rounded-2xl border border-white/20 dark:border-gray-700/50
-          bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl
-          shadow-2xl shadow-black/20
+          w-full max-w-sm rounded-2xl border border-silver/30 dark:border-stone/20
+          bg-papyrus/95 dark:bg-charcoal/95 backdrop-blur-xl
+          shadow-2xl
           transition-all duration-200 ease-out
           ${isVisible ? "scale-100 opacity-100" : "scale-95 opacity-0"}
         `}
@@ -275,11 +281,11 @@ const ConfirmDialog: React.FC<{
         {/* Content */}
         <div className="px-6 py-4 text-center">
           {options.title && (
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            <h3 className="text-lg font-semibold text-charcoal dark:text-papyrus mb-2">
               {options.title}
             </h3>
           )}
-          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+          <p className="text-sm text-stone dark:text-silver leading-relaxed">
             {options.message}
           </p>
         </div>
@@ -290,8 +296,8 @@ const ConfirmDialog: React.FC<{
             onClick={handleCancel}
             className="
               flex-1 px-4 py-2.5 text-sm font-medium rounded-xl
-              bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200
-              hover:bg-gray-200 dark:hover:bg-gray-600
+              bg-neutral-100 dark:bg-neutral-800 text-charcoal dark:text-silver
+              hover:bg-neutral-200 dark:hover:bg-neutral-700
               transition-all duration-200
             "
           >
@@ -388,7 +394,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
 
       {/* Toast Container */}
-      <div className="fixed top-4 right-4 z-50 flex w-[360px] max-w-[90vw] flex-col gap-2">
+      <div
+        className="fixed top-4 right-4 z-[9999] flex w-[360px] max-w-[90vw] flex-col gap-2"
+        role="status"
+        aria-live="polite"
+        aria-label="Notifications"
+      >
         {toasts.map((toast) => (
           <ToastItemComponent
             key={toast.id}

@@ -6,6 +6,7 @@ import React, {
   forwardRef,
 } from "react";
 import { useTranslation } from "@/lib/i18n";
+import { useBranding } from "@/contexts/BrandingContext";
 import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
 
 export interface AudioPlayerRef {
@@ -17,7 +18,7 @@ export interface AudioPlayerRef {
 }
 
 interface AudioPlayerProps {
-  cabinetId: string;
+  assemblyId: string;
   stepId: string;
   audioUrl?: { en?: string; ar?: string };
   autoPlay?: boolean;
@@ -29,7 +30,7 @@ interface AudioPlayerProps {
 const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
   function AudioPlayer(
     {
-      cabinetId,
+      assemblyId,
       stepId,
       audioUrl,
       autoPlay = false,
@@ -40,6 +41,7 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
     ref,
   ) {
     const { t, locale } = useTranslation();
+    const { branding } = useBranding();
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
@@ -231,11 +233,11 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
     };
 
     return (
-      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-3 shadow-lg border border-white/50 dark:border-gray-700/50">
+      <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl p-3 shadow-lg border border-silver/50 dark:border-stone/20">
         <audio ref={audioRef} preload="auto" />
 
         {hasError && (
-          <div className="mb-2 rounded-lg bg-gray-100/80 dark:bg-gray-700/50 p-2 text-center text-xs text-gray-500 dark:text-gray-400">
+          <div className="mb-2 rounded-lg bg-neutral-100/80 dark:bg-neutral-800/50 p-2 text-center text-xs text-stone dark:text-silver">
             {t("audioNotAvailable") ||
               "Audio narration not available for this step"}
           </div>
@@ -248,13 +250,21 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
             disabled={isLoading}
             className={`flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center transition-all min-h-[44px] min-w-[44px] ${
               isLoading
-                ? "bg-gray-200 dark:bg-gray-700 cursor-not-allowed"
-                : "bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 shadow-lg shadow-primary-500/25"
+                ? "bg-neutral-200 dark:bg-neutral-700 cursor-not-allowed"
+                : "shadow-lg"
             }`}
+            style={
+              !isLoading
+                ? {
+                    backgroundColor: branding.primaryColor,
+                    boxShadow: `0 10px 15px -3px ${branding.primaryColor}40`,
+                  }
+                : undefined
+            }
             aria-label={isPlaying ? t("pause") || "Pause" : t("play") || "Play"}
           >
             {isLoading ? (
-              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-pewter border-t-transparent rounded-full animate-spin" />
             ) : isPlaying ? (
               <Pause className="w-5 h-5 text-white" />
             ) : (
@@ -272,18 +282,18 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
               onChange={handleSeek}
               disabled={isLoading}
               aria-label={t("audioProgress") || "Audio progress"}
-              className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed"
+              className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed"
               style={{
                 background: isLoading
                   ? undefined
-                  : `linear-gradient(to right, #6366f1 0%, #6366f1 ${
+                  : `linear-gradient(to right, #323841 0%, #323841 ${
                       (currentTime / duration) * 100
-                    }%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} ${
+                    }%, ${document.documentElement.classList.contains("dark") ? "#4a4f57" : "#CACBCD"} ${
                       (currentTime / duration) * 100
-                    }%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} 100%)`,
+                    }%, ${document.documentElement.classList.contains("dark") ? "#4a4f57" : "#CACBCD"} 100%)`,
               }}
             />
-            <div className="flex justify-between text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
+            <div className="flex justify-between text-[10px] text-stone dark:text-silver mt-0.5">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
             </div>
@@ -293,20 +303,20 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
           <div className="relative flex-shrink-0">
             <button
               onClick={() => setShowVolumeSlider(!showVolumeSlider)}
-              className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors min-h-[44px] min-w-[44px]"
+              className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors min-h-[44px] min-w-[44px]"
               aria-label={t("volume") || "Volume"}
             >
               {volume === 0 ? (
-                <VolumeX className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <VolumeX className="w-5 h-5 text-stone dark:text-silver" />
               ) : volume < 0.5 ? (
-                <Volume1 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <Volume1 className="w-5 h-5 text-stone dark:text-silver" />
               ) : (
-                <Volume2 className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <Volume2 className="w-5 h-5 text-stone dark:text-silver" />
               )}
             </button>
 
             {showVolumeSlider && (
-              <div className="absolute bottom-full end-0 mb-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-lg shadow-lg p-2.5 border border-white/50 dark:border-gray-700/50">
+              <div className="absolute bottom-full end-0 mb-2 bg-papyrus/90 dark:bg-charcoal/90 backdrop-blur-xl rounded-lg shadow-lg p-2.5 border border-silver/50 dark:border-stone/20">
                 <input
                   type="range"
                   min="0"
@@ -315,11 +325,11 @@ const AudioPlayer = forwardRef<AudioPlayerRef, AudioPlayerProps>(
                   value={volume}
                   onChange={handleVolumeChange}
                   aria-label={t("volumeSlider") || "Volume slider"}
-                  className="w-24 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
+                  className="w-24 h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #6366f1 0%, #6366f1 ${
+                    background: `linear-gradient(to right, #323841 0%, #323841 ${
                       volume * 100
-                    }%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} ${volume * 100}%, ${document.documentElement.classList.contains("dark") ? "#374151" : "#e5e7eb"} 100%)`,
+                    }%, ${document.documentElement.classList.contains("dark") ? "#4a4f57" : "#CACBCD"} ${volume * 100}%, ${document.documentElement.classList.contains("dark") ? "#4a4f57" : "#CACBCD"} 100%)`,
                   }}
                 />
               </div>

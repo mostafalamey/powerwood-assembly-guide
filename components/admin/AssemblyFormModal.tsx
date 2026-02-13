@@ -1,0 +1,457 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
+import { X, Package, Clock } from "lucide-react";
+import FileUploadField from "./FileUploadField";
+
+export interface AssemblyFormData {
+  id: string;
+  name: {
+    en: string;
+    ar: string;
+  };
+  category: string;
+  estimatedTime: number;
+  description: {
+    en: string;
+    ar: string;
+  };
+  model?: string;
+  image?: string;
+}
+
+interface AssemblyFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (assembly: AssemblyFormData) => Promise<void>;
+  assembly?: AssemblyFormData | null;
+  categories: Array<{ id: string; name: string }>;
+  mode: "create" | "edit";
+}
+
+export function AssemblyFormModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  assembly,
+  categories,
+  mode,
+}: AssemblyFormModalProps) {
+  const [formData, setFormData] = useState<AssemblyFormData>({
+    id: "",
+    name: { en: "", ar: "" },
+    category: categories[0]?.id || "base",
+    estimatedTime: 0,
+    description: { en: "", ar: "" },
+    model: "",
+    image: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Focus trap and ESC key handler
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !isSubmitting) {
+        onClose();
+        return;
+      }
+      if (e.key === "Tab" && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [isSubmitting, onClose],
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+      // Focus the modal on open
+      setTimeout(
+        () =>
+          modalRef.current
+            ?.querySelector<HTMLElement>("input, button")
+            ?.focus(),
+        50,
+      );
+      return () => document.removeEventListener("keydown", handleKeyDown);
+    }
+  }, [isOpen, handleKeyDown]);
+
+  useEffect(() => {
+    if (assembly && mode === "edit") {
+      setFormData({
+        id: assembly.id,
+        name: assembly.name,
+        category: assembly.category,
+        estimatedTime: assembly.estimatedTime,
+        description: assembly.description,
+        model: assembly.model || "",
+        image: assembly.image || "",
+      });
+    } else {
+      setFormData({
+        id: "",
+        name: { en: "", ar: "" },
+        category: categories[0]?.id || "base",
+        estimatedTime: 0,
+        description: { en: "", ar: "" },
+        model: "",
+        image: "",
+      });
+    }
+    setError(null);
+  }, [assembly, mode, isOpen, categories]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    // Validation
+    if (!formData.id || !formData.name.en || !formData.name.ar) {
+      setError("Please fill in all required fields (ID and both names)");
+      return;
+    }
+
+    // ID validation (uppercase letters, hyphens, numbers)
+    if (!/^[A-Z0-9-]+$/.test(formData.id)) {
+      setError(
+        "Assembly ID must be uppercase letters, numbers, and hyphens only (e.g., BC-001)",
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await onSubmit(formData);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || "Failed to save assembly");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (field: string, value: any) => {
+    setFormData((prev) => {
+      const keys = field.split(".");
+      if (keys.length === 1) {
+        return { ...prev, [field]: value };
+      } else if (keys.length === 2) {
+        return {
+          ...prev,
+          [keys[0]]: {
+            ...(prev as any)[keys[0]],
+            [keys[1]]: value,
+          },
+        };
+      }
+      return prev;
+    });
+  };
+
+  if (!isOpen) return null;
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={
+        mode === "create" ? "Add New Assembly" : `Edit Assembly: ${formData.id}`
+      }
+    >
+      <div
+        ref={modalRef}
+        className="bg-papyrus dark:bg-charcoal rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-silver/30 dark:border-stone/20"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-silver/30 dark:border-stone/20 bg-neutral-100/50 dark:bg-neutral-800/30">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-charcoal/10 dark:bg-papyrus/10">
+              <Package className="w-5 h-5 text-charcoal dark:text-papyrus" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-charcoal dark:text-papyrus">
+                {mode === "create"
+                  ? "Add New Assembly"
+                  : `Edit Assembly: ${formData.id}`}
+              </h2>
+              <p className="text-sm text-stone dark:text-silver">
+                {mode === "create"
+                  ? "Create a new assembly with details"
+                  : "Update assembly information"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
+            disabled={isSubmitting}
+            type="button"
+            aria-label="Close modal"
+          >
+            <X className="w-5 h-5 text-stone dark:text-silver" />
+          </button>
+        </div>
+
+        {/* Form Content */}
+        <form
+          onSubmit={handleSubmit}
+          className="overflow-y-auto max-h-[calc(90vh-140px)]"
+        >
+          <div className="p-6 space-y-6">
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
+                <p className="text-sm text-red-700 dark:text-red-300">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            {/* Assembly ID */}
+            <div>
+              <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
+                Assembly ID <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.id}
+                onChange={(e) =>
+                  handleChange("id", e.target.value.toUpperCase())
+                }
+                className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                  bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus font-mono
+                  placeholder-stone/50 dark:placeholder-silver/50
+                  focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                  transition-all duration-200 disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:cursor-not-allowed"
+                placeholder="BC-001"
+                required
+                disabled={mode === "edit"}
+              />
+              <p className="mt-2 text-sm text-stone dark:text-silver">
+                {mode === "edit"
+                  ? "Assembly ID cannot be changed"
+                  : "Format: XX-000 (e.g., BC-001, WC-002)"}
+              </p>
+            </div>
+
+            {/* Name (English & Arabic) - Side by Side */}
+            <div>
+              <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
+                Assembly Name <span className="text-red-500">*</span>
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
+                    English
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name.en}
+                    onChange={(e) => handleChange("name.en", e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                      transition-all duration-200"
+                    placeholder='2-Door Base 36"'
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
+                    Arabic (عربي)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name.ar}
+                    onChange={(e) => handleChange("name.ar", e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus text-right
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                      transition-all duration-200"
+                    placeholder="خزانة أرضية بابين 36"
+                    dir="rtl"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Category & Estimated Time - Side by Side */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
+                  Category <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => handleChange("category", e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                    bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                    focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                    transition-all duration-200"
+                  required
+                  title="Category"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
+                  Estimated Time (minutes)
+                </label>
+                <div className="relative">
+                  <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone dark:text-silver" />
+                  <input
+                    type="number"
+                    value={formData.estimatedTime}
+                    onChange={(e) =>
+                      handleChange(
+                        "estimatedTime",
+                        parseInt(e.target.value) || 0,
+                      )
+                    }
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                      transition-all duration-200"
+                    placeholder="30"
+                    min="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Description (English & Arabic) - Side by Side */}
+            <div>
+              <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
+                Description
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
+                    English
+                  </label>
+                  <textarea
+                    value={formData.description.en}
+                    onChange={(e) =>
+                      handleChange("description.en", e.target.value)
+                    }
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                      transition-all duration-200 resize-none"
+                    placeholder="Assembly description..."
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
+                    Arabic (عربي)
+                  </label>
+                  <textarea
+                    value={formData.description.ar}
+                    onChange={(e) =>
+                      handleChange("description.ar", e.target.value)
+                    }
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus text-right
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                      transition-all duration-200 resize-none"
+                    placeholder="وصف التجميع..."
+                    dir="rtl"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 3D Model & Image - Side by Side */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FileUploadField
+                label="3D Model (GLB)"
+                value={formData.model || ""}
+                onChange={(value) => handleChange("model", value)}
+                accept=".glb,.gltf"
+                placeholder="/models/BC-001.glb"
+                directory="models"
+              />
+              <FileUploadField
+                label="Thumbnail Image"
+                value={formData.image || ""}
+                onChange={(value) => handleChange("image", value)}
+                accept=".png,.jpg,.jpeg,.webp"
+                placeholder="/images/assemblies/BC-001.png"
+                directory="images/assemblies"
+              />
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-silver/30 dark:border-stone/20 bg-neutral-100/50 dark:bg-neutral-800/30">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2.5 rounded-xl font-medium text-sm
+                text-stone dark:text-silver
+                hover:bg-neutral-200 dark:hover:bg-neutral-700
+                transition-all duration-200"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-2.5 rounded-xl font-medium text-sm
+                bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal
+                hover:bg-neutral-800 dark:hover:bg-white
+                shadow-lg
+                transition-all duration-200
+                disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Saving..."
+                : mode === "create"
+                  ? "Create Assembly"
+                  : "Update Assembly"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body,
+  );
+}

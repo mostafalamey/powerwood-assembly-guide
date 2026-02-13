@@ -1,0 +1,36 @@
+{
+  "assemblies": [
+    {
+      "id": "BU-1D-600",
+      "name": {
+        "en": "Base Unit 1 Door 600",
+        "ar": "خزانة ارضية 1 باب 600"
+      },
+      "category": "base",
+      "estimatedTime": 20,
+      "description": {
+        "en": "",
+        "ar": ""
+      },
+      "model": "/models/BaseUnit_1D_600-1770764456681.glb",
+      "image": "/images/assemblies/BaseUnit_1D_600-1770646387877.png",
+      "stepCount": 9
+    },
+    {
+      "id": "BC-1D-450",
+      "name": {
+        "en": "Base Unit 1 Door 450",
+        "ar": "خزانة ارضية باب واحد 450"
+      },
+      "category": "base",
+      "estimatedTime": 12,
+      "description": {
+        "en": "",
+        "ar": ""
+      },
+      "model": "/models/BaseUnit_1D_450-1771004223662.glb",
+      "image": "/images/assemblies/BU_45_0D1D_G-1771004226787.png",
+      "stepCount": 9
+    }
+  ]
+}

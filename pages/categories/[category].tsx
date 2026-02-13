@@ -7,32 +7,34 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Header from "@/components/Header";
 import categoriesData from "@/data/categories.json";
-import { Cabinet } from "@/types/cabinet";
+import { Assembly } from "@/types/assembly";
+import { useBranding } from "@/contexts/BrandingContext";
 import { FolderOpen, Home, Package, Clock, ListOrdered } from "lucide-react";
 
 export default function CategoryPage() {
   const { t, locale } = useTranslation();
+  const { branding } = useBranding();
   const router = useRouter();
   const { category } = router.query;
-  const [cabinets, setCabinets] = useState<Cabinet[]>([]);
+  const [assemblies, setCabinets] = useState<Assembly[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch cabinets from API
+  // Fetch assemblys from API
   useEffect(() => {
     if (!category) return;
 
-    const fetchCabinets = async () => {
+    const fetchAssemblys = async () => {
       try {
-        const response = await fetch(`/api/cabinets?_=${Date.now()}`, {
+        const response = await fetch(`/api/assemblies?_=${Date.now()}`, {
           cache: "no-store",
         });
 
         if (response.ok) {
           const allCabinets = await response.json();
-          // Filter by category
-          const filtered = allCabinets.filter(
-            (cab: Cabinet) => cab.category === category,
-          );
+          // Filter by category and sort by ID
+          const filtered = allCabinets
+            .filter((cab: Assembly) => cab.category === category)
+            .sort((a: Assembly, b: Assembly) => a.id.localeCompare(b.id));
           setCabinets(filtered);
         }
       } catch (error) {
@@ -42,7 +44,7 @@ export default function CategoryPage() {
       }
     };
 
-    fetchCabinets();
+    fetchAssemblys();
   }, [category]);
 
   // Find category info
@@ -50,26 +52,33 @@ export default function CategoryPage() {
     (cat) => cat.id === category,
   );
 
+  const companyName =
+    locale === "en" ? branding.companyName : branding.companyNameAr;
+
   if (!categoryInfo) {
     return (
       <>
         <Head>
-          <title>{`${t("errors.notFound")} - ${t("appTitle")}`}</title>
+          <title>{`${t("errors.notFound")} - ${companyName}`}</title>
+          <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+          {branding.primaryColor && (
+            <meta name="theme-color" content={branding.primaryColor} />
+          )}
         </Head>
-        <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+        <div className="h-screen flex flex-col bg-papyrus dark:bg-neutral-900">
           <Header showBackButton />
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="text-center">
-              <FolderOpen className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4 mx-auto" />
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <FolderOpen className="w-16 h-16 text-silver dark:text-stone mb-4 mx-auto" />
+              <h1 className="text-xl font-bold text-charcoal dark:text-papyrus mb-2">
                 {t("errors.notFound")}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+              <p className="text-stone dark:text-silver text-sm mb-6">
                 {t("errors.notFoundDescription")}
               </p>
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors font-medium"
+                className="inline-flex items-center gap-2 bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal px-5 py-2.5 rounded-xl hover:bg-neutral-800 dark:hover:bg-white transition-colors font-medium"
               >
                 <Home className="w-5 h-5" />
                 {t("errors.goHome")}
@@ -90,14 +99,18 @@ export default function CategoryPage() {
     return (
       <>
         <Head>
-          <title>{`${categoryName} - ${t("appTitle")}`}</title>
+          <title>{`${categoryName} - ${companyName}`}</title>
+          <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+          {branding.primaryColor && (
+            <meta name="theme-color" content={branding.primaryColor} />
+          )}
         </Head>
-        <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+        <div className="h-screen flex flex-col bg-papyrus dark:bg-neutral-900">
           <Header showBackButton />
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <div className="w-12 h-12 border-3 border-charcoal dark:border-papyrus border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-stone dark:text-silver text-sm">
                 {t("loading")}
               </p>
             </div>
@@ -110,93 +123,115 @@ export default function CategoryPage() {
   return (
     <>
       <Head>
-        <title>{`${categoryName} - ${t("appTitle")}`}</title>
+        <title>{`${categoryName} - ${companyName}`}</title>
         <meta name="description" content={categoryDescription} />
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
+        <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+        {branding.primaryColor && (
+          <meta name="theme-color" content={branding.primaryColor} />
+        )}
       </Head>
 
-      <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+      <div className="h-screen flex flex-col overflow-hidden bg-papyrus dark:bg-neutral-900">
         <Header showBackButton />
 
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-7xl mx-auto p-4 md:p-6">
             {/* Category Header */}
             <div className="mb-6">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-charcoal dark:text-papyrus mb-2">
                 {categoryName}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-stone dark:text-silver">
                 {categoryDescription}
               </p>
             </div>
 
             {/* Cabinets Grid */}
-            {cabinets.length > 0 ? (
+            {assemblies.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {cabinets.map((cabinet) => {
+                {assemblies.map((assembly) => {
                   const cabinetName =
-                    typeof cabinet.name === "string"
+                    typeof assembly.name === "string"
                       ? locale === "ar"
-                        ? (cabinet as any).nameAr
-                        : cabinet.name
+                        ? (assembly as any).nameAr
+                        : assembly.name
                       : locale === "ar"
-                        ? cabinet.name.ar
-                        : cabinet.name.en;
+                        ? assembly.name.ar
+                        : assembly.name.en;
                   const cabinetDesc =
-                    typeof cabinet.description === "string"
+                    typeof assembly.description === "string"
                       ? locale === "ar"
-                        ? (cabinet as any).descriptionAr
-                        : cabinet.description
+                        ? (assembly as any).descriptionAr
+                        : assembly.description
                       : locale === "ar"
-                        ? cabinet.description?.ar
-                        : cabinet.description?.en;
+                        ? assembly.description?.ar
+                        : assembly.description?.en;
 
                   return (
                     <TransitionLink
-                      key={cabinet.id}
-                      href={`/cabinet/${cabinet.id}`}
-                      className="group bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all"
+                      key={assembly.id}
+                      href={`/assembly/${assembly.id}`}
+                      className="group bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all"
                     >
                       {/* Cabinet Image */}
-                      <div className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 h-40 flex items-center justify-center relative overflow-hidden group-hover:from-primary-100 group-hover:to-primary-200 dark:group-hover:from-primary-900/30 dark:group-hover:to-primary-800/30 transition-colors">
-                        {cabinet.image ? (
+                      <div className="bg-neutral-100 dark:bg-neutral-800 h-40 flex items-center justify-center relative overflow-hidden group-hover:bg-neutral-200 dark:group-hover:bg-neutral-700 transition-colors">
+                        {assembly.image ? (
                           <Image
-                            src={cabinet.image}
+                            src={assembly.image}
                             alt={cabinetName}
                             fill
                             className="object-contain p-4"
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                           />
                         ) : (
-                          <Package className="w-12 h-12 text-primary-300 dark:text-primary-700" />
+                          <Package className="w-12 h-12 text-silver dark:text-stone" />
                         )}
                       </div>
 
                       {/* Cabinet Info */}
                       <div className="p-4">
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+                        <h3
+                          className="text-base font-semibold text-charcoal dark:text-papyrus mb-1 transition-colors truncate"
+                          style={{
+                            ["--hover-color" as any]: branding.primaryColor,
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.color =
+                              branding.primaryColor)
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.color = "")
+                          }
+                        >
                           {cabinetName}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 text-xs mb-3 line-clamp-2">
+                        <p className="text-stone dark:text-silver text-xs mb-3 line-clamp-2">
                           {cabinetDesc}
                         </p>
 
                         {/* Stats */}
-                        <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-3 text-xs text-stone dark:text-silver">
                           <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4 text-blue-500" />
+                            <Clock
+                              className="w-4 h-4"
+                              style={{ color: branding.primaryColor }}
+                            />
                             <span>
-                              {cabinet.estimatedTime} {t("cabinet.minutes")}
+                              {assembly.estimatedTime} {t("assembly.minutes")}
                             </span>
                           </div>
                           <div className="flex items-center gap-1">
-                            <ListOrdered className="w-4 h-4 text-green-500" />
-                            <span>
-                              {(cabinet as any).stepCount || 0}{" "}
-                              {t("cabinet.steps")}
+                            <ListOrdered
+                              className="w-4 h-4"
+                              style={{ color: branding.secondaryColor }}
+                            />
+                            <span style={{ color: branding.secondaryColor }}>
+                              {(assembly as any).stepCount || 0}{" "}
+                              {t("assembly.steps")}
                             </span>
                           </div>
                         </div>
@@ -207,16 +242,16 @@ export default function CategoryPage() {
               </div>
             ) : (
               <div className="text-center py-16">
-                <Package className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                <Package className="w-16 h-16 text-silver dark:text-stone mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-charcoal dark:text-papyrus mb-2">
                   No cabinets in this category yet
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-stone dark:text-silver mb-6">
                   Cabinets for this category are coming soon.
                 </p>
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors font-medium"
+                  className="inline-flex items-center gap-2 bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal px-5 py-2.5 rounded-xl hover:bg-neutral-800 dark:hover:bg-white transition-colors font-medium"
                 >
                   <Home className="w-5 h-5" />
                   {t("errors.goHome")}

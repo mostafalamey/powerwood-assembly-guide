@@ -9,7 +9,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { AnnotationInstance } from "@/types/animation";
+import { AnnotationInstance, LightingSettings } from "@/types/animation";
+import { normalizeLightingSettings } from "@/lib/lighting";
 import {
   loadAnnotationModel,
   applyAnnotationColor,
@@ -24,21 +25,27 @@ export interface AuthoringSceneViewerRef {
   removeAnnotation: (annotationId: string) => void;
   updateAnnotationColor: (annotationId: string, color: string) => void;
   getAnnotationObject: (annotationId: string) => THREE.Object3D | null;
+  frameObject: (object?: THREE.Object3D | null) => void;
 }
 
 interface AuthoringSceneViewerProps {
   modelPath?: string;
   selectedObject?: THREE.Object3D | null;
+  selectedObjects?: THREE.Object3D[];
   transformMode?: "translate" | "rotate" | "scale";
   translationSnap?: number | null;
   rotationSnap?: number | null;
   scaleSnap?: number | null;
   annotationInstances?: AnnotationInstance[];
+  lightingSettings?: LightingSettings;
   onSceneReady?: (scene: THREE.Scene, camera: THREE.Camera) => void;
   onModelLoaded?: (model: THREE.Group) => void;
   onLoadProgress?: (progress: number) => void;
   onLoadError?: (error: Error) => void;
-  onObjectSelected?: (object: THREE.Object3D | null) => void;
+  onObjectSelected?: (
+    object: THREE.Object3D | null,
+    options?: { toggle?: boolean },
+  ) => void;
   onAnnotationLoaded?: (annotationId: string, object: THREE.Object3D) => void;
   onGetCameraState?: () => {
     position: THREE.Vector3;
@@ -53,11 +60,13 @@ const AuthoringSceneViewer = forwardRef<
   {
     modelPath,
     selectedObject,
+    selectedObjects,
     transformMode = "translate",
     translationSnap = 0.1,
     rotationSnap = THREE.MathUtils.degToRad(15),
     scaleSnap = null,
     annotationInstances = [],
+    lightingSettings,
     onSceneReady,
     onModelLoaded,
     onLoadProgress,
@@ -79,14 +88,57 @@ const AuthoringSceneViewer = forwardRef<
   const annotationsGroupRef = useRef<THREE.Group | null>(null);
   const raycasterRef = useRef<THREE.Raycaster>(new THREE.Raycaster());
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2());
-  const previousSelectedRef = useRef<THREE.Object3D | null | undefined>(null);
+  const previousSelectedSetRef = useRef<Set<THREE.Object3D>>(new Set());
   const currentSelectionRef = useRef<THREE.Object3D | null>(null);
+  const selectedObjectsRef = useRef<THREE.Object3D[]>([]);
+  const selectionPivotRef = useRef<THREE.Object3D | null>(null);
+  const hemisphereLightRef = useRef<THREE.HemisphereLight | null>(null);
+  const mainLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const fillLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const rimLightRef = useRef<THREE.DirectionalLight | null>(null);
+  const multiSelectionStateRef = useRef<{
+    pivotStartPosition: THREE.Vector3;
+    pivotStartQuaternion: THREE.Quaternion;
+    pivotStartScale: THREE.Vector3;
+    objectStates: Map<
+      string,
+      {
+        object: THREE.Object3D;
+        worldPosition: THREE.Vector3;
+        worldQuaternion: THREE.Quaternion;
+        worldScale: THREE.Vector3;
+        parent: THREE.Object3D | null;
+      }
+    >;
+  } | null>(null);
   const translationSnapRef = useRef<number | null>(translationSnap);
   const rotationSnapRef = useRef<number | null>(rotationSnap);
   const scaleSnapRef = useRef<number | null>(scaleSnap);
   const [isReady, setIsReady] = useState(false);
   const [loadingModel, setLoadingModel] = useState(false);
   const [modelLoadProgress, setModelLoadProgress] = useState(0);
+
+  useEffect(() => {
+    if (selectedObjects && selectedObjects.length > 0) {
+      selectedObjectsRef.current = selectedObjects;
+    } else if (selectedObject) {
+      selectedObjectsRef.current = [selectedObject];
+    } else {
+      selectedObjectsRef.current = [];
+    }
+  }, [selectedObjects, selectedObject]);
+
+  useEffect(() => {
+    if (selectedObject) {
+      currentSelectionRef.current = selectedObject;
+      return;
+    }
+    if (selectedObjects && selectedObjects.length > 0) {
+      currentSelectionRef.current = selectedObjects[selectedObjects.length - 1];
+      return;
+    }
+    currentSelectionRef.current = null;
+  }, [selectedObject, selectedObjects]);
 
   // Expose annotation methods via ref
   useImperativeHandle(
@@ -173,11 +225,71 @@ const AuthoringSceneViewer = forwardRef<
         if (object) {
           applyAnnotationColor(object, color);
           object.userData.annotationColor = color;
+          object.traverse((child: any) => {
+            const originalMaterial = child.userData?.originalMaterial;
+            if (child instanceof THREE.Mesh && originalMaterial) {
+              if (originalMaterial.color) {
+                originalMaterial.color.set(color);
+              }
+              if (originalMaterial.emissive) {
+                originalMaterial.emissive.set(color).multiplyScalar(0.2);
+              }
+            }
+          });
         }
       },
 
       getAnnotationObject: (annotationId: string): THREE.Object3D | null => {
         return annotationObjectsRef.current.get(annotationId) || null;
+      },
+
+      frameObject: (object?: THREE.Object3D | null) => {
+        if (!object || !cameraRef.current || !controlsRef.current) return;
+
+        const camera = cameraRef.current;
+        const controls = controlsRef.current;
+        const box = new THREE.Box3().setFromObject(object);
+        const center = new THREE.Vector3();
+        const size = new THREE.Vector3();
+
+        if (box.isEmpty()) {
+          object.getWorldPosition(center);
+          const fallbackDirection = camera.position
+            .clone()
+            .sub(controls.target)
+            .normalize();
+          const direction =
+            fallbackDirection.lengthSq() > 0
+              ? fallbackDirection
+              : new THREE.Vector3(1, 1, 1).normalize();
+          const distance = camera.position.distanceTo(controls.target) || 2;
+          camera.position.copy(center).add(direction.multiplyScalar(distance));
+          controls.target.copy(center);
+          controls.update();
+          return;
+        }
+
+        box.getCenter(center);
+        box.getSize(size);
+
+        const maxSize = Math.max(size.x, size.y, size.z);
+        const fov = THREE.MathUtils.degToRad(camera.fov);
+        const fitDistance = maxSize / 2 / Math.tan(fov / 2);
+        const paddedDistance = fitDistance * 1.3;
+        const fallbackDirection = camera.position
+          .clone()
+          .sub(controls.target)
+          .normalize();
+        const direction =
+          fallbackDirection.lengthSq() > 0
+            ? fallbackDirection
+            : new THREE.Vector3(1, 1, 1).normalize();
+
+        camera.position
+          .copy(center)
+          .add(direction.multiplyScalar(paddedDistance));
+        controls.target.copy(center);
+        controls.update();
       },
     }),
     [onAnnotationLoaded, onObjectSelected],
@@ -204,7 +316,11 @@ const AuthoringSceneViewer = forwardRef<
     cameraRef.current = camera;
 
     // Renderer setup
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
     renderer.setSize(
       mountRef.current.clientWidth,
       mountRef.current.clientHeight,
@@ -221,13 +337,27 @@ const AuthoringSceneViewer = forwardRef<
 
     // Lighting - Enhanced for better visual quality
     // Hemisphere light for natural ambient lighting
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.8);
+    const resolvedLighting = normalizeLightingSettings(lightingSettings);
+
+    const hemisphereLight = new THREE.HemisphereLight(
+      new THREE.Color(resolvedLighting.hemisphere.skyColor),
+      new THREE.Color(resolvedLighting.hemisphere.groundColor),
+      resolvedLighting.hemisphere.intensity,
+    );
     hemisphereLight.position.set(0, 0, 0);
     scene.add(hemisphereLight);
+    hemisphereLightRef.current = hemisphereLight;
 
     // Main directional light (sun) with improved shadows
-    const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    mainLight.position.set(5, 10, 7.5);
+    const mainLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.main.color),
+      resolvedLighting.main.intensity,
+    );
+    mainLight.position.set(
+      resolvedLighting.main.position.x,
+      resolvedLighting.main.position.y,
+      resolvedLighting.main.position.z,
+    );
     mainLight.castShadow = true;
     mainLight.shadow.mapSize.width = 2048;
     mainLight.shadow.mapSize.height = 2048;
@@ -241,16 +371,25 @@ const AuthoringSceneViewer = forwardRef<
     mainLight.shadow.normalBias = 0.02;
     mainLight.shadow.radius = 2;
     scene.add(mainLight);
+    mainLightRef.current = mainLight;
 
     // Fill light from the side
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const fillLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.fill.color),
+      resolvedLighting.fill.intensity,
+    );
     fillLight.position.set(-5, 5, -5);
     scene.add(fillLight);
+    fillLightRef.current = fillLight;
 
     // Rim light for edge highlighting
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    const rimLight = new THREE.DirectionalLight(
+      new THREE.Color(resolvedLighting.rim.color),
+      resolvedLighting.rim.intensity,
+    );
     rimLight.position.set(0, 5, -10);
     scene.add(rimLight);
+    rimLightRef.current = rimLight;
 
     // Grid helper
     const gridHelper = new THREE.GridHelper(10, 10, 0xcccccc, 0xeeeeee);
@@ -269,6 +408,11 @@ const AuthoringSceneViewer = forwardRef<
     ground.receiveShadow = true;
     scene.add(ground);
 
+    const selectionPivot = new THREE.Object3D();
+    selectionPivot.name = "__selection_pivot__";
+    scene.add(selectionPivot);
+    selectionPivotRef.current = selectionPivot;
+
     // Annotations group - container for all annotation objects
     const annotationsGroup = new THREE.Group();
     annotationsGroup.name = "__annotations__";
@@ -279,10 +423,10 @@ const AuthoringSceneViewer = forwardRef<
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.15;
-    controls.rotateSpeed = 0.25; // Reduced from default 1.0
-    controls.panSpeed = 0.25; // Reduced from default 1.0
-    controls.minDistance = 1;
-    controls.maxDistance = 20;
+    controls.rotateSpeed = 0.5; // Reduced from default 1.0
+    controls.panSpeed = 0.8; // Reduced from default 1.0
+    controls.minDistance = 0.5;
+    controls.maxDistance = 30;
     controls.target.set(0, 0.45, 0);
     controlsRef.current = controls;
 
@@ -361,11 +505,60 @@ const AuthoringSceneViewer = forwardRef<
         startPosition = transformControls.object.position.clone();
         startRotation = transformControls.object.rotation.clone();
         justFinishedDragging = false;
+
+        const selectionPivot = selectionPivotRef.current;
+        if (selectionPivot && transformControls.object === selectionPivot) {
+          selectionPivot.updateWorldMatrix(true, false);
+          const pivotStartPosition = new THREE.Vector3();
+          const pivotStartQuaternion = new THREE.Quaternion();
+          const pivotStartScale = new THREE.Vector3();
+          selectionPivot.getWorldPosition(pivotStartPosition);
+          selectionPivot.getWorldQuaternion(pivotStartQuaternion);
+          selectionPivot.getWorldScale(pivotStartScale);
+
+          const objectStates = new Map<
+            string,
+            {
+              object: THREE.Object3D;
+              worldPosition: THREE.Vector3;
+              worldQuaternion: THREE.Quaternion;
+              worldScale: THREE.Vector3;
+              parent: THREE.Object3D | null;
+            }
+          >();
+
+          selectedObjectsRef.current.forEach((object) => {
+            object.updateWorldMatrix(true, false);
+            const worldPosition = new THREE.Vector3();
+            const worldQuaternion = new THREE.Quaternion();
+            const worldScale = new THREE.Vector3();
+            object.getWorldPosition(worldPosition);
+            object.getWorldQuaternion(worldQuaternion);
+            object.getWorldScale(worldScale);
+            objectStates.set(object.uuid, {
+              object,
+              worldPosition,
+              worldQuaternion,
+              worldScale,
+              parent: object.parent,
+            });
+          });
+
+          multiSelectionStateRef.current = {
+            pivotStartPosition,
+            pivotStartQuaternion,
+            pivotStartScale,
+            objectStates,
+          };
+        } else {
+          multiSelectionStateRef.current = null;
+        }
       } else {
         // End dragging - clear stored values
         startPosition = null;
         startRotation = null;
         justFinishedDragging = true;
+        multiSelectionStateRef.current = null;
         // Clear the flag after a short delay to allow click event to be blocked
         setTimeout(() => {
           justFinishedDragging = false;
@@ -394,6 +587,92 @@ const AuthoringSceneViewer = forwardRef<
         // Apply snapped position
         obj.position.copy(startPosition).add(offset);
       }
+
+      const multiState = multiSelectionStateRef.current;
+      const selectionPivot = selectionPivotRef.current;
+      if (!multiState || !selectionPivot) return;
+
+      selectionPivot.updateWorldMatrix(true, false);
+      const currentPivotPosition = new THREE.Vector3();
+      const currentPivotQuaternion = new THREE.Quaternion();
+      const currentPivotScale = new THREE.Vector3();
+      selectionPivot.getWorldPosition(currentPivotPosition);
+      selectionPivot.getWorldQuaternion(currentPivotQuaternion);
+      selectionPivot.getWorldScale(currentPivotScale);
+
+      const deltaQuaternion = currentPivotQuaternion
+        .clone()
+        .multiply(multiState.pivotStartQuaternion.clone().invert());
+      const deltaScale = new THREE.Vector3(
+        multiState.pivotStartScale.x
+          ? currentPivotScale.x / multiState.pivotStartScale.x
+          : 1,
+        multiState.pivotStartScale.y
+          ? currentPivotScale.y / multiState.pivotStartScale.y
+          : 1,
+        multiState.pivotStartScale.z
+          ? currentPivotScale.z / multiState.pivotStartScale.z
+          : 1,
+      );
+      const translation = currentPivotPosition
+        .clone()
+        .sub(multiState.pivotStartPosition);
+
+      multiState.objectStates.forEach((state) => {
+        const offset = state.worldPosition
+          .clone()
+          .sub(multiState.pivotStartPosition);
+        offset.applyQuaternion(deltaQuaternion);
+        offset.set(
+          offset.x * deltaScale.x,
+          offset.y * deltaScale.y,
+          offset.z * deltaScale.z,
+        );
+
+        const newWorldPosition = multiState.pivotStartPosition
+          .clone()
+          .add(offset)
+          .add(translation);
+        const newWorldQuaternion = deltaQuaternion
+          .clone()
+          .multiply(state.worldQuaternion);
+        const newWorldScale = state.worldScale.clone().multiply(deltaScale);
+
+        if (state.parent) {
+          state.parent.updateWorldMatrix(true, false);
+          const parentWorldQuaternion = new THREE.Quaternion();
+          const parentWorldScale = new THREE.Vector3();
+          state.parent.getWorldQuaternion(parentWorldQuaternion);
+          state.parent.getWorldScale(parentWorldScale);
+
+          const localPosition = state.parent.worldToLocal(
+            newWorldPosition.clone(),
+          );
+          const localQuaternion = parentWorldQuaternion
+            .clone()
+            .invert()
+            .multiply(newWorldQuaternion);
+          const localScale = new THREE.Vector3(
+            parentWorldScale.x
+              ? newWorldScale.x / parentWorldScale.x
+              : newWorldScale.x,
+            parentWorldScale.y
+              ? newWorldScale.y / parentWorldScale.y
+              : newWorldScale.y,
+            parentWorldScale.z
+              ? newWorldScale.z / parentWorldScale.z
+              : newWorldScale.z,
+          );
+
+          state.object.position.copy(localPosition);
+          state.object.quaternion.copy(localQuaternion);
+          state.object.scale.copy(localScale);
+        } else {
+          state.object.position.copy(newWorldPosition);
+          state.object.quaternion.copy(newWorldQuaternion);
+          state.object.scale.copy(newWorldScale);
+        }
+      });
     });
 
     // Animation loop
@@ -500,7 +779,7 @@ const AuthoringSceneViewer = forwardRef<
           // Clicked on annotation - select the annotation root
           currentSelectionRef.current = annotationRoot;
           if (onObjectSelected) {
-            onObjectSelected(annotationRoot);
+            onObjectSelected(annotationRoot, { toggle: event.ctrlKey });
           }
           return;
         }
@@ -513,9 +792,12 @@ const AuthoringSceneViewer = forwardRef<
         if (currentlySelected && clickedMesh.parent === currentlySelected) {
           currentSelectionRef.current = clickedMesh;
           if (onObjectSelected) {
-            onObjectSelected(clickedMesh);
+            onObjectSelected(clickedMesh, { toggle: event.ctrlKey });
           }
         } else if (currentlySelected === clickedMesh) {
+          if (event.ctrlKey && onObjectSelected) {
+            onObjectSelected(clickedMesh, { toggle: true });
+          }
           return;
         } else {
           // First click - select the parent group if it exists and has a name
@@ -529,14 +811,14 @@ const AuthoringSceneViewer = forwardRef<
           }
           currentSelectionRef.current = targetObject;
           if (onObjectSelected) {
-            onObjectSelected(targetObject);
+            onObjectSelected(targetObject, { toggle: event.ctrlKey });
           }
         }
       } else {
         // Clicked on empty space, deselect
         currentSelectionRef.current = null;
         if (onObjectSelected) {
-          onObjectSelected(null);
+          onObjectSelected(null, { toggle: event.ctrlKey });
         }
       }
     };
@@ -612,9 +894,46 @@ const AuthoringSceneViewer = forwardRef<
       controlsRef.current = null;
       transformControlsRef.current = null;
       annotationsGroupRef.current = null;
+      selectionPivotRef.current = null;
+      hemisphereLightRef.current = null;
+      mainLightRef.current = null;
+      fillLightRef.current = null;
+      rimLightRef.current = null;
       annotationObjectsRef.current.clear();
     };
   }, [onSceneReady]);
+
+  useEffect(() => {
+    const resolved = normalizeLightingSettings(lightingSettings);
+
+    if (hemisphereLightRef.current) {
+      hemisphereLightRef.current.color.set(resolved.hemisphere.skyColor);
+      hemisphereLightRef.current.groundColor.set(
+        resolved.hemisphere.groundColor,
+      );
+      hemisphereLightRef.current.intensity = resolved.hemisphere.intensity;
+    }
+
+    if (mainLightRef.current) {
+      mainLightRef.current.color.set(resolved.main.color);
+      mainLightRef.current.intensity = resolved.main.intensity;
+      mainLightRef.current.position.set(
+        resolved.main.position.x,
+        resolved.main.position.y,
+        resolved.main.position.z,
+      );
+    }
+
+    if (fillLightRef.current) {
+      fillLightRef.current.color.set(resolved.fill.color);
+      fillLightRef.current.intensity = resolved.fill.intensity;
+    }
+
+    if (rimLightRef.current) {
+      rimLightRef.current.color.set(resolved.rim.color);
+      rimLightRef.current.intensity = resolved.rim.intensity;
+    }
+  }, [lightingSettings]);
 
   // Update transform mode when it changes
   useEffect(() => {
@@ -636,16 +955,52 @@ const AuthoringSceneViewer = forwardRef<
     }
   }, [translationSnap, rotationSnap, scaleSnap]);
 
-  // Attach TransformControls to selected object
+  // Attach TransformControls to selected object or selection pivot
   useEffect(() => {
-    if (transformControlsRef.current) {
-      if (selectedObject) {
-        transformControlsRef.current.attach(selectedObject);
-      } else {
-        transformControlsRef.current.detach();
-      }
+    const transformControls = transformControlsRef.current;
+    if (!transformControls) return;
+
+    const selection = selectedObjects?.length
+      ? selectedObjects
+      : selectedObject
+        ? [selectedObject]
+        : [];
+
+    if (selection.length === 0) {
+      transformControls.detach();
+      return;
     }
-  }, [selectedObject]);
+
+    if (selection.length === 1) {
+      transformControls.attach(selection[0]);
+      return;
+    }
+
+    const selectionPivot = selectionPivotRef.current;
+    if (!selectionPivot) return;
+
+    const center = new THREE.Vector3();
+    const tempCenter = new THREE.Vector3();
+    const tempBox = new THREE.Box3();
+
+    selection.forEach((object) => {
+      tempBox.setFromObject(object);
+      if (tempBox.isEmpty()) {
+        object.getWorldPosition(tempCenter);
+      } else {
+        tempBox.getCenter(tempCenter);
+      }
+      center.add(tempCenter);
+    });
+
+    center.multiplyScalar(1 / selection.length);
+    selectionPivot.position.copy(center);
+    selectionPivot.rotation.set(0, 0, 0);
+    selectionPivot.scale.set(1, 1, 1);
+    selectionPivot.updateMatrixWorld();
+
+    transformControls.attach(selectionPivot);
+  }, [selectedObject, selectedObjects]);
 
   // Load GLB model when modelPath changes
   useEffect(() => {
@@ -708,46 +1063,12 @@ const AuthoringSceneViewer = forwardRef<
         model.position.y = 0; // Place on ground level
         model.position.z = -center.z;
 
-        // Enable shadows and customize materials
+        // Enable shadows
         model.traverse((child: THREE.Object3D) => {
           if (child instanceof THREE.Mesh) {
             // Only cast shadows if visible
             child.castShadow = child.visible;
             child.receiveShadow = true;
-
-            // Customize materials based on name
-            if (child.material) {
-              const materials = Array.isArray(child.material)
-                ? child.material
-                : [child.material];
-
-              materials.forEach((mat: any) => {
-                // Check both material name and mesh name
-                const meshName = child.name?.toLowerCase() || "";
-                const matName = mat.name?.toLowerCase() || "";
-
-                if (meshName.includes("leg") || matName.includes("leg")) {
-                  // Make legs darker grey
-                  if (mat.color) {
-                    mat.color.setRGB(0.8, 0.8, 0.8); // Dark grey
-                  }
-                } else if (
-                  meshName.includes("panel") ||
-                  matName.includes("panel")
-                ) {
-                  // Keep panels lighter - brighten by 20%
-                  if (mat.color) {
-                    mat.color.multiplyScalar(1.2);
-                  }
-                } else {
-                  // Default: lighten other materials
-                  if (mat.color) {
-                    mat.color.multiplyScalar(1.4);
-                  }
-                }
-                mat.needsUpdate = true;
-              });
-            }
           }
         });
 
@@ -775,44 +1096,48 @@ const AuthoringSceneViewer = forwardRef<
 
   // Handle selection highlighting
   useEffect(() => {
-    // Remove highlight from previously selected object
-    if (previousSelectedRef.current) {
-      previousSelectedRef.current.traverse((child) => {
+    const nextSelection = new Set<THREE.Object3D>();
+    if (selectedObjects && selectedObjects.length > 0) {
+      selectedObjects.forEach((object) => nextSelection.add(object));
+    } else if (selectedObject) {
+      nextSelection.add(selectedObject);
+    }
+
+    const previousSelection = previousSelectedSetRef.current;
+
+    previousSelection.forEach((object) => {
+      if (nextSelection.has(object)) return;
+      object.traverse((child) => {
         if (child instanceof THREE.Mesh && child.userData.originalMaterial) {
-          // Restore original material
           child.material = child.userData.originalMaterial;
           delete child.userData.originalMaterial;
         }
       });
-    }
+    });
 
-    // Add highlight to newly selected object
-    if (selectedObject) {
-      // If it's a mesh, highlight only that mesh
-      // If it's a group, highlight all its children
-      selectedObject.traverse((child) => {
+    nextSelection.forEach((object) => {
+      if (previousSelection.has(object)) return;
+      object.traverse((child) => {
         if (child instanceof THREE.Mesh) {
           const material = child.material;
           if (
             material instanceof THREE.MeshStandardMaterial ||
             material instanceof THREE.MeshPhongMaterial
           ) {
-            // Clone the material to avoid affecting other objects that share it
+            if (!child.userData.originalMaterial) {
+              child.userData.originalMaterial = material;
+            }
             const clonedMaterial = material.clone();
-            // Store original material for restoration
-            child.userData.originalMaterial = material;
-            // Set highlight color (yellow glow)
             clonedMaterial.emissive = new THREE.Color(0xffff00);
             clonedMaterial.emissiveIntensity = 0.5;
-            // Apply the cloned material
             child.material = clonedMaterial;
           }
         }
       });
-    }
+    });
 
-    previousSelectedRef.current = selectedObject;
-  }, [selectedObject]);
+    previousSelectedSetRef.current = nextSelection;
+  }, [selectedObject, selectedObjects]);
 
   return (
     <div className="relative w-full h-full">

@@ -2,16 +2,24 @@ import Head from "next/head";
 import Image from "next/image";
 import TransitionLink from "@/components/TransitionLink";
 import { useTranslation } from "@/lib/i18n";
+import { useBranding } from "@/contexts/BrandingContext";
 import { Home } from "lucide-react";
 
 export default function Custom404() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const { branding } = useBranding();
+  const companyName =
+    locale === "en" ? branding.companyName : branding.companyNameAr;
 
   return (
     <>
       <Head>
-        <title>{`404 - ${t("errors.notFound")} | ${t("appTitle")}`}</title>
+        <title>{`404 - ${t("errors.notFound")} | ${companyName}`}</title>
         <meta name="description" content="Page not found" />
+        <link rel="icon" href={branding.favicon || "/favicon.svg"} />
+        {branding.primaryColor && (
+          <meta name="theme-color" content={branding.primaryColor} />
+        )}
       </Head>
 
       <div className="min-h-screen w-full relative bg-white">
@@ -28,12 +36,12 @@ export default function Custom404() {
         {/* Content on the right side */}
         <div className="absolute inset-y-0 right-0 w-full sm:w-2/5 lg:w-1/3 flex flex-col items-center justify-center px-6 sm:px-4">
           {/* Title */}
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-charcoal mb-4 text-center">
             {t("errors.notFound") || "Page Not Found"}
           </h1>
 
           {/* Message */}
-          <p className="text-base sm:text-lg text-gray-600 mb-8 max-w-sm text-center">
+          <p className="text-base sm:text-lg text-stone mb-8 max-w-sm text-center">
             {t("errors.notFoundDescription") ||
               "The cabinet you're looking for doesn't exist or has been removed."}
           </p>

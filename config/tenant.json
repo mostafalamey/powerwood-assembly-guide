@@ -1,0 +1,31 @@
+{
+  "branding": {
+    "companyName": "PowerWood AG",
+    "companyNameAr": "دليل تجميع باور وود",
+    "logo": "/logos/pw-logo-1770460953972.png",
+    "primaryColor": "#00a398",
+    "secondaryColor": "#ce9340",
+    "favicon": "/favicons/png-favicon-1770460957053.png"
+  },
+  "terminology": {
+    "itemSingular": {
+      "en": "Assembly",
+      "ar": "تجميع"
+    },
+    "itemPlural": {
+      "en": "Assemblies",
+      "ar": "تجميعات"
+    },
+    "urlSlug": "assembly"
+  },
+  "features": {
+    "enableQRCodes": true,
+    "enableAudio": true,
+    "enableAnnotations": true,
+    "enableDarkMode": true
+  },
+  "contact": {
+    "email": "support@powerwood.com",
+    "website": "https://powerwood.com"
+  }
+}

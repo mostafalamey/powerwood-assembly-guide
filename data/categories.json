@@ -5,7 +5,8 @@
       "name": "Base Cabinets",
       "nameAr": "الخزائن الأرضية",
       "description": "Standard base cabinets for kitchen countertops",
-      "descriptionAr": "الخزائن الأرضية القياسية لطاولات المطبخ"
+      "descriptionAr": "الخزائن الأرضية القياسية لطاولات المطبخ",
+      "icon": ""
     },
     {
       "id": "wall",
