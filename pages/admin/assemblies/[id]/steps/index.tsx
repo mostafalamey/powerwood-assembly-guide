@@ -314,12 +314,11 @@ export default function StepManagementPage() {
       };
     });
 
-    const newStepId = insertIndex.toString();
     const saved = await saveSteps(renumberedSteps);
     if (!saved) return;
 
     setIsCopyModalOpen(false);
-    router.push(`/admin/assemblies/${id}/steps/${newStepId}/edit`);
+    toast.success("Step copied successfully");
   };
 
   const handleDeleteStep = async (stepId: string) => {

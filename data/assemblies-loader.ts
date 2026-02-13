@@ -8,8 +8,7 @@ import assembliesIndex from "./assemblies-index.json";
 // AUTO-GENERATED - DO NOT EDIT MANUALLY
 // Run: npm run generate:loader to regenerate this file
 const assemblyFiles: Record<string, () => Promise<{ default: Assembly }>> = {
-  "BU-1D-600": () =>
-    import("./assemblies/BU-1D-600.json").then((m) => m as any),
+  "BU-1D-600": () => import("./assemblies/BU-1D-600.json").then((m) => m as any),
 };
 
 /**
