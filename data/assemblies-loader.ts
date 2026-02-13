@@ -6,8 +6,9 @@ import assembliesIndex from "./assemblies-index.json";
 // Dynamically import assembly files as needed
 // This works with static export because imports are resolved at build time
 const assemblyFiles: Record<string, () => Promise<{ default: Assembly }>> = {
-  "BC-002": () => import("./assemblies/BC-002.json").then((m) => m as any),
   "BC-003": () => import("./assemblies/BC-003.json").then((m) => m as any),
+  "BU-1D-600": () =>
+    import("./assemblies/BU-1D-600.json").then((m) => m as any),
   // Add more assemblies here as they are created
 };
 

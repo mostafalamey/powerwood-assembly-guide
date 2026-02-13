@@ -432,7 +432,7 @@ Play button: Uses primary button style
 
 ### 7.9 3D Viewer Area
 
-```
+```text
 Light:
   Canvas background: linear-gradient(180deg, #F6F2EE 0%, #E8E4E0 100%)
   Overlay controls use glass surface (Level 1)
@@ -450,7 +450,7 @@ The admin panel shares the same design language but with denser information layo
 
 ### Admin Sidebar
 
-```
+```text
 Light:
   bg: rgba(255, 255, 255, 0.80)
   backdrop-filter: blur(20px)
@@ -474,7 +474,7 @@ Inactive nav item:
 
 Instead of colorful gradients, use the neutral palette with subtle warm tints:
 
-```
+```text
 Light:
   Icon badge: bg #323841 with white icon, rounded-xl, shadow
   Card: standard Level 1 surface
@@ -490,7 +490,7 @@ Dark:
 
 ### Admin Tables / Lists
 
-```
+```text
 Header row:
   Light: bg #F0ECE8, text #77726E, font 12px/600, uppercase
   Dark:  bg #2A3039, text #B3B9C1
@@ -504,7 +504,7 @@ Row text: uses standard text hierarchy (primary, secondary)
 
 ### Admin Modals
 
-```
+```text
 Overlay: rgba(30, 34, 40, 0.6) with backdrop-blur(4px)
 
 Modal:
@@ -591,7 +591,7 @@ colors: {
 
 ### Commonly Used Class Patterns
 
-```
+```classes
 /* Page background */
 bg-papyrus dark:bg-neutral-900
 
