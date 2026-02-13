@@ -8,13 +8,13 @@
       },
       "category": "base",
       "estimatedTime": 25,
-      "image": "/images/cabinets/BC-002.png",
-      "model": "/models/BC_002.glb",
       "description": {
         "en": "Standard 1-door base cabinet with adjustable shelf",
         "ar": "خزانة أرضية قياسية باب واحد مع رف قابل للتعديل"
       },
-      "stepCount": 7
+      "model": "/models/BC_002.glb",
+      "image": "/images/cabinets/BC-002.png",
+      "stepCount": 0
     },
     {
       "id": "BC-003",

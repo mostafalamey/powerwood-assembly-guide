@@ -134,23 +134,23 @@ export default function CabinetFormModal({
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {/* Background overlay */}
         <div
-          className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75"
+          className="fixed inset-0 transition-opacity bg-black/50 backdrop-blur-sm"
           onClick={onClose}
         ></div>
 
         {/* Modal panel */}
-        <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+        <div className="inline-block align-bottom bg-papyrus dark:bg-charcoal rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border border-silver/30 dark:border-stone/20">
           <form onSubmit={handleSubmit}>
             {/* Header */}
-            <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
+            <div className="bg-neutral-100/50 dark:bg-neutral-800/30 px-6 py-4 border-b border-silver/30 dark:border-stone/20">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                <h3 className="text-lg font-medium text-charcoal dark:text-papyrus">
                   {editCabinet ? "Edit Cabinet" : "Add New Cabinet"}
                 </h3>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                  className="text-stone hover:text-charcoal dark:text-silver dark:hover:text-papyrus"
                   title="Close modal"
                   aria-label="Close modal"
                 >
@@ -169,7 +169,7 @@ export default function CabinetFormModal({
 
               {/* Cabinet ID */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Cabinet ID <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -178,44 +178,44 @@ export default function CabinetFormModal({
                   onChange={(e) =>
                     handleChange("id", e.target.value.toUpperCase())
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-silver/50 dark:border-stone/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus"
                   placeholder="BC-001"
                   required
                   disabled={!!editCabinet}
                 />
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-sm text-stone dark:text-silver">
                   Format: XX-000 (e.g., BC-001, WC-002)
                 </p>
               </div>
 
               {/* Name (English & Arabic) */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Cabinet Name <span className="text-red-500">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                    <label className="block text-xs text-stone dark:text-silver mb-1">
                       English
                     </label>
                     <input
                       type="text"
                       value={formData.name.en}
                       onChange={(e) => handleChange("name.en", e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-4 py-2.5 border border-silver/50 dark:border-stone/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus"
                       placeholder='2-Door Base Cabinet 36"'
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                    <label className="block text-xs text-stone dark:text-silver mb-1">
                       Arabic
                     </label>
                     <input
                       type="text"
                       value={formData.name.ar}
                       onChange={(e) => handleChange("name.ar", e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right dark:bg-gray-700 dark:text-white"
+                      className="w-full px-4 py-2.5 border border-silver/50 dark:border-stone/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 text-right bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus"
                       placeholder="خزانة أرضية بابين 36 بوصة"
                       dir="rtl"
                       required
@@ -226,13 +226,13 @@ export default function CabinetFormModal({
 
               {/* Category */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Category <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.category}
                   onChange={(e) => handleChange("category", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-silver/50 dark:border-stone/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus"
                   title="Select cabinet category"
                   required
                 >
@@ -248,7 +248,7 @@ export default function CabinetFormModal({
 
               {/* Estimated Time */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Estimated Assembly Time (minutes)
                 </label>
                 <input
@@ -257,7 +257,7 @@ export default function CabinetFormModal({
                   onChange={(e) =>
                     handleChange("estimatedTime", parseInt(e.target.value) || 0)
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-4 py-2.5 border border-silver/50 dark:border-stone/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus"
                   placeholder="25"
                   min="0"
                 />
@@ -265,12 +265,12 @@ export default function CabinetFormModal({
 
               {/* Description (English & Arabic) */}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Description
                 </label>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                    <label className="block text-xs text-stone dark:text-silver mb-1">
                       English
                     </label>
                     <textarea
@@ -278,13 +278,13 @@ export default function CabinetFormModal({
                       onChange={(e) =>
                         handleChange("description.en", e.target.value)
                       }
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                      className="w-full px-4 py-2.5 border border-silver/50 dark:border-stone/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus"
                       rows={3}
                       placeholder="Standard 2-door base assembly..."
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-600 dark:text-gray-400 mb-1">
+                    <label className="block text-xs text-stone dark:text-silver mb-1">
                       Arabic
                     </label>
                     <textarea
@@ -292,7 +292,7 @@ export default function CabinetFormModal({
                       onChange={(e) =>
                         handleChange("description.ar", e.target.value)
                       }
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right dark:bg-gray-700 dark:text-white"
+                      className="w-full px-4 py-2.5 border border-silver/50 dark:border-stone/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 text-right bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus"
                       rows={3}
                       placeholder="خزانة أرضية قياسية بابين..."
                       dir="rtl"
@@ -325,12 +325,12 @@ export default function CabinetFormModal({
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
+            <div className="bg-neutral-100/50 dark:bg-neutral-800/30 px-6 py-4 border-t border-silver/30 dark:border-stone/20 flex justify-between items-center">
               <div>
                 {editCabinet && (
                   <Link
                     href={`/admin/cabinets/${formData.id}/steps`}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                    className="text-sm text-charcoal dark:text-papyrus hover:underline inline-flex items-center gap-1 font-medium"
                     onClick={onClose}
                   >
                     <List className="w-4 h-4" />
@@ -342,14 +342,14 @@ export default function CabinetFormModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="px-4 py-2.5 rounded-xl font-medium text-sm text-stone dark:text-silver hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-200"
                   disabled={loading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="px-6 py-2.5 rounded-xl font-medium text-sm bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal hover:bg-neutral-800 dark:hover:bg-white shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading

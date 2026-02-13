@@ -13,9 +13,9 @@ export default function ThemeToggle({ className = "" }: ThemeToggleProps) {
       onClick={toggleTheme}
       className={`
         relative w-12 h-12 rounded-full
-        bg-gray-100 dark:bg-gray-800
-        hover:bg-gray-200 dark:hover:bg-gray-700
-        border border-gray-200 dark:border-gray-700
+        bg-neutral-100 dark:bg-neutral-800
+        hover:bg-neutral-200 dark:hover:bg-neutral-700
+        border border-silver/50 dark:border-stone/20
         transition-all duration-300 ease-out
         flex items-center justify-center
         shadow-sm hover:shadow-md
@@ -28,7 +28,7 @@ export default function ThemeToggle({ className = "" }: ThemeToggleProps) {
       {/* Sun icon */}
       <Sun
         className={`
-          w-5 h-5 text-amber-500
+          w-5 h-5 text-stone
           absolute transition-all duration-300
           ${
             theme === "light"
@@ -40,7 +40,7 @@ export default function ThemeToggle({ className = "" }: ThemeToggleProps) {
       {/* Moon icon */}
       <Moon
         className={`
-          w-5 h-5 text-blue-400
+          w-5 h-5 text-silver
           absolute transition-all duration-300
           ${
             theme === "dark"

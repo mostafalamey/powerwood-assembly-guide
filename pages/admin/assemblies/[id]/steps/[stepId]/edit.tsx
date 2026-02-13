@@ -381,11 +381,11 @@ export default function EditStepPage() {
         </Head>
         <AdminLayout title="Error">
           <div className="p-6">
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 shadow-xl p-6 mb-6">
+            <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 shadow-xl p-6 mb-6">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-6 h-6 text-red-500" />
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">
+                  <h3 className="font-semibold text-charcoal dark:text-papyrus">
                     Error Loading Step
                   </h3>
                   <p className="text-red-600 dark:text-red-400 mt-1">
@@ -396,7 +396,7 @@ export default function EditStepPage() {
             </div>
             <Link
               href={`/admin/assemblies/${id}/steps`}
-              className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+              className="inline-flex items-center gap-2 text-stone dark:text-silver hover:underline"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Steps
@@ -422,7 +422,7 @@ export default function EditStepPage() {
           <div className="mb-6">
             <Link
               href={`/admin/assemblies/${id}/steps`}
-              className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Steps
@@ -434,23 +434,23 @@ export default function EditStepPage() {
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] items-stretch">
               <form onSubmit={handleSubmit} className="space-y-6">
                 {error && (
-                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 p-4 flex items-start gap-3">
+                  <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-red-200 dark:border-red-800/50 p-4 flex items-start gap-3">
                     <AlertCircle className="w-5 h-5 text-red-500" />
                     <p className="text-red-600 dark:text-red-400">{error}</p>
                   </div>
                 )}
 
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 space-y-5">
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-6 space-y-5">
                   {/* Step ID (Read-only) */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-stone dark:text-silver mb-2">
                       Step Number
                     </label>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-500/30">
+                      <div className="w-10 h-10 rounded-xl bg-charcoal dark:bg-papyrus flex items-center justify-center text-papyrus dark:text-charcoal font-bold text-lg shadow-lg">
                         {formData.id}
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-stone dark:text-silver">
                         Step order can be changed by dragging in the steps list
                       </p>
                     </div>
@@ -458,12 +458,12 @@ export default function EditStepPage() {
 
                   {/* Title (Bilingual) */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-stone dark:text-silver mb-2">
                       Title <span className="text-red-500">*</span>
                     </label>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                        <label className="block text-xs text-stone dark:text-silver mb-1.5">
                           English
                         </label>
                         <input
@@ -472,15 +472,15 @@ export default function EditStepPage() {
                           onChange={(e) =>
                             handleChange("title.en", e.target.value)
                           }
-                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                            bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                            focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                            bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                            focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 transition-all"
                           placeholder="Attach one leg to base panel"
                           required
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                        <label className="block text-xs text-stone dark:text-silver mb-1.5">
                           Arabic
                         </label>
                         <input
@@ -489,9 +489,9 @@ export default function EditStepPage() {
                           onChange={(e) =>
                             handleChange("title.ar", e.target.value)
                           }
-                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                            bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-right
-                            focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                            bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus text-right
+                            focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 transition-all"
                           dir="rtl"
                           placeholder="تثبيت ساق واحدة على اللوحة الأساسية"
                           required
@@ -502,12 +502,12 @@ export default function EditStepPage() {
 
                   {/* Description (Bilingual) */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-stone dark:text-silver mb-2">
                       Description <span className="text-red-500">*</span>
                     </label>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                        <label className="block text-xs text-stone dark:text-silver mb-1.5">
                           English
                         </label>
                         <textarea
@@ -515,16 +515,16 @@ export default function EditStepPage() {
                           onChange={(e) =>
                             handleChange("description.en", e.target.value)
                           }
-                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                            bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                            focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                            bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                            focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 transition-all resize-none"
                           rows={4}
                           placeholder="Detailed assembly instructions..."
                           required
                         />
                       </div>
                       <div>
-                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                        <label className="block text-xs text-stone dark:text-silver mb-1.5">
                           Arabic
                         </label>
                         <textarea
@@ -532,9 +532,9 @@ export default function EditStepPage() {
                           onChange={(e) =>
                             handleChange("description.ar", e.target.value)
                           }
-                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                            bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-right
-                            focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                          className="w-full px-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                            bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus text-right
+                            focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 transition-all resize-none"
                           dir="rtl"
                           rows={4}
                           placeholder="تعليمات التجميع التفصيلية..."
@@ -546,11 +546,11 @@ export default function EditStepPage() {
 
                   {/* Duration */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-stone dark:text-silver mb-2">
                       Estimated Duration (minutes)
                     </label>
                     <div className="relative w-full max-w-xs">
-                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                       <input
                         type="number"
                         value={formData.duration || ""}
@@ -560,21 +560,21 @@ export default function EditStepPage() {
                             parseInt(e.target.value) || 0,
                           )
                         }
-                        className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                        className="w-full pl-11 pr-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                          bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                          focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 transition-all"
                         min="1"
                         placeholder="3"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                    <p className="text-xs text-stone dark:text-silver mt-1.5">
                       Approximate time to complete this step
                     </p>
                   </div>
 
                   {/* Animation Status */}
                   <div>
-                    <label className="block text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 mb-2">
+                    <label className="block text-xs font-semibold uppercase tracking-wide text-stone dark:text-silver mb-2">
                       3D Animation
                     </label>
                     {formData.animation ? (
@@ -598,26 +598,26 @@ export default function EditStepPage() {
                           <Link
                             href={`/admin/assemblies/${id}/steps/authoring?step=${stepId}`}
                             className="px-4 py-2 text-xs font-medium rounded-xl
-                              bg-gradient-to-r from-green-500 to-emerald-600 text-white
-                              hover:from-green-600 hover:to-emerald-700
-                              shadow-lg shadow-green-500/20 transition-all"
+                              bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal
+                              hover:opacity-90
+                              shadow-lg transition-all"
                           >
                             Edit Animation
                           </Link>
                         </div>
                       </div>
                     ) : (
-                      <div className="bg-blue-50/80 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/50 p-4">
+                      <div className="bg-neutral-50/80 dark:bg-neutral-800/50 rounded-xl border border-silver/50 dark:border-stone/20 p-4">
                         <div className="flex flex-wrap items-center justify-between gap-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
-                              <Film className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                            <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+                              <Film className="w-5 h-5 text-stone dark:text-silver" />
                             </div>
                             <div>
-                              <h4 className="font-medium text-blue-800 dark:text-blue-200 text-sm">
+                              <h4 className="font-medium text-charcoal dark:text-silver text-sm">
                                 No Animation Yet
                               </h4>
-                              <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                              <p className="text-xs text-stone dark:text-silver mt-0.5">
                                 Add 3D animation using the Visual Editor
                               </p>
                             </div>
@@ -625,9 +625,9 @@ export default function EditStepPage() {
                           <Link
                             href={`/admin/assemblies/${id}/steps/authoring?step=${stepId}`}
                             className="px-4 py-2 text-xs font-medium rounded-xl
-                              bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                              hover:from-blue-600 hover:to-indigo-700
-                              shadow-lg shadow-blue-500/20 transition-all"
+                              bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal
+                              hover:opacity-90
+                              shadow-lg transition-all"
                           >
                             Create Animation
                           </Link>
@@ -641,8 +641,8 @@ export default function EditStepPage() {
                 <div className="flex items-center justify-between pt-2">
                   <Link
                     href={`/admin/assemblies/${id}/steps`}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 
-                      hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
+                    className="px-5 py-2.5 text-sm font-medium text-stone dark:text-silver 
+                      hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
                   >
                     Cancel
                   </Link>
@@ -650,9 +650,9 @@ export default function EditStepPage() {
                     type="submit"
                     disabled={saving}
                     className="px-6 py-2.5 text-sm font-medium rounded-xl
-                      bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                      hover:from-blue-600 hover:to-indigo-700
-                      shadow-lg shadow-blue-500/30 hover:shadow-xl
+                      text-papyrus dark:text-charcoal bg-charcoal dark:bg-papyrus
+                      hover:opacity-90
+                      shadow-lg hover:shadow-xl
                       disabled:opacity-50 disabled:cursor-not-allowed
                       transition-all duration-200 flex items-center gap-2"
                   >
@@ -691,16 +691,16 @@ export default function EditStepPage() {
 
               {/* Audio Uploads (Right Panel) */}
               <div className="space-y-4 h-full">
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 h-full flex flex-col">
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-6 h-full flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
-                      <Mic className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-xl bg-charcoal dark:bg-papyrus flex items-center justify-center shadow-lg">
+                      <Mic className="w-5 h-5 text-papyrus dark:text-charcoal" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-sm font-semibold text-charcoal dark:text-papyrus">
                         Step Audio Narration
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-stone dark:text-silver">
                         Upload English and Arabic audio files
                       </p>
                     </div>
@@ -710,13 +710,13 @@ export default function EditStepPage() {
                     {/* English Upload */}
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-400">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-stone dark:text-silver flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold text-stone dark:text-silver">
                             EN
                           </span>
                           English
                         </span>
-                        <span className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">
+                        <span className="text-[11px] text-stone dark:text-silver font-mono">
                           step{getNormalizedStepId()}.mp3
                         </span>
                       </div>
@@ -731,37 +731,37 @@ export default function EditStepPage() {
                         onDrop={(e) => handleDrop(e, "eng")}
                         className={`border-2 border-dashed rounded-xl p-4 text-center text-xs transition-all min-h-[130px] flex flex-col items-center justify-center ${
                           dragging.eng
-                            ? "border-blue-400 bg-blue-50/60 dark:bg-blue-900/20"
-                            : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                            ? "border-charcoal/40 dark:border-papyrus/40 bg-neutral-50/60 dark:bg-neutral-800/20"
+                            : "border-silver/50 dark:border-stone/20 hover:border-silver dark:hover:border-stone"
                         }`}
                       >
                         {pendingFiles.eng ? (
                           <>
                             <FileAudio className="w-6 h-6 text-green-500 mb-2" />
-                            <p className="text-gray-700 dark:text-gray-300 font-medium">
+                            <p className="text-charcoal dark:text-silver font-medium">
                               {pendingFiles.eng.name}
                             </p>
-                            <p className="text-gray-400 dark:text-gray-500 mt-1">
+                            <p className="text-pewter mt-1">
                               Ready to upload on save
                             </p>
                           </>
                         ) : audioExists.eng ? (
                           <>
                             <CheckCircle className="w-6 h-6 text-green-500 mb-2" />
-                            <p className="text-gray-700 dark:text-gray-300 font-medium">
+                            <p className="text-charcoal dark:text-silver font-medium">
                               Audio exists
                             </p>
-                            <p className="text-gray-400 dark:text-gray-500 mt-1">
+                            <p className="text-pewter mt-1">
                               Drop new file to replace
                             </p>
                           </>
                         ) : (
                           <>
-                            <Upload className="w-6 h-6 text-gray-400 mb-2" />
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <Upload className="w-6 h-6 text-pewter mb-2" />
+                            <p className="text-stone dark:text-silver">
                               Drag & drop MP3 here
                             </p>
-                            <p className="text-gray-400 dark:text-gray-500 mt-1">
+                            <p className="text-pewter mt-1">
                               or click to select
                             </p>
                           </>
@@ -779,16 +779,16 @@ export default function EditStepPage() {
                         <label
                           htmlFor="upload-eng-audio"
                           className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium 
-                            bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg 
-                            hover:from-blue-600 hover:to-indigo-700 cursor-pointer transition-all
-                            shadow-md shadow-blue-500/20"
+                            bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal rounded-lg 
+                            hover:opacity-90 cursor-pointer transition-all
+                            shadow-md"
                         >
                           <FolderOpen className="w-3 h-3" />
                           Choose File
                         </label>
                       </div>
                       {(uploading.eng || uploadStatus.eng) && (
-                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                        <p className="mt-2 text-xs text-stone dark:text-silver flex items-center gap-1">
                           {uploading.eng ? (
                             <>
                               <svg
@@ -822,13 +822,13 @@ export default function EditStepPage() {
                     {/* Arabic Upload */}
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-stone dark:text-silver flex items-center gap-2">
+                          <span className="w-6 h-6 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs font-bold text-stone dark:text-silver">
                             AR
                           </span>
                           Arabic
                         </span>
-                        <span className="text-[11px] text-gray-500 dark:text-gray-400 font-mono">
+                        <span className="text-[11px] text-stone dark:text-silver font-mono">
                           step{getNormalizedStepId()}.mp3
                         </span>
                       </div>
@@ -843,37 +843,37 @@ export default function EditStepPage() {
                         onDrop={(e) => handleDrop(e, "arb")}
                         className={`border-2 border-dashed rounded-xl p-4 text-center text-xs transition-all min-h-[130px] flex flex-col items-center justify-center ${
                           dragging.arb
-                            ? "border-emerald-400 bg-emerald-50/60 dark:bg-emerald-900/20"
-                            : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                            ? "border-charcoal/40 dark:border-papyrus/40 bg-neutral-50/60 dark:bg-neutral-800/20"
+                            : "border-silver/50 dark:border-stone/20 hover:border-silver dark:hover:border-stone"
                         }`}
                       >
                         {pendingFiles.arb ? (
                           <>
                             <FileAudio className="w-6 h-6 text-green-500 mb-2" />
-                            <p className="text-gray-700 dark:text-gray-300 font-medium">
+                            <p className="text-charcoal dark:text-silver font-medium">
                               {pendingFiles.arb.name}
                             </p>
-                            <p className="text-gray-400 dark:text-gray-500 mt-1">
+                            <p className="text-pewter mt-1">
                               Ready to upload on save
                             </p>
                           </>
                         ) : audioExists.arb ? (
                           <>
                             <CheckCircle className="w-6 h-6 text-green-500 mb-2" />
-                            <p className="text-gray-700 dark:text-gray-300 font-medium">
+                            <p className="text-charcoal dark:text-silver font-medium">
                               Audio exists
                             </p>
-                            <p className="text-gray-400 dark:text-gray-500 mt-1">
+                            <p className="text-pewter mt-1">
                               Drop new file to replace
                             </p>
                           </>
                         ) : (
                           <>
-                            <Upload className="w-6 h-6 text-gray-400 mb-2" />
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <Upload className="w-6 h-6 text-pewter mb-2" />
+                            <p className="text-stone dark:text-silver">
                               Drag & drop MP3 here
                             </p>
-                            <p className="text-gray-400 dark:text-gray-500 mt-1">
+                            <p className="text-pewter mt-1">
                               or click to select
                             </p>
                           </>
@@ -891,16 +891,16 @@ export default function EditStepPage() {
                         <label
                           htmlFor="upload-arb-audio"
                           className="mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium 
-                            bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg 
-                            hover:from-emerald-600 hover:to-teal-700 cursor-pointer transition-all
-                            shadow-md shadow-emerald-500/20"
+                            bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal rounded-lg 
+                            hover:opacity-90 cursor-pointer transition-all
+                            shadow-md"
                         >
                           <FolderOpen className="w-3 h-3" />
                           Choose File
                         </label>
                       </div>
                       {(uploading.arb || uploadStatus.arb) && (
-                        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                        <p className="mt-2 text-xs text-stone dark:text-silver flex items-center gap-1">
                           {uploading.arb ? (
                             <>
                               <svg

@@ -24,8 +24,8 @@ const defaultBranding: BrandingData = {
   companyName: "PW Assembly Guide",
   companyNameAr: "دليل التجميع",
   logo: "",
-  primaryColor: "#3b82f6",
-  secondaryColor: "#6366f1",
+  primaryColor: "#323841",
+  secondaryColor: "#77726E",
   favicon: "",
 };
 

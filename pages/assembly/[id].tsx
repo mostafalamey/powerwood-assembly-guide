@@ -66,12 +66,12 @@ export default function AssemblyPage() {
             <meta name="theme-color" content={branding.primaryColor} />
           )}
         </Head>
-        <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+        <div className="h-screen flex flex-col bg-papyrus dark:bg-neutral-900">
           <Header showBackButton />
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <div className="w-12 h-12 border-3 border-charcoal dark:border-papyrus border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-stone dark:text-silver text-sm">
                 {t("loading")}
               </p>
             </div>
@@ -91,20 +91,20 @@ export default function AssemblyPage() {
             <meta name="theme-color" content={branding.primaryColor} />
           )}
         </Head>
-        <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+        <div className="h-screen flex flex-col bg-papyrus dark:bg-neutral-900">
           <Header showBackButton />
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="text-center">
-              <Package className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4 mx-auto" />
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <Package className="w-16 h-16 text-silver dark:text-stone mb-4 mx-auto" />
+              <h1 className="text-xl font-bold text-charcoal dark:text-papyrus mb-2">
                 {t("errors.notFound")}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+              <p className="text-stone dark:text-silver text-sm mb-6">
                 {t("errors.notFoundDescription")}
               </p>
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 bg-primary-600 text-white px-5 py-2.5 rounded-xl hover:bg-primary-700 transition-colors font-medium"
+                className="inline-flex items-center gap-2 bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal px-5 py-2.5 rounded-xl hover:bg-neutral-800 dark:hover:bg-white transition-colors font-medium"
               >
                 <Home className="w-5 h-5" />
                 {t("errors.goHome")}
@@ -161,16 +161,16 @@ export default function AssemblyPage() {
         )}
       </Head>
 
-      <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+      <div className="h-screen flex flex-col overflow-hidden bg-papyrus dark:bg-neutral-900">
         <Header showBackButton />
 
         <main className="flex-1 overflow-y-auto md:overflow-hidden">
           <div className="h-full flex flex-col lg:flex-row p-4 md:p-6 gap-4 md:gap-6 max-w-7xl mx-auto">
             {/* Left Panel - Assembly Image & Quick Info */}
             <div className="lg:w-2/5 xl:w-1/3 flex-shrink-0">
-              <div className="h-full bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
+              <div className="h-full bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl shadow-xl border border-silver/50 dark:border-stone/20 overflow-hidden flex flex-col">
                 {/* Assembly Image */}
-                <div className="relative h-48 lg:h-64 bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 flex items-center justify-center overflow-hidden">
+                <div className="relative h-48 lg:h-64 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center overflow-hidden">
                   {assembly.image ? (
                     <Image
                       src={assembly.image}
@@ -181,22 +181,22 @@ export default function AssemblyPage() {
                       sizes="(max-width: 768px) 100vw, 400px"
                     />
                   ) : (
-                    <Package className="w-16 h-16 text-primary-300 dark:text-primary-700" />
+                    <Package className="w-16 h-16 text-silver dark:text-stone" />
                   )}
                 </div>
 
                 {/* Assembly Info */}
                 <div className="flex-1 p-4 md:p-5 flex flex-col">
-                  <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  <h1 className="text-xl md:text-2xl font-bold text-charcoal dark:text-papyrus mb-2">
                     {assemblyName}
                   </h1>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 lg:line-clamp-none">
+                  <p className="text-sm text-stone dark:text-silver mb-4 line-clamp-2 lg:line-clamp-none">
                     {description}
                   </p>
 
                   {/* Stats Row */}
                   <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-gray-50 dark:bg-gray-900/20 rounded-xl p-3 border border-gray-200 dark:border-gray-800/50">
+                    <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl p-3 border border-silver/30 dark:border-stone/20">
                       <div className="flex items-center gap-2 mb-1">
                         <Clock
                           className="w-4 h-4"
@@ -219,7 +219,7 @@ export default function AssemblyPage() {
                         </span>
                       </p>
                     </div>
-                    <div className="bg-gray-50 dark:bg-gray-900/20 rounded-xl p-3 border border-gray-200 dark:border-gray-800/50">
+                    <div className="bg-neutral-100 dark:bg-neutral-800 rounded-xl p-3 border border-silver/30 dark:border-stone/20">
                       <div className="flex items-center gap-2 mb-1">
                         <ListOrdered
                           className="w-4 h-4"
@@ -247,8 +247,8 @@ export default function AssemblyPage() {
                   {/* Tools (if any) */}
                   {tools && tools.length > 0 && (
                     <div className="mb-4">
-                      <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
-                        <Wrench className="w-4 h-4 text-purple-500" />
+                      <h3 className="text-xs font-semibold text-charcoal dark:text-silver mb-2 flex items-center gap-1">
+                        <Wrench className="w-4 h-4 text-stone" />
                         {t("assembly.requiredTools")}
                       </h3>
                       <div className="flex flex-wrap gap-1.5">
@@ -257,13 +257,13 @@ export default function AssemblyPage() {
                           .map((tool: string, index: number) => (
                             <span
                               key={index}
-                              className="px-2 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-xs rounded-lg border border-purple-100 dark:border-purple-800/50"
+                              className="px-2 py-1 bg-neutral-100 dark:bg-neutral-800 text-stone dark:text-silver text-xs rounded-lg border border-silver/50 dark:border-stone/30"
                             >
                               {tool}
                             </span>
                           ))}
                         {tools.length > 4 && (
-                          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs rounded-lg">
+                          <span className="px-2 py-1 bg-neutral-200 dark:bg-neutral-700 text-stone dark:text-silver text-xs rounded-lg">
                             +{tools.length - 4}
                           </span>
                         )}
@@ -292,11 +292,11 @@ export default function AssemblyPage() {
             {/* Right Panel - Steps Overview */}
             <div className="flex-1 flex flex-col min-h-0">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <CheckSquare className="w-6 h-6 text-primary-500" />
+                <h2 className="text-lg font-bold text-charcoal dark:text-papyrus flex items-center gap-2">
+                  <CheckSquare className="w-6 h-6 text-stone" />
                   {t("assembly.assemblySteps") || "Assembly Steps"}
                 </h2>
-                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
+                <span className="text-xs text-stone dark:text-silver bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded-full">
                   {assembly.steps?.length || 0} {t("assembly.steps")}
                 </span>
               </div>
@@ -318,22 +318,22 @@ export default function AssemblyPage() {
                       <TransitionLink
                         key={step.id}
                         href={`/assembly/${assembly.id}/step/${step.id}`}
-                        className="group flex items-center gap-4 p-3 md:p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl border border-white/50 dark:border-gray-700/50 hover:shadow-lg hover:shadow-primary-500/10 transition-all hover:-translate-y-0.5"
+                        className="group flex items-center gap-4 p-3 md:p-4 bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl border border-silver/50 dark:border-stone/20 hover:shadow-lg transition-all hover:-translate-y-0.5"
                       >
                         {/* Step Number */}
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 flex items-center justify-center flex-shrink-0 group-hover:from-primary-500 group-hover:to-primary-600 transition-all">
-                          <span className="text-sm font-bold text-primary-600 dark:text-primary-400 group-hover:text-white transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center flex-shrink-0 group-hover:bg-charcoal dark:group-hover:bg-papyrus transition-all">
+                          <span className="text-sm font-bold text-charcoal dark:text-papyrus group-hover:text-papyrus dark:group-hover:text-charcoal transition-colors">
                             {index + 1}
                           </span>
                         </div>
 
                         {/* Step Info */}
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors truncate">
+                          <h3 className="font-medium text-charcoal dark:text-papyrus group-hover:text-stone dark:group-hover:text-silver transition-colors truncate">
                             {stepTitle}
                           </h3>
                           {step.duration && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
+                            <p className="text-xs text-stone dark:text-silver flex items-center gap-1 mt-0.5">
                               <Clock className="w-3 h-3" />
                               {step.duration}
                             </p>
@@ -341,7 +341,7 @@ export default function AssemblyPage() {
                         </div>
 
                         {/* Arrow */}
-                        <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-primary-500 transition-colors rtl:rotate-180" />
+                        <ChevronRight className="w-5 h-5 text-silver group-hover:text-stone transition-colors rtl:rotate-180" />
                       </TransitionLink>
                     );
                   })}

@@ -157,12 +157,10 @@ export default function EditAssemblyPage() {
         </Head>
         <AdminLayout title="Edit Assembly">
           <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-800 mb-4">
               <LoadingSpinner size="md" />
             </div>
-            <p className="text-gray-600 dark:text-gray-400">
-              Loading assembly...
-            </p>
+            <p className="text-stone dark:text-silver">Loading assembly...</p>
           </div>
         </AdminLayout>
       </AuthGuard>
@@ -180,7 +178,7 @@ export default function EditAssemblyPage() {
           <div className="mb-6">
             <Link
               href="/admin/assemblies"
-              className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to Assemblies
@@ -200,33 +198,33 @@ export default function EditAssemblyPage() {
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,400px)] items-start">
               {/* Left Column - Cabinet Details */}
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 space-y-5">
+              <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-6 space-y-5">
                 {/* Assembly ID (Read-only) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                     Assembly ID
                   </label>
                   <input
                     type="text"
                     value={formData.id}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 
-                      bg-gray-50 dark:bg-gray-800/50 text-gray-500 dark:text-gray-400 font-mono
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/20 
+                      bg-neutral-50 dark:bg-neutral-800/50 text-stone dark:text-silver font-mono
                       cursor-not-allowed"
                     disabled
                   />
-                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  <p className="mt-2 text-sm text-stone dark:text-silver">
                     Assembly ID cannot be changed
                   </p>
                 </div>
 
                 {/* Name (English & Arabic) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                     Assembly Name <span className="text-red-500">*</span>
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                      <label className="block text-xs text-stone dark:text-silver mb-1.5">
                         English
                       </label>
                       <input
@@ -235,17 +233,17 @@ export default function EditAssemblyPage() {
                         onChange={(e) =>
                           handleChange("name.en", e.target.value)
                         }
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                          placeholder-gray-400 dark:placeholder-gray-500
-                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                        className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                          bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                          placeholder-pewter dark:placeholder-stone
+                          focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                           transition-all duration-200"
                         placeholder='2-Door Base Cabinet 36"'
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                      <label className="block text-xs text-stone dark:text-silver mb-1.5">
                         Arabic
                       </label>
                       <input
@@ -254,10 +252,10 @@ export default function EditAssemblyPage() {
                         onChange={(e) =>
                           handleChange("name.ar", e.target.value)
                         }
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-right
-                          placeholder-gray-400 dark:placeholder-gray-500
-                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                        className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                          bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus text-right
+                          placeholder-pewter dark:placeholder-stone
+                          focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                           transition-all duration-200"
                         placeholder="خزانة أرضية بابين 36 بوصة"
                         dir="rtl"
@@ -270,16 +268,16 @@ export default function EditAssemblyPage() {
                 {/* Category & Estimated Time */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Category <span className="text-red-500">*</span>
                     </label>
                     <select
                       value={formData.category}
                       title="category"
                       onChange={(e) => handleChange("category", e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                        bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                        focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                      className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                        bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                        focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                         transition-all duration-200"
                       required
                     >
@@ -292,11 +290,11 @@ export default function EditAssemblyPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Estimated Time (minutes)
                     </label>
                     <div className="relative">
-                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-pewter dark:text-stone" />
                       <input
                         type="number"
                         value={formData.estimatedTime}
@@ -306,10 +304,10 @@ export default function EditAssemblyPage() {
                             parseInt(e.target.value) || 0,
                           )
                         }
-                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                          placeholder-gray-400 dark:placeholder-gray-500
-                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                        className="w-full pl-12 pr-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                          bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                          placeholder-pewter dark:placeholder-stone
+                          focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                           transition-all duration-200"
                         placeholder="25"
                         min="0"
@@ -320,12 +318,12 @@ export default function EditAssemblyPage() {
 
                 {/* Description (English & Arabic) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                     Description
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                      <label className="block text-xs text-stone dark:text-silver mb-1.5">
                         English
                       </label>
                       <textarea
@@ -333,17 +331,17 @@ export default function EditAssemblyPage() {
                         onChange={(e) =>
                           handleChange("description.en", e.target.value)
                         }
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                          placeholder-gray-400 dark:placeholder-gray-500
-                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                        className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                          bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                          placeholder-pewter dark:placeholder-stone
+                          focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                           transition-all duration-200 resize-none"
                         rows={3}
                         placeholder="Standard 2-door base assembly..."
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                      <label className="block text-xs text-stone dark:text-silver mb-1.5">
                         Arabic
                       </label>
                       <textarea
@@ -351,10 +349,10 @@ export default function EditAssemblyPage() {
                         onChange={(e) =>
                           handleChange("description.ar", e.target.value)
                         }
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                          bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white text-right
-                          placeholder-gray-400 dark:placeholder-gray-500
-                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                        className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                          bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus text-right
+                          placeholder-pewter dark:placeholder-stone
+                          focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                           transition-all duration-200 resize-none"
                         rows={3}
                         placeholder="خزانة أرضية قياسية بابين..."
@@ -366,15 +364,15 @@ export default function EditAssemblyPage() {
 
                 {/* Step Count (Read-only info) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                     Assembly Steps
                   </label>
-                  <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-gray-50/50 dark:bg-gray-800/50 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+                  <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-neutral-50/50 dark:bg-neutral-800/50 rounded-xl border border-silver/30 dark:border-stone/20">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
                         <ListOrdered className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span className="text-sm font-medium text-charcoal dark:text-silver">
                         {formData.steps?.length || 0} step(s) configured
                       </span>
                     </div>
@@ -395,16 +393,16 @@ export default function EditAssemblyPage() {
 
               {/* Right Column - File Uploads */}
               <div className="space-y-4">
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6">
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-6">
                   <div className="flex items-center gap-3 mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                      <Upload className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-xl bg-charcoal dark:bg-papyrus flex items-center justify-center shadow-lg">
+                      <Upload className="w-5 h-5 text-papyrus dark:text-charcoal" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-sm font-semibold text-charcoal dark:text-papyrus">
                         Assembly Assets
                       </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-stone dark:text-silver">
                         3D model and preview image
                       </p>
                     </div>
@@ -438,13 +436,13 @@ export default function EditAssemblyPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 mt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 mt-6 border-t border-silver/50 dark:border-stone/20">
               <Link
                 href="/admin/assemblies"
                 className="px-6 py-2.5 rounded-xl text-sm font-medium text-center
-                  border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300
-                  hover:bg-gray-50 dark:hover:bg-gray-700/50
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500
+                  border border-silver dark:border-stone text-charcoal dark:text-silver
+                  hover:bg-neutral-100 dark:hover:bg-neutral-800
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-charcoal dark:focus:ring-papyrus
                   transition-all duration-200"
               >
                 Cancel
@@ -452,10 +450,10 @@ export default function EditAssemblyPage() {
               <button
                 type="submit"
                 className="px-6 py-2.5 rounded-xl text-sm font-medium
-                  bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                  hover:from-blue-600 hover:to-indigo-700
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                  shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
+                  text-papyrus dark:text-charcoal bg-charcoal dark:bg-papyrus
+                  hover:bg-neutral-800 dark:hover:bg-neutral-200
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-charcoal dark:focus:ring-papyrus
+                  shadow-lg hover:shadow-xl
                   disabled:opacity-50 disabled:cursor-not-allowed
                   transition-all duration-300 flex items-center justify-center gap-2"
                 disabled={saving}

@@ -24,6 +24,10 @@ import AdminLayout from "../../../../../components/admin/AdminLayout";
 import AuthGuard from "../../../../../components/admin/AuthGuard";
 import LoadingSpinner from "../../../../../components/admin/LoadingSpinner";
 import { useToast } from "../../../../../components/admin/ToastProvider";
+import {
+  StepFormModal,
+  StepFormData,
+} from "../../../../../components/admin/StepFormModal";
 
 interface Step {
   id: string;
@@ -72,6 +76,12 @@ export default function StepManagementPage() {
   const [copySearch, setCopySearch] = useState("");
   const [copyLoading, setCopyLoading] = useState(false);
   const [copyInsertIndex, setCopyInsertIndex] = useState(0);
+  const [isStepModalOpen, setIsStepModalOpen] = useState(false);
+  const [stepModalMode, setStepModalMode] = useState<"create" | "edit">(
+    "create",
+  );
+  const [selectedStepForEdit, setSelectedStepForEdit] =
+    useState<StepFormData | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -170,6 +180,27 @@ export default function StepManagementPage() {
       console.error(err);
       return false;
     }
+  };
+
+  const uploadAudioFile = async (
+    file: File,
+    langCode: "eng" | "arb",
+    stepId: string,
+  ) => {
+    const dir = getAudioDirectory(langCode);
+    const filePath = `${dir}/step${stepId}.mp3`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "audio");
+    formData.append("path", filePath);
+
+    const token = localStorage.getItem("admin_token");
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) throw new Error(`Audio upload failed for ${langCode}`);
   };
 
   const handleDragStart = (index: number) => {
@@ -320,6 +351,93 @@ export default function StepManagementPage() {
     await saveSteps(newSteps);
   };
 
+  const openAddStepModal = () => {
+    setSelectedStepForEdit(null);
+    setStepModalMode("create");
+    setIsStepModalOpen(true);
+  };
+
+  const openEditStepModal = (step: Step) => {
+    setSelectedStepForEdit(step as StepFormData);
+    setStepModalMode("edit");
+    setIsStepModalOpen(true);
+  };
+
+  const handleStepModalSubmit = async (
+    formData: StepFormData,
+    pendingFiles: { eng?: File; arb?: File },
+  ) => {
+    if (stepModalMode === "create") {
+      const newStepId = (steps.length + 1).toString();
+      const newStep: Step = {
+        id: newStepId,
+        title: formData.title,
+        description: formData.description,
+        duration: formData.duration,
+        animation: formData.animation,
+        audioUrl:
+          pendingFiles.eng || pendingFiles.arb
+            ? {
+                en: pendingFiles.eng
+                  ? getAudioPublicPathForLocale("en", newStepId)
+                  : undefined,
+                ar: pendingFiles.arb
+                  ? getAudioPublicPathForLocale("ar", newStepId)
+                  : undefined,
+              }
+            : formData.audioUrl,
+      };
+
+      const updatedSteps = [...steps, newStep];
+      const saved = await saveSteps(updatedSteps);
+      if (!saved) throw new Error("Failed to save step");
+
+      // Upload audio files
+      if (pendingFiles.eng)
+        await uploadAudioFile(pendingFiles.eng, "eng", newStepId);
+      if (pendingFiles.arb)
+        await uploadAudioFile(pendingFiles.arb, "arb", newStepId);
+
+      toast.success(`Step ${newStepId} created successfully`);
+    } else {
+      // Edit mode
+      const updatedSteps = steps.map((s) => {
+        if (s.id !== formData.id) return s;
+        return {
+          ...s,
+          title: formData.title,
+          description: formData.description,
+          duration: formData.duration,
+          animation: formData.animation,
+          audioUrl:
+            pendingFiles.eng || pendingFiles.arb
+              ? {
+                  en: pendingFiles.eng
+                    ? getAudioPublicPathForLocale("en", formData.id)
+                    : s.audioUrl?.en,
+                  ar: pendingFiles.arb
+                    ? getAudioPublicPathForLocale("ar", formData.id)
+                    : s.audioUrl?.ar,
+                }
+              : formData.audioUrl || s.audioUrl,
+        };
+      });
+
+      const saved = await saveSteps(updatedSteps);
+      if (!saved) throw new Error("Failed to save step");
+
+      // Upload audio files
+      if (pendingFiles.eng)
+        await uploadAudioFile(pendingFiles.eng, "eng", formData.id);
+      if (pendingFiles.arb)
+        await uploadAudioFile(pendingFiles.arb, "arb", formData.id);
+
+      toast.success(`Step ${formData.id} updated successfully`);
+    }
+
+    setIsStepModalOpen(false);
+  };
+
   if (loading) {
     return (
       <AuthGuard>
@@ -351,7 +469,7 @@ export default function StepManagementPage() {
             </div>
             <Link
               href="/admin/assemblies"
-              className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-stone dark:text-silver hover:underline"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Assemblies
@@ -373,19 +491,19 @@ export default function StepManagementPage() {
           <div className="mb-6 flex items-center gap-2 text-sm overflow-x-auto">
             <Link
               href="/admin/assemblies"
-              className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
+              className="text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus transition-colors whitespace-nowrap"
             >
               Assemblies
             </Link>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-pewter" />
             <Link
               href={`/admin/assemblies/${id}/edit`}
-              className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap font-mono"
+              className="text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus transition-colors whitespace-nowrap font-mono"
             >
               {assembly.id}
             </Link>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-900 dark:text-white font-medium">
+            <ChevronRight className="w-4 h-4 text-pewter" />
+            <span className="text-charcoal dark:text-papyrus font-medium">
               Steps
             </span>
           </div>
@@ -393,20 +511,19 @@ export default function StepManagementPage() {
           {/* Header Actions */}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-charcoal dark:text-papyrus">
                 Assembly Steps
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-sm text-stone dark:text-silver mt-1">
                 {steps.length} step{steps.length !== 1 ? "s" : ""} configured
               </p>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
-                onClick={() => router.push(`/admin/assemblies/${id}/steps/new`)}
+                onClick={openAddStepModal}
                 className="px-4 py-2.5 rounded-xl font-medium text-sm
-                  bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                  hover:from-blue-600 hover:to-indigo-700
-                  shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
+                  bg-emerald-500 hover:bg-emerald-600 text-white
+                  shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35
                   transition-all duration-300 inline-flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
@@ -415,9 +532,8 @@ export default function StepManagementPage() {
               <button
                 onClick={openCopyModal}
                 className="px-4 py-2.5 rounded-xl font-medium text-sm
-                  bg-gradient-to-r from-indigo-500 to-indigo-600 text-white
-                  hover:from-indigo-600 hover:to-indigo-700
-                  shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40
+                  bg-sky-500 hover:bg-sky-600 text-white
+                  shadow-lg shadow-sky-500/25 hover:shadow-xl hover:shadow-sky-500/35
                   transition-all duration-300 inline-flex items-center gap-2"
               >
                 <Copy className="w-4 h-4" />
@@ -441,25 +557,22 @@ export default function StepManagementPage() {
 
           {/* Steps List */}
           {steps.length === 0 ? (
-            <div className="rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-12 text-center bg-gray-50/50 dark:bg-gray-800/50">
-              <div className="w-16 h-16 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4">
-                <List className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+            <div className="rounded-xl border border-silver/30 dark:border-stone/20 p-12 text-center bg-neutral-50/50 dark:bg-neutral-800/50">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-sky-500/15 dark:bg-sky-400/15 flex items-center justify-center mb-4">
+                <List className="w-8 h-8 text-sky-500 dark:text-sky-400" />
               </div>
-              <h3 className="text-base font-medium text-gray-900 dark:text-white">
+              <h3 className="text-base font-medium text-charcoal dark:text-papyrus">
                 No steps yet
               </h3>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-2 text-sm text-stone dark:text-silver">
                 Get started by creating a new assembly step.
               </p>
               <div className="mt-6">
                 <button
-                  onClick={() =>
-                    router.push(`/admin/assemblies/${id}/steps/new`)
-                  }
+                  onClick={openAddStepModal}
                   className="px-6 py-2.5 rounded-xl font-medium text-sm
-                    bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                    hover:from-blue-600 hover:to-indigo-700
-                    shadow-lg shadow-blue-500/30 hover:shadow-xl
+                    bg-emerald-500 hover:bg-emerald-600 text-white
+                    shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35
                     transition-all duration-300 inline-flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
@@ -468,8 +581,8 @@ export default function StepManagementPage() {
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
-              <div className="divide-y divide-gray-200/50 dark:divide-gray-700/50">
+            <div className="rounded-xl border border-silver/30 dark:border-stone/20 overflow-hidden">
+              <div className="divide-y divide-silver/30 dark:divide-stone/20">
                 {steps.map((step, index) => (
                   <div
                     key={step.id}
@@ -477,21 +590,21 @@ export default function StepManagementPage() {
                     onDragStart={() => handleDragStart(index)}
                     onDragOver={(e) => handleDragOver(e, index)}
                     onDragEnd={handleDragEnd}
-                    className={`p-4 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-all duration-200 cursor-move ${
+                    className={`p-4 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/50 transition-all duration-200 cursor-move ${
                       draggedIndex === index
-                        ? "opacity-50 bg-blue-50 dark:bg-blue-900/20 scale-[0.98]"
+                        ? "opacity-50 bg-neutral-100 dark:bg-neutral-800/30 scale-[0.98]"
                         : ""
                     }`}
                   >
                     <div className="flex items-start gap-4">
                       {/* Drag Handle */}
                       <div className="flex-shrink-0 mt-1">
-                        <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                        <GripVertical className="w-4 h-4 text-pewter dark:text-stone" />
                       </div>
 
                       {/* Step Number Badge */}
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-blue-500/30">
+                        <div className="w-10 h-10 rounded-xl bg-sky-500/15 dark:bg-sky-400/15 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold text-sm shadow-sm">
                           {index + 1}
                         </div>
                       </div>
@@ -500,15 +613,15 @@ export default function StepManagementPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="text-base font-medium text-gray-900 dark:text-white">
+                            <h3 className="text-base font-medium text-charcoal dark:text-papyrus">
                               {step.title.en}
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                            <p className="text-sm text-stone dark:text-silver mt-1 line-clamp-2">
                               {step.description.en}
                             </p>
                             <div className="flex flex-wrap items-center gap-3 mt-3">
                               {step.duration && (
-                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-neutral-100 dark:bg-neutral-800 text-stone dark:text-silver">
                                   <Clock className="w-3 h-3" />
                                   {step.duration}m
                                 </span>
@@ -536,7 +649,7 @@ export default function StepManagementPage() {
                                   `/admin/assemblies/${id}/steps/authoring?step=${step.id}`,
                                 )
                               }
-                              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
+                              className="p-2 rounded-lg text-stone dark:text-silver 
                                 hover:text-purple-600 dark:hover:text-purple-400 
                                 hover:bg-purple-50 dark:hover:bg-purple-900/20 
                                 transition-all duration-200"
@@ -545,14 +658,10 @@ export default function StepManagementPage() {
                               <Film className="w-5 h-5" />
                             </button>
                             <button
-                              onClick={() =>
-                                router.push(
-                                  `/admin/assemblies/${id}/steps/${step.id}/edit`,
-                                )
-                              }
-                              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
-                                hover:text-blue-600 dark:hover:text-blue-400 
-                                hover:bg-blue-50 dark:hover:bg-blue-900/20 
+                              onClick={() => openEditStepModal(step)}
+                              className="p-2 rounded-lg text-stone dark:text-silver 
+                                hover:text-charcoal dark:hover:text-papyrus 
+                                hover:bg-neutral-100 dark:hover:bg-neutral-800 
                                 transition-all duration-200"
                               title="Edit step"
                             >
@@ -560,7 +669,7 @@ export default function StepManagementPage() {
                             </button>
                             <button
                               onClick={() => handleDeleteStep(step.id)}
-                              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 
+                              className="p-2 rounded-lg text-stone dark:text-silver 
                                 hover:text-red-600 dark:hover:text-red-400 
                                 hover:bg-red-50 dark:hover:bg-red-900/20 
                                 transition-all duration-200"
@@ -580,7 +689,7 @@ export default function StepManagementPage() {
 
           {/* Help Text */}
           {steps.length > 0 && (
-            <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <div className="mt-4 flex items-center gap-2 text-sm text-stone dark:text-silver">
               <Lightbulb className="w-4 h-4" />
               <span>Drag and drop steps to reorder them</span>
             </div>
@@ -590,15 +699,15 @@ export default function StepManagementPage() {
         {/* Copy Modal */}
         {isCopyModalOpen && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[85vh] overflow-hidden border border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="bg-papyrus dark:bg-charcoal rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[85vh] overflow-hidden border border-silver/50 dark:border-stone/20">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-silver/50 dark:border-stone/20">
+                <h3 className="text-lg font-semibold text-charcoal dark:text-papyrus">
                   Copy Step from Another Cabinet
                 </h3>
                 <button
                   onClick={() => setIsCopyModalOpen(false)}
-                  className="p-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 
-                    hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="p-2 rounded-lg text-stone hover:text-charcoal dark:text-silver dark:hover:text-papyrus 
+                    hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                   title="Close"
                 >
                   <X className="w-5 h-5" />
@@ -608,7 +717,7 @@ export default function StepManagementPage() {
               <div className="p-6 space-y-4">
                 <div className="grid gap-4 sm:grid-cols-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Source Cabinet
                     </label>
                     <select
@@ -617,9 +726,9 @@ export default function StepManagementPage() {
                       onChange={(e) =>
                         handleSelectSourceCabinet(e.target.value)
                       }
-                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                        focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                        bg-papyrus dark:bg-charcoal text-charcoal dark:text-papyrus
+                        focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30"
                     >
                       <option value="">Select assembly...</option>
                       {cabinetIndex.map((item) => (
@@ -631,25 +740,25 @@ export default function StepManagementPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Search Steps
                     </label>
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pewter" />
                       <input
                         type="text"
                         value={copySearch}
                         onChange={(e) => setCopySearch(e.target.value)}
                         placeholder="Search..."
-                        className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                          bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                          focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                        className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                          bg-papyrus dark:bg-charcoal text-charcoal dark:text-papyrus
+                          focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Insert at Position
                     </label>
                     <select
@@ -658,9 +767,9 @@ export default function StepManagementPage() {
                       onChange={(e) =>
                         setCopyInsertIndex(Number(e.target.value))
                       }
-                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-gray-200 dark:border-gray-600 
-                        bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                        focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className="w-full px-4 py-2.5 text-sm rounded-xl border border-silver/50 dark:border-stone/30 
+                        bg-papyrus dark:bg-charcoal text-charcoal dark:text-papyrus
+                        focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30"
                     >
                       {Array.from(
                         { length: steps.length + 1 },
@@ -674,8 +783,8 @@ export default function StepManagementPage() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  <div className="max-h-[50vh] overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
+                <div className="rounded-xl border border-silver/50 dark:border-stone/20 overflow-hidden">
+                  <div className="max-h-[50vh] overflow-y-auto divide-y divide-silver/30 dark:divide-stone/20">
                     {copyLoading && (
                       <div className="p-8 text-center">
                         <LoadingSpinner
@@ -686,14 +795,14 @@ export default function StepManagementPage() {
                       </div>
                     )}
                     {!copyLoading && !sourceCabinetId && (
-                      <div className="p-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                      <div className="p-8 text-center text-sm text-stone dark:text-silver">
                         Select a source cabinet to view available steps
                       </div>
                     )}
                     {!copyLoading &&
                       sourceCabinetId &&
                       sourceSteps.length === 0 && (
-                        <div className="p-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <div className="p-8 text-center text-sm text-stone dark:text-silver">
                           No steps available in this cabinet
                         </div>
                       )}
@@ -713,23 +822,23 @@ export default function StepManagementPage() {
                         .map((step) => (
                           <div
                             key={`${sourceCabinetId}-${step.id}`}
-                            className="p-4 flex items-start justify-between gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                            className="p-4 flex items-start justify-between gap-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                           >
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <span className="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xs font-bold">
+                                <span className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-charcoal dark:text-papyrus flex items-center justify-center text-xs font-bold">
                                   {step.id}
                                 </span>
-                                <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                <span className="text-sm font-medium text-charcoal dark:text-papyrus">
                                   {step.title.en}
                                 </span>
                               </div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2 ml-9">
+                              <p className="text-xs text-stone dark:text-silver mt-2 line-clamp-2 ml-9">
                                 {step.description.en}
                               </p>
                               <div className="flex flex-wrap gap-2 mt-2 ml-9">
                                 {step.duration && (
-                                  <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                  <span className="text-xs text-stone dark:text-silver flex items-center gap-1">
                                     <Clock className="w-3 h-3" />
                                     {step.duration}m
                                   </span>
@@ -751,9 +860,9 @@ export default function StepManagementPage() {
                             <button
                               onClick={() => handleCopyStep(step)}
                               className="px-4 py-2 rounded-xl text-sm font-medium
-                                bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                                hover:from-blue-600 hover:to-indigo-700
-                                shadow-md shadow-blue-500/20 hover:shadow-lg
+                                text-papyrus dark:text-charcoal bg-charcoal dark:bg-papyrus
+                                hover:bg-neutral-800 dark:hover:bg-neutral-200
+                                shadow-md hover:shadow-lg
                                 transition-all duration-200"
                             >
                               Copy
@@ -766,6 +875,20 @@ export default function StepManagementPage() {
             </div>
           </div>
         )}
+        {/* Step Form Modal */}
+        <StepFormModal
+          isOpen={isStepModalOpen}
+          onClose={() => setIsStepModalOpen(false)}
+          onSubmit={handleStepModalSubmit}
+          step={selectedStepForEdit}
+          mode={stepModalMode}
+          stepNumber={
+            stepModalMode === "create"
+              ? steps.length + 1
+              : Number(selectedStepForEdit?.id || 1)
+          }
+          assemblyId={id as string}
+        />
       </AdminLayout>
     </AuthGuard>
   );

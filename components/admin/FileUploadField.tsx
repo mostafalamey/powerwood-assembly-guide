@@ -142,7 +142,7 @@ export default function FileUploadField({
 
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
         {label}
       </label>
 
@@ -152,10 +152,10 @@ export default function FileUploadField({
           type="text"
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 
-            bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-            placeholder-gray-400 dark:placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+          className="flex-1 px-4 py-2.5 rounded-xl border border-silver/50 dark:border-stone/30 
+            bg-white/50 dark:bg-neutral-900/50 text-charcoal dark:text-papyrus
+            placeholder-stone/50 dark:placeholder-silver/50
+            focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
             transition-all duration-200"
           placeholder={placeholder}
         />
@@ -164,12 +164,12 @@ export default function FileUploadField({
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
           className="px-4 py-2.5 rounded-xl text-sm font-medium
-            bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-            hover:from-blue-600 hover:to-indigo-700
-            shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
+            bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal
+            hover:bg-neutral-800 dark:hover:bg-white
+            shadow-lg
+            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-charcoal/30
             disabled:opacity-50 disabled:cursor-not-allowed
-            transition-all duration-300 whitespace-nowrap"
+            transition-all duration-200 whitespace-nowrap"
         >
           {uploading ? "Uploading..." : "Choose File"}
         </button>
@@ -183,16 +183,16 @@ export default function FileUploadField({
         onDrop={handleDrop}
         className={`border-2 border-dashed rounded-xl p-4 text-center transition-all duration-200 ${
           dragActive
-            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-inner"
-            : "border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-800/30"
+            ? "border-charcoal dark:border-papyrus bg-neutral-100 dark:bg-neutral-800 shadow-inner"
+            : "border-silver/50 dark:border-stone/30 bg-neutral-50/50 dark:bg-neutral-800/30"
         } ${uploading ? "opacity-50 pointer-events-none" : ""}`}
       >
-        <Upload className="w-8 h-8 text-gray-400 mx-auto block" />
-        <p className="mt-1.5 text-sm text-gray-600 dark:text-gray-400">
+        <Upload className="w-8 h-8 text-silver dark:text-stone mx-auto block" />
+        <p className="mt-1.5 text-sm text-stone dark:text-silver">
           <span className="font-semibold">Drop file here</span> or click
           &ldquo;Choose File&rdquo;
         </p>
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
+        <p className="mt-1 text-xs text-stone/70 dark:text-silver/50">
           {helpText || `Accepted: ${accept}`} · Max {maxSize}MB
         </p>
       </div>
@@ -200,13 +200,13 @@ export default function FileUploadField({
       {/* Upload status */}
       {uploading && (
         <div className="mt-2 space-y-1.5">
-          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm">
-            <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 dark:border-blue-400"></div>
+          <div className="flex items-center gap-2 text-charcoal dark:text-papyrus text-sm">
+            <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-charcoal dark:border-papyrus"></div>
             <span>Uploading... {uploadProgress}%</span>
           </div>
-          <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-300"
+              className="h-full bg-charcoal dark:bg-papyrus rounded-full transition-all duration-300"
               style={{ width: `${uploadProgress}%` }}
             />
           </div>
@@ -236,7 +236,7 @@ export default function FileUploadField({
             <img
               src={value}
               alt="Preview"
-              className="max-w-xs h-32 object-cover rounded-xl border border-gray-200 dark:border-gray-600"
+              className="max-w-xs h-32 object-cover rounded-xl border border-silver/50 dark:border-stone/30"
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = "none";
               }}

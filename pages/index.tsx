@@ -56,12 +56,12 @@ export default function Home() {
         )}
       </Head>
 
-      <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+      <div className="h-screen flex flex-col overflow-hidden bg-papyrus dark:bg-neutral-900">
         {/* Top Bar */}
-        <header className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-gray-200/50 dark:border-gray-800/50 backdrop-blur-sm bg-white/30 dark:bg-gray-900/30">
+        <header className="flex-shrink-0 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-silver/50 dark:border-stone/20 backdrop-blur-sm bg-papyrus/85 dark:bg-neutral-900/85">
           <div className="flex items-center gap-3">
             {branding.logo ? (
-              <div className="w-16 h-16 rounded-xl overflow-hidden relative p-1.5 bg-primary-500/10 dark:bg-primary-100/20">
+              <div className="w-16 h-16 rounded-xl overflow-hidden relative p-1.5 bg-neutral-100 dark:bg-neutral-800">
                 <Image
                   src={branding.logo}
                   alt={
@@ -75,17 +75,17 @@ export default function Home() {
                 />
               </div>
             ) : (
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
-                <Box className="w-7 h-7 text-white" />
+              <div className="w-16 h-16 rounded-xl bg-charcoal dark:bg-papyrus flex items-center justify-center shadow-lg">
+                <Box className="w-7 h-7 text-papyrus dark:text-charcoal" />
               </div>
             )}
             <div>
-              <h1 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight">
+              <h1 className="text-lg md:text-xl font-bold text-charcoal dark:text-papyrus leading-tight">
                 {locale === "en"
                   ? branding.companyName
                   : branding.companyNameAr}
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+              <p className="text-xs text-stone dark:text-silver hidden sm:block">
                 {t("homeDescription")}
               </p>
             </div>
@@ -101,7 +101,7 @@ export default function Home() {
           <div className="h-full flex flex-col md:flex-row p-3 md:p-6 gap-3 md:gap-6">
             {/* Left Panel - QR Scanner Card - Compact on mobile */}
             <div className="flex-shrink-0 md:w-80 lg:w-96">
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl md:rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 p-3 md:p-6 md:h-full flex flex-col">
+              <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl md:rounded-2xl shadow-lg border border-silver/50 dark:border-stone/20 p-3 md:p-6 md:h-full flex flex-col">
                 {/* Mobile: Horizontal compact layout */}
                 <div className="flex md:flex-col items-center md:items-stretch gap-3 md:gap-0">
                   {/* QR Icon */}
@@ -112,7 +112,7 @@ export default function Home() {
                         background: `linear-gradient(135deg, ${branding.primaryColor}, ${branding.primaryColor})`,
                       }}
                     />
-                    <div className="absolute inset-1 bg-white dark:bg-gray-800 rounded-lg md:rounded-xl flex items-center justify-center">
+                    <div className="absolute inset-1 bg-white dark:bg-neutral-800 rounded-lg md:rounded-xl flex items-center justify-center">
                       <ScanLine
                         className="w-6 h-6 md:w-10 md:h-10"
                         style={{ color: branding.primaryColor }}
@@ -121,10 +121,10 @@ export default function Home() {
                   </div>
 
                   <div className="flex-1 md:flex-none">
-                    <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-white md:text-center md:mb-2">
+                    <h2 className="text-base md:text-xl font-bold text-charcoal dark:text-papyrus md:text-center md:mb-2">
                       {t("scanQRCode")}
                     </h2>
-                    <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 md:text-center md:mb-4 leading-relaxed hidden md:block">
+                    <p className="text-xs md:text-sm text-stone dark:text-silver md:text-center md:mb-4 leading-relaxed hidden md:block">
                       {t("scanInstructions")}
                     </p>
                   </div>
@@ -153,13 +153,13 @@ export default function Home() {
                 </div>
 
                 {/* Features - Hidden on mobile */}
-                <div className="hidden md:grid mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 grid-cols-3 gap-2">
+                <div className="hidden md:grid mt-4 pt-4 border-t border-silver/50 dark:border-stone/20 grid-cols-3 gap-2">
                   <div className="text-center p-2">
                     <Box
                       className="w-[18px] h-[18px] mb-1 mx-auto"
                       style={{ color: branding.primaryColor }}
                     />
-                    <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
+                    <span className="text-[10px] text-stone dark:text-silver font-medium">
                       3D View
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export default function Home() {
                       className="w-[18px] h-[18px] mb-1 mx-auto"
                       style={{ color: branding.primaryColor }}
                     />
-                    <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
+                    <span className="text-[10px] text-stone dark:text-silver font-medium">
                       Bilingual
                     </span>
                   </div>
@@ -177,7 +177,7 @@ export default function Home() {
                       className="w-[18px] h-[18px] mb-1 mx-auto"
                       style={{ color: branding.primaryColor }}
                     />
-                    <span className="text-[10px] text-gray-600 dark:text-gray-400 font-medium">
+                    <span className="text-[10px] text-stone dark:text-silver font-medium">
                       Audio
                     </span>
                   </div>
@@ -188,10 +188,10 @@ export default function Home() {
             {/* Right Panel - Categories Grid - Takes priority on mobile */}
             <div className="flex-1 flex flex-col min-h-0">
               <div className="flex items-center justify-between mb-2 md:mb-4">
-                <h2 className="text-base md:text-xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-base md:text-xl font-bold text-charcoal dark:text-papyrus">
                   {t("browseCategories")}
                 </h2>
-                <span className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 md:py-1 rounded-full">
+                <span className="text-[10px] md:text-xs text-stone dark:text-silver bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 md:py-1 rounded-full">
                   {categories.length} categories
                 </span>
               </div>
@@ -203,10 +203,10 @@ export default function Home() {
                     <TransitionLink
                       key={category}
                       href={`/categories/${category}`}
-                      className="group relative bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl md:rounded-xl shadow-lg shadow-gray-200/30 dark:shadow-gray-900/30 border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl hover:shadow-primary-500/10 dark:hover:shadow-primary-500/5 transition-all duration-300 hover:-translate-y-0.5"
+                      className="group relative bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl md:rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
                     >
                       {/* Category Image */}
-                      <div className="relative aspect-square md:aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 p-2 md:p-3">
+                      <div className="relative aspect-square md:aspect-[4/3] bg-neutral-100 dark:bg-neutral-800 p-2 md:p-3">
                         <Image
                           src={categoryImages[category]}
                           alt={t(`categories.${category}`)}
@@ -214,13 +214,13 @@ export default function Home() {
                           className="object-contain p-8 md:p-10 group-hover:scale-105 transition-transform duration-500"
                           unoptimized
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-primary-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
 
                       {/* Category Label */}
-                      <div className="p-2 bg-white/80 dark:bg-gray-800/80">
+                      <div className="p-2 bg-white/80 dark:bg-charcoal/80">
                         <h3
-                          className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white transition-colors truncate"
+                          className="text-xs md:text-sm font-semibold text-charcoal dark:text-papyrus transition-colors truncate"
                           style={{
                             ["--hover-color" as any]: branding.primaryColor,
                           }}
@@ -237,7 +237,7 @@ export default function Home() {
                       </div>
 
                       {/* Arrow indicator */}
-                      <span className="absolute top-2 end-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/80 dark:bg-gray-700/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                      <span className="absolute top-2 end-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-white/80 dark:bg-neutral-800/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
                         <ArrowRight
                           className="w-3 h-3 md:w-3.5 md:h-3.5 rtl:rotate-180"
                           style={{ color: branding.secondaryColor }}
@@ -252,8 +252,8 @@ export default function Home() {
         </main>
 
         {/* Footer */}
-        <footer className="flex-shrink-0 px-4 py-2 text-center border-t border-gray-200/50 dark:border-gray-800/50 bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm">
-          <p className="text-[10px] text-gray-400 dark:text-gray-500">
+        <footer className="flex-shrink-0 px-4 py-2 text-center border-t border-silver/50 dark:border-stone/20 bg-papyrus/50 dark:bg-neutral-900/50 backdrop-blur-sm">
+          <p className="text-[10px] text-pewter dark:text-stone">
             © 2026 PW Assembly Guide • Interactive 3D Cabinet Assembly
             Instructions
           </p>

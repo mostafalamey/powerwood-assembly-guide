@@ -25,7 +25,7 @@ export default function LoadingSpinner({
 }: LoadingSpinnerProps) {
   const spinner = (
     <svg
-      className={`animate-spin ${sizeMap[size]} text-blue-600 dark:text-blue-400 ${className}`}
+      className={`animate-spin ${sizeMap[size]} text-charcoal dark:text-papyrus ${className}`}
       viewBox="0 0 24 24"
       fill="none"
     >
@@ -50,9 +50,7 @@ export default function LoadingSpinner({
       <div className="flex flex-col items-center justify-center min-h-[200px]">
         {spinner}
         {message && (
-          <p className="mt-4 text-gray-600 dark:text-gray-400 text-sm">
-            {message}
-          </p>
+          <p className="mt-4 text-stone dark:text-silver text-sm">{message}</p>
         )}
       </div>
     );

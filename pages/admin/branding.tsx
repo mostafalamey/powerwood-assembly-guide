@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import Head from "next/head";
 import AuthGuard from "@/components/admin/AuthGuard";
 import AdminLayout from "@/components/admin/AdminLayout";
@@ -130,14 +130,14 @@ export default function BrandingPage() {
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 flex items-center justify-center">
-                <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 flex items-center justify-center">
+                <Palette className="w-5 h-5 text-stone dark:text-silver" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-2xl font-bold text-charcoal dark:text-papyrus">
                   Branding Settings
                 </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-stone dark:text-silver">
                   Customize your public app appearance
                 </p>
               </div>
@@ -145,17 +145,17 @@ export default function BrandingPage() {
           </div>
 
           {/* Form */}
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
+          <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 overflow-hidden">
             <div className="p-6 space-y-6">
               {/* Company Name Section */}
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Type className="w-5 h-5 text-blue-500" />
+                <h2 className="text-lg font-semibold text-charcoal dark:text-papyrus mb-4 flex items-center gap-2">
+                  <Type className="w-5 h-5 text-stone" />
                   Company Information
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Company Name (EN) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -167,14 +167,14 @@ export default function BrandingPage() {
                           companyName: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                        bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                      className="w-full px-4 py-2.5 rounded-lg border border-silver dark:border-stone 
+                        bg-papyrus dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                        focus:ring-2 focus:ring-charcoal dark:focus:ring-papyrus focus:border-charcoal dark:focus:border-papyrus transition-colors"
                       placeholder="e.g., PowerWood"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Company Name (AR) <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -186,10 +186,10 @@ export default function BrandingPage() {
                           companyNameAr: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                        bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                      placeholder="e.g., باور وود"
+                      className="w-full px-4 py-2.5 rounded-lg border border-silver dark:border-stone 
+                        bg-papyrus dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                        focus:ring-2 focus:ring-charcoal dark:focus:ring-papyrus focus:border-charcoal dark:focus:border-papyrus transition-colors"
+                      placeholder="e.g., Ø¨Ø§ÙˆØ± ÙˆÙˆØ¯"
                       dir="rtl"
                     />
                   </div>
@@ -198,13 +198,13 @@ export default function BrandingPage() {
 
               {/* Logo Section */}
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <ImageIcon className="w-5 h-5 text-green-500" />
+                <h2 className="text-lg font-semibold text-charcoal dark:text-papyrus mb-4 flex items-center gap-2">
+                  <ImageIcon className="w-5 h-5 text-stone" />
                   Logo & Favicon
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Logo Image
                     </label>
                     <FileUploadField
@@ -220,7 +220,7 @@ export default function BrandingPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Favicon
                     </label>
                     <FileUploadField
@@ -240,13 +240,13 @@ export default function BrandingPage() {
 
               {/* Color Section */}
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Droplet className="w-5 h-5 text-purple-500" />
+                <h2 className="text-lg font-semibold text-charcoal dark:text-papyrus mb-4 flex items-center gap-2">
+                  <Droplet className="w-5 h-5 text-stone" />
                   Brand Colors
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Primary Color
                     </label>
                     <div className="flex gap-3 items-center">
@@ -259,7 +259,7 @@ export default function BrandingPage() {
                             primaryColor: e.target.value,
                           })
                         }
-                        className="w-16 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer"
+                        className="w-16 h-12 rounded-lg border-2 border-silver dark:border-stone cursor-pointer"
                       />
                       <input
                         type="text"
@@ -270,18 +270,18 @@ export default function BrandingPage() {
                             primaryColor: e.target.value,
                           })
                         }
-                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                          bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        className="flex-1 px-4 py-2.5 rounded-lg border border-silver dark:border-stone 
+                          bg-papyrus dark:bg-neutral-900 text-charcoal dark:text-papyrus font-mono
+                          focus:ring-2 focus:ring-charcoal dark:focus:ring-papyrus focus:border-charcoal dark:focus:border-papyrus transition-colors"
                         placeholder="#3b82f6"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    <p className="text-xs text-stone dark:text-silver mt-2">
                       Used for buttons, links, and accents
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                       Secondary Color
                     </label>
                     <div className="flex gap-3 items-center">
@@ -294,7 +294,7 @@ export default function BrandingPage() {
                             secondaryColor: e.target.value,
                           })
                         }
-                        className="w-16 h-12 rounded-lg border-2 border-gray-300 dark:border-gray-600 cursor-pointer"
+                        className="w-16 h-12 rounded-lg border-2 border-silver dark:border-stone cursor-pointer"
                       />
                       <input
                         type="text"
@@ -305,13 +305,13 @@ export default function BrandingPage() {
                             secondaryColor: e.target.value,
                           })
                         }
-                        className="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
-                          bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono
-                          focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        className="flex-1 px-4 py-2.5 rounded-lg border border-silver dark:border-stone 
+                          bg-papyrus dark:bg-neutral-900 text-charcoal dark:text-papyrus font-mono
+                          focus:ring-2 focus:ring-charcoal dark:focus:ring-papyrus focus:border-charcoal dark:focus:border-papyrus transition-colors"
                         placeholder="#6366f1"
                       />
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    <p className="text-xs text-stone dark:text-silver mt-2">
                       Used for gradients and secondary elements
                     </p>
                   </div>
@@ -320,10 +320,10 @@ export default function BrandingPage() {
 
               {/* Preview Section */}
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                <h2 className="text-lg font-semibold text-charcoal dark:text-papyrus mb-4">
                   Preview
                 </h2>
-                <div className="p-6 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50">
+                <div className="p-6 rounded-lg border-2 border-dashed border-silver dark:border-stone bg-neutral-50 dark:bg-neutral-900/50">
                   <div className="flex items-center gap-4 mb-4">
                     {formData.logo && (
                       <img
@@ -339,8 +339,8 @@ export default function BrandingPage() {
                       >
                         {formData.companyName || "Company Name"}
                       </h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {formData.companyNameAr || "اسم الشركة"}
+                      <p className="text-sm text-stone dark:text-silver">
+                        {formData.companyNameAr || "Ø§Ø³Ù… Ø§Ù„Ø´Ø±ÙƒØ©"}
                       </p>
                     </div>
                   </div>
@@ -357,14 +357,13 @@ export default function BrandingPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-3 justify-end">
+            <div className="px-6 py-4 bg-neutral-50 dark:bg-neutral-900/50 border-t border-silver/50 dark:border-stone/20 flex flex-wrap gap-3 justify-end">
               <button
                 onClick={handleReset}
                 disabled={!hasChanges || saving}
                 className="px-4 py-2.5 rounded-xl font-medium text-sm
-                  bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300
-                  border border-gray-300 dark:border-gray-600 
-                  hover:bg-gray-50 dark:hover:bg-gray-700
+                  bg-papyrus dark:bg-charcoal text-charcoal dark:text-silver
+                  border border-silver dark:border-stone
                   disabled:opacity-50 disabled:cursor-not-allowed
                   transition-all duration-200 inline-flex items-center gap-2"
               >
@@ -375,9 +374,9 @@ export default function BrandingPage() {
                 onClick={handleSave}
                 disabled={saving || !hasChanges}
                 className="px-4 py-2.5 rounded-xl font-medium text-sm
-                  bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                  hover:from-blue-600 hover:to-indigo-700
-                  shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
+                  text-papyrus dark:text-charcoal bg-charcoal dark:bg-papyrus
+                  hover:bg-neutral-800 dark:hover:bg-neutral-200
+                  shadow-lg hover:shadow-xl
                   disabled:opacity-50 disabled:cursor-not-allowed
                   transition-all duration-300 inline-flex items-center gap-2"
               >

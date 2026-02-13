@@ -269,12 +269,12 @@ export default function StepPage() {
             <meta name="theme-color" content={branding.primaryColor} />
           )}
         </Head>
-        <div className="h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+        <div className="h-screen flex flex-col bg-papyrus dark:bg-neutral-900">
           <Header showBackButton />
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="w-12 h-12 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
+              <div className="w-12 h-12 border-3 border-charcoal dark:border-papyrus border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+              <p className="text-stone dark:text-silver text-sm">
                 {t("loading")}
               </p>
             </div>
@@ -325,7 +325,7 @@ export default function StepPage() {
         )}
       </Head>
 
-      <div className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900">
+      <div className="h-screen flex flex-col overflow-hidden bg-papyrus dark:bg-neutral-900">
         <Header showBackButton />
 
         <main className="flex-1 overflow-hidden">
@@ -484,7 +484,7 @@ export default function StepPage() {
             className={`lg:hidden h-full flex flex-col p-2 gap-2 ${isFullscreen ? "hidden" : ""}`}
           >
             {/* 3D Viewer - Mobile - Increased height */}
-            <div className="flex-[3] min-h-[55vh] bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden relative">
+            <div className="flex-[3] min-h-[55vh] bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 overflow-hidden relative">
               {modelUrl ? (
                 !isDesktop && (
                   <SceneViewer
@@ -500,10 +500,10 @@ export default function StepPage() {
                   />
                 )
               ) : (
-                <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 h-full">
+                <div className="flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 h-full">
                   <div className="text-center p-6">
-                    <Box className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-600 dark:text-gray-400 font-medium">
+                    <Box className="w-12 h-12 text-silver dark:text-stone mx-auto mb-4" />
+                    <p className="text-stone dark:text-silver font-medium">
                       3D Model Not Available
                     </p>
                   </div>
@@ -515,42 +515,42 @@ export default function StepPage() {
                   {/* Fullscreen Button */}
                   <button
                     onClick={toggleFullscreen}
-                    className="w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
+                    className="w-10 h-10 bg-papyrus/90 dark:bg-charcoal/90 hover:bg-papyrus dark:hover:bg-neutral-800 shadow-lg rounded-full flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
                     aria-label={t("fullscreen") || "Fullscreen"}
                   >
-                    <Maximize2 className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                    <Maximize2 className="w-5 h-5 text-charcoal dark:text-silver" />
                   </button>
                   {/* Restart Button */}
                   <button
                     onClick={handleRestart}
-                    className="w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
+                    className="w-10 h-10 bg-papyrus/90 dark:bg-charcoal/90 hover:bg-papyrus dark:hover:bg-neutral-800 shadow-lg rounded-full flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
                     aria-label="Restart animation"
                   >
-                    <RotateCcw className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                    <RotateCcw className="w-5 h-5 text-charcoal dark:text-silver" />
                   </button>
                 </div>
               )}
             </div>
 
             {/* Step Info Card - Mobile */}
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
+            <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 overflow-hidden">
               <button
                 onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                className="w-full p-3 flex items-center justify-between hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors min-h-[48px]"
+                className="w-full p-3 flex items-center justify-between hover:bg-neutral-100/50 dark:hover:bg-neutral-800/50 transition-colors min-h-[48px]"
               >
                 <div className="flex-1 text-start">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-stone dark:text-silver">
                     {assemblyName}
                   </span>
                   <h1
-                    className="text-lg font-bold text-gray-900 dark:text-white"
+                    className="text-lg font-bold text-charcoal dark:text-papyrus"
                     style={{ color: branding.primaryColor }}
                   >
                     {stepTitle}
                   </h1>
                 </div>
                 <ChevronDown
-                  className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform ${isDescriptionExpanded ? "rotate-180" : ""}`}
+                  className={`w-5 h-5 text-stone dark:text-silver transition-transform ${isDescriptionExpanded ? "rotate-180" : ""}`}
                 />
               </button>
 
@@ -558,21 +558,21 @@ export default function StepPage() {
                 className={`transition-all duration-300 ease-in-out ${isDescriptionExpanded ? "max-h-96 opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
               >
                 <div className="px-3 pb-3">
-                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line mb-3">
+                  <p className="text-sm text-charcoal dark:text-silver leading-relaxed whitespace-pre-line mb-3">
                     {stepDescription}
                   </p>
 
                   {currentStep.toolsRequired &&
                     currentStep.toolsRequired.length > 0 && (
-                      <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                        <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                      <div className="mt-2 pt-2 border-t border-silver/30 dark:border-stone/20">
+                        <h3 className="text-xs font-semibold text-charcoal dark:text-silver mb-1">
                           {t("toolsRequired")}:
                         </h3>
                         <div className="flex flex-wrap gap-1">
                           {currentStep.toolsRequired.map((tool, index) => (
                             <span
                               key={index}
-                              className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700/50 text-xs rounded-full border"
+                              className="px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800/50 text-xs rounded-full border"
                               style={{
                                 color: branding.secondaryColor,
                                 borderColor: branding.secondaryColor,
@@ -620,11 +620,11 @@ export default function StepPage() {
             {/* Left Sidebar - Steps Navigation */}
             <div className="w-72 xl:w-80 flex-shrink-0 flex flex-col gap-3">
               {/* Assembly Info */}
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 p-4">
-                <h2 className="text-base font-bold text-gray-900 dark:text-white mb-1">
+              <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 p-4">
+                <h2 className="text-base font-bold text-charcoal dark:text-papyrus mb-1">
                   {assemblyName}
                 </h2>
-                <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+                <p className="text-xs text-stone dark:text-silver line-clamp-2">
                   {typeof assembly.description === "string"
                     ? locale === "ar"
                       ? (assembly as any).descriptionAr
@@ -656,7 +656,7 @@ export default function StepPage() {
             {/* Main Content - 3D Viewer */}
             <div className="flex-1 flex flex-col gap-3 min-w-0">
               {/* 3D Viewer - Desktop */}
-              <div className="flex-1 min-h-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden relative">
+              <div className="flex-1 min-h-0 bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 overflow-hidden relative">
                 {modelUrl ? (
                   isDesktop && (
                     <SceneViewer
@@ -672,13 +672,13 @@ export default function StepPage() {
                     />
                   )
                 ) : (
-                  <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-800 h-full">
+                  <div className="flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 h-full">
                     <div className="text-center p-6">
-                      <Box className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                      <p className="text-gray-600 dark:text-gray-400 font-medium text-lg">
+                      <Box className="w-16 h-16 text-silver dark:text-stone mx-auto mb-4" />
+                      <p className="text-stone dark:text-silver font-medium text-lg">
                         3D Model Not Available
                       </p>
-                      <p className="text-gray-500 dark:text-gray-500 mt-2">
+                      <p className="text-pewter dark:text-stone mt-2">
                         Model file will be added soon
                       </p>
                     </div>
@@ -688,10 +688,10 @@ export default function StepPage() {
                 {modelUrl && (
                   <button
                     onClick={handleRestart}
-                    className="absolute top-3 end-3 w-10 h-10 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 shadow-lg rounded-full flex items-center justify-center transition-colors z-10 min-h-[44px] min-w-[44px]"
+                    className="absolute top-3 end-3 w-10 h-10 bg-papyrus/90 dark:bg-charcoal/90 hover:bg-papyrus dark:hover:bg-neutral-800 shadow-lg rounded-full flex items-center justify-center transition-colors z-10 min-h-[44px] min-w-[44px]"
                     aria-label="Restart animation"
                   >
-                    <RotateCcw className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                    <RotateCcw className="w-5 h-5 text-charcoal dark:text-silver" />
                   </button>
                 )}
               </div>
@@ -709,9 +709,9 @@ export default function StepPage() {
             </div>
 
             {/* Right Sidebar - Step Info */}
-            <div className="w-80 xl:w-96 flex-shrink-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden flex flex-col">
+            <div className="w-80 xl:w-96 flex-shrink-0 bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 overflow-hidden flex flex-col">
               {/* Step Header */}
-              <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/20">
+              <div className="p-4 border-b border-silver/30 dark:border-stone/20 bg-neutral-100/50 dark:bg-neutral-800/20">
                 <div className="flex items-center gap-2 mb-2">
                   <span
                     className="w-8 h-8 rounded-lg text-white flex items-center justify-center text-sm font-bold"
@@ -719,7 +719,7 @@ export default function StepPage() {
                   >
                     {currentStepIndex + 1}
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-stone dark:text-silver">
                     {t("assembly.step")}{" "}
                     <span style={{ color: branding.secondaryColor }}>
                       {currentStepIndex + 1}
@@ -731,7 +731,7 @@ export default function StepPage() {
                   </span>
                 </div>
                 <h1
-                  className="text-xl font-bold text-gray-900 dark:text-white"
+                  className="text-xl font-bold text-charcoal dark:text-papyrus"
                   style={{ color: branding.primaryColor }}
                 >
                   {stepTitle}
@@ -740,15 +740,15 @@ export default function StepPage() {
 
               {/* Step Description */}
               <div className="flex-1 overflow-y-auto p-4">
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                <p className="text-charcoal dark:text-silver leading-relaxed whitespace-pre-line">
                   {stepDescription}
                 </p>
 
                 {/* Tools Required */}
                 {currentStep.toolsRequired &&
                   currentStep.toolsRequired.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
+                    <div className="mt-4 pt-4 border-t border-silver/30 dark:border-stone/20">
+                      <h3 className="text-sm font-semibold text-charcoal dark:text-silver mb-2 flex items-center gap-1">
                         <Wrench
                           className="w-4 h-4"
                           style={{ color: branding.secondaryColor }}
@@ -759,7 +759,7 @@ export default function StepPage() {
                         {currentStep.toolsRequired.map((tool, index) => (
                           <span
                             key={index}
-                            className="px-2.5 py-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs rounded-lg border border-purple-200 dark:border-purple-800"
+                            className="px-2.5 py-1 bg-neutral-100 dark:bg-neutral-800/50 text-stone dark:text-silver text-xs rounded-lg border border-silver/50 dark:border-stone/30"
                           >
                             {tool}
                           </span>
@@ -770,8 +770,8 @@ export default function StepPage() {
 
                 {/* Duration */}
                 {currentStep.duration && (
-                  <div className="mt-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <Clock className="w-4 h-4 text-blue-500" />
+                  <div className="mt-4 flex items-center gap-2 text-sm text-stone dark:text-silver">
+                    <Clock className="w-4 h-4 text-stone" />
                     <span>{currentStep.duration}</span>
                   </div>
                 )}

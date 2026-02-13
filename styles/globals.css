@@ -41,13 +41,13 @@
 }
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
+  --foreground-rgb: 50, 56, 65;
+  --background-rgb: 246, 242, 238;
 }
 
 .dark {
-  --foreground-rgb: 255, 255, 255;
-  --background-rgb: 17, 24, 39;
+  --foreground-rgb: 246, 242, 238;
+  --background-rgb: 30, 34, 40;
 }
 
 * {
@@ -98,28 +98,28 @@ canvas {
 }
 
 .step-list-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f0ece8;
 }
 
 .dark .step-list-scrollbar::-webkit-scrollbar-track {
-  background: #374151;
+  background: #2a3039;
 }
 
 .step-list-scrollbar::-webkit-scrollbar-thumb {
-  background: #888;
+  background: #cacbcd;
   border-radius: 3px;
 }
 
 .dark .step-list-scrollbar::-webkit-scrollbar-thumb {
-  background: #6b7280;
+  background: #77726e;
 }
 
 .step-list-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #b3b9c1;
 }
 
 .dark .step-list-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #b3b9c1;
 }
 
 /* Custom scrollbar for all scrollable areas in dark mode */
@@ -133,20 +133,20 @@ canvas {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(202, 203, 205, 0.6);
   border-radius: 4px;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(119, 114, 110, 0.4);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(179, 185, 193, 0.8);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(119, 114, 110, 0.6);
 }
 
 /* Loading animation */

@@ -51,19 +51,19 @@ export default function AdminLogin() {
         <title>Admin Login | ML-Assemble</title>
         <link rel="icon" href="/favicon.svg" />
       </Head>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-slate-900 dark:to-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="min-h-screen bg-papyrus dark:bg-neutral-900 flex items-center justify-center px-4 relative overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-blue-400/20 to-indigo-500/20 dark:from-blue-500/10 dark:to-indigo-600/10 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-gradient-to-br from-indigo-400/20 to-purple-500/20 dark:from-indigo-500/10 dark:to-purple-600/10 blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-silver/20 dark:bg-stone/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-pewter/15 dark:bg-stone/10 blur-3xl" />
         </div>
 
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          className="absolute top-4 right-4 p-3 rounded-xl bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl
-            border border-white/50 dark:border-gray-700/50 shadow-lg
-            text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white
+          className="absolute top-4 right-4 p-3 rounded-xl bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl
+            border border-silver/50 dark:border-stone/20 shadow-lg
+            text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus
             hover:shadow-xl transition-all duration-300"
           aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
         >
@@ -77,20 +77,20 @@ export default function AdminLogin() {
         <div className="relative w-full max-w-md">
           {/* Logo and heading */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
-              <Wrench className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-charcoal dark:bg-papyrus flex items-center justify-center shadow-xl">
+              <Wrench className="w-8 h-8 text-papyrus dark:text-charcoal" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-charcoal dark:text-papyrus">
               Admin Panel
             </h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-sm text-stone dark:text-silver">
               PWAssemblyGuide Content Management
             </p>
           </div>
 
           {/* Login form card */}
           <form
-            className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 border border-white/50 dark:border-gray-700/50 p-8"
+            className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl shadow-xl border border-silver/50 dark:border-stone/20 p-8"
             onSubmit={handleSubmit}
           >
             <div className="space-y-5">
@@ -98,22 +98,22 @@ export default function AdminLogin() {
               <div>
                 <label
                   htmlFor="username"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-charcoal dark:text-silver mb-2"
                 >
                   Username
                 </label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-pewter dark:text-stone" />
                   <input
                     id="username"
                     name="username"
                     type="text"
                     autoComplete="username"
                     required
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                      bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                      placeholder-gray-400 dark:placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                      placeholder-pewter dark:placeholder-stone
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                       transition-all duration-200"
                     placeholder="Enter username"
                     value={username}
@@ -127,22 +127,22 @@ export default function AdminLogin() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                  className="block text-sm font-medium text-charcoal dark:text-silver mb-2"
                 >
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-pewter dark:text-stone" />
                   <input
                     id="password"
                     name="password"
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                      bg-white/50 dark:bg-gray-900/50 text-gray-900 dark:text-white
-                      placeholder-gray-400 dark:placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    className="w-full pl-11 pr-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white/50 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus
+                      placeholder-pewter dark:placeholder-stone
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal dark:focus:border-papyrus
                       transition-all duration-200"
                     placeholder="Enter password"
                     value={password}
@@ -168,11 +168,11 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 rounded-xl text-white font-medium
-                  bg-gradient-to-r from-blue-500 to-indigo-600 
-                  hover:from-blue-600 hover:to-indigo-700
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                  shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
+                className="w-full py-3 px-4 rounded-xl text-papyrus dark:text-charcoal font-medium
+                  bg-charcoal dark:bg-papyrus
+                  hover:bg-neutral-800 dark:hover:bg-white
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-charcoal dark:focus:ring-papyrus
+                  shadow-lg hover:shadow-xl
                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
@@ -191,8 +191,8 @@ export default function AdminLogin() {
             </div>
 
             {/* Help text */}
-            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+            <div className="mt-6 pt-6 border-t border-silver/30 dark:border-stone/20">
+              <p className="text-xs text-center text-stone dark:text-silver">
                 Contact your administrator if you need access credentials.
               </p>
             </div>
@@ -202,7 +202,7 @@ export default function AdminLogin() {
           <div className="mt-6 text-center">
             <a
               href="/"
-              className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-stone dark:text-silver hover:text-charcoal dark:hover:text-papyrus transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
               Back to website

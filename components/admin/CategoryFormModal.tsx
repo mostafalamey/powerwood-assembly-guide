@@ -150,20 +150,20 @@ export function CategoryFormModal({
     >
       <div
         ref={modalRef}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+        className="bg-papyrus dark:bg-charcoal rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-silver/30 dark:border-stone/20"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+        <div className="sticky top-0 bg-neutral-100/50 dark:bg-neutral-800/30 border-b border-silver/30 dark:border-stone/20 px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-              <FolderTree className="text-white w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-charcoal dark:bg-papyrus flex items-center justify-center shadow-lg">
+              <FolderTree className="text-papyrus dark:text-charcoal w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-charcoal dark:text-papyrus">
                 {mode === "create" ? "Create New Category" : "Edit Category"}
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-stone dark:text-silver">
                 {mode === "create"
                   ? "Add a new category to organize your assemblies"
                   : "Update category information and settings"}
@@ -172,11 +172,11 @@ export function CategoryFormModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
             disabled={isSubmitting}
             aria-label="Close modal"
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <X className="w-5 h-5 text-stone dark:text-silver" />
           </button>
         </div>
 
@@ -196,7 +196,7 @@ export function CategoryFormModal({
 
             {/* Category ID */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                 Category ID *
               </label>
               <input
@@ -206,16 +206,16 @@ export function CategoryFormModal({
                   setFormData({ ...formData, id: e.target.value.toLowerCase() })
                 }
                 disabled={mode === "edit" || isSubmitting}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono
-                placeholder-gray-400 dark:placeholder-gray-500
-                focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus font-mono
+                placeholder-stone/50 dark:placeholder-silver/50
+                focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                 transition-all duration-200
-                disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:cursor-not-allowed"
                 placeholder="e.g., base-cabinets, wall-units"
                 required
               />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-stone dark:text-silver">
                 Lowercase letters, numbers, and hyphens only. Cannot be changed
                 after creation.
               </p>
@@ -225,7 +225,7 @@ export function CategoryFormModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* English Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Name (English) *
                 </label>
                 <input
@@ -235,10 +235,10 @@ export function CategoryFormModal({
                     setFormData({ ...formData, name: e.target.value })
                   }
                   disabled={isSubmitting}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                  bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                  placeholder-gray-400 dark:placeholder-gray-500
-                  focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                  className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                  bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                  placeholder-stone/50 dark:placeholder-silver/50
+                  focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                   transition-all duration-200"
                   placeholder="e.g., Base Cabinets"
                   required
@@ -247,7 +247,7 @@ export function CategoryFormModal({
 
               {/* Arabic Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Name (Arabic) *
                 </label>
                 <input
@@ -258,10 +258,10 @@ export function CategoryFormModal({
                   }
                   disabled={isSubmitting}
                   dir="rtl"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                  bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-right
-                  placeholder-gray-400 dark:placeholder-gray-500
-                  focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                  className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                  bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus text-right
+                  placeholder-stone/50 dark:placeholder-silver/50
+                  focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                   transition-all duration-200"
                   placeholder="مثل: الخزائن الأرضية"
                   required
@@ -273,7 +273,7 @@ export function CategoryFormModal({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* English Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Description (English)
                 </label>
                 <textarea
@@ -282,10 +282,10 @@ export function CategoryFormModal({
                     setFormData({ ...formData, description: e.target.value })
                   }
                   disabled={isSubmitting}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                  bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                  placeholder-gray-400 dark:placeholder-gray-500
-                  focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                  className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                  bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                  placeholder-stone/50 dark:placeholder-silver/50
+                  focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                   transition-all duration-200 resize-none"
                   rows={3}
                   placeholder="Brief description of this category..."
@@ -294,7 +294,7 @@ export function CategoryFormModal({
 
               {/* Arabic Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Description (Arabic)
                 </label>
                 <textarea
@@ -304,10 +304,10 @@ export function CategoryFormModal({
                   }
                   disabled={isSubmitting}
                   dir="rtl"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                  bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-right
-                  placeholder-gray-400 dark:placeholder-gray-500
-                  focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                  className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                  bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus text-right
+                  placeholder-stone/50 dark:placeholder-silver/50
+                  focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                   transition-all duration-200 resize-none"
                   rows={3}
                   placeholder="وصف مختصر لهذه الفئة..."
@@ -328,14 +328,14 @@ export function CategoryFormModal({
           </div>
 
           {/* Form Actions */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-silver/30 dark:border-stone/20 bg-neutral-100/50 dark:bg-neutral-800/30">
             <button
               type="button"
               onClick={onClose}
               disabled={isSubmitting}
               className="px-4 py-2.5 rounded-xl font-medium text-sm
-                text-gray-700 dark:text-gray-300
-                hover:bg-gray-200 dark:hover:bg-gray-700
+                text-stone dark:text-silver
+                hover:bg-neutral-200 dark:hover:bg-neutral-700
                 transition-all duration-200"
             >
               Cancel
@@ -344,10 +344,10 @@ export function CategoryFormModal({
               type="submit"
               disabled={isSubmitting}
               className="px-6 py-2.5 rounded-xl font-medium text-sm
-                bg-gradient-to-r from-amber-500 to-orange-600 text-white
-                hover:from-amber-600 hover:to-orange-700
-                shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40
-                transition-all duration-300
+                bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal
+                hover:bg-neutral-800 dark:hover:bg-white
+                shadow-lg
+                transition-all duration-200
                 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting

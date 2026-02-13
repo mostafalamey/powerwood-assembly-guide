@@ -149,19 +149,18 @@ export default function CategoriesPage() {
           {/* Header */}
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-2xl font-bold text-charcoal dark:text-papyrus">
                 Categories
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
+              <p className="text-stone dark:text-silver mt-1">
                 Organize your assemblies into categories
               </p>
             </div>
             <button
               onClick={openCreateModal}
               className="flex items-center gap-2 px-4 py-2.5 
-                bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-medium
-                hover:from-amber-600 hover:to-orange-700
-                shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40
+                bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium
+                shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35
                 transition-all duration-300"
             >
               <Plus className="w-4 h-4" />
@@ -182,20 +181,19 @@ export default function CategoriesPage() {
 
           {/* Categories Grid */}
           {!loading && categories.length === 0 && (
-            <div className="text-center py-12 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-700">
-              <FolderOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            <div className="text-center py-12 bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border-2 border-dashed border-silver dark:border-stone">
+              <FolderOpen className="w-12 h-12 text-amber-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-charcoal dark:text-papyrus mb-2">
                 No categories yet
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-stone dark:text-silver mb-4">
                 Get started by creating your first category
               </p>
               <button
                 onClick={openCreateModal}
                 className="inline-flex items-center gap-2 px-4 py-2.5 
-                  bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-medium
-                  hover:from-amber-600 hover:to-orange-700
-                  shadow-lg shadow-amber-500/30 hover:shadow-xl
+                  bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-medium
+                  shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35
                   transition-all duration-300"
               >
                 <Plus className="w-4 h-4" />
@@ -209,28 +207,28 @@ export default function CategoriesPage() {
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-5 hover:shadow-2xl transition-all duration-300"
+                  className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-5 hover:shadow-2xl transition-all duration-300"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-lg">
+                      <h3 className="font-semibold text-charcoal dark:text-papyrus text-lg">
                         {category.name}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 rtl">
+                      <p className="text-stone dark:text-silver text-sm mt-1 rtl">
                         {category.nameAr}
                       </p>
                     </div>
                     <div className="flex gap-1">
                       <button
                         onClick={() => openEditModal(category)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        className="p-2 text-stone hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg transition-colors"
                         title="Edit category"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteCategory(category.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                        className="p-2 text-error hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                         title="Delete category"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -240,20 +238,18 @@ export default function CategoriesPage() {
 
                   <div className="space-y-2">
                     <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        ID:
-                      </p>
-                      <p className="text-sm font-mono text-gray-700 dark:text-gray-300">
+                      <p className="text-xs text-stone dark:text-silver">ID:</p>
+                      <p className="text-sm font-mono text-charcoal dark:text-silver">
                         {category.id}
                       </p>
                     </div>
 
                     {category.description && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="text-xs text-stone dark:text-silver">
                           Description:
                         </p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                        <p className="text-sm text-charcoal dark:text-silver">
                           {category.description}
                         </p>
                       </div>

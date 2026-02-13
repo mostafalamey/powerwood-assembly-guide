@@ -19,8 +19,8 @@ export default function StepNavigation({
   currentStepIndex,
   onStepClick,
   isAnimating = false,
-  primaryColor = "#3b82f6",
-  secondaryColor = "#6366f1",
+  primaryColor = "#323841",
+  secondaryColor = "#77726E",
 }: StepNavigationProps) {
   const { t, locale } = useTranslation();
 
@@ -30,16 +30,16 @@ export default function StepNavigation({
   return (
     <div className="space-y-2 lg:space-y-3">
       {/* Progress Bar */}
-      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl p-3 shadow-lg border border-white/50 dark:border-gray-700/50">
+      <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl p-3 shadow-lg border border-silver/50 dark:border-stone/20">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+          <span className="text-xs font-medium text-charcoal dark:text-silver">
             {t("navigation.progress")}
           </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-stone dark:text-silver">
             {currentStepIndex + 1} / {steps.length}
           </span>
         </div>
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+        <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-1.5">
           <div
             className="h-1.5 rounded-full transition-all duration-300"
             style={{
@@ -55,15 +55,15 @@ export default function StepNavigation({
         {hasPrevious ? (
           <TransitionLink
             href={`/assembly/${assemblyId}/step/${steps[currentStepIndex - 1].id}`}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl hover:bg-white dark:hover:bg-gray-700 border border-white/50 dark:border-gray-700/50 rounded-xl transition-all shadow-sm hover:shadow min-h-[44px]"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl hover:bg-white dark:hover:bg-neutral-800 border border-silver/50 dark:border-stone/20 rounded-xl transition-all shadow-sm hover:shadow min-h-[44px]"
           >
-            <ArrowLeft className="w-4 h-4 rtl:rotate-180 text-gray-700 dark:text-gray-300" />
-            <span className="font-medium text-sm text-gray-700 dark:text-gray-300">
+            <ArrowLeft className="w-4 h-4 rtl:rotate-180 text-charcoal dark:text-silver" />
+            <span className="font-medium text-sm text-charcoal dark:text-silver">
               {t("navigation.previous")}
             </span>
           </TransitionLink>
         ) : (
-          <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gray-100/50 dark:bg-gray-800/30 border border-gray-200/50 dark:border-gray-700/30 rounded-xl text-gray-400 dark:text-gray-600 cursor-not-allowed min-h-[44px]">
+          <div className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-neutral-100/50 dark:bg-neutral-800/30 border border-silver/30 dark:border-stone/10 rounded-xl text-pewter dark:text-stone cursor-not-allowed min-h-[44px]">
             <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
             <span className="font-medium text-sm">
               {t("navigation.previous")}
@@ -103,7 +103,7 @@ export default function StepNavigation({
         ) : (
           <TransitionLink
             href={`/assembly/${assemblyId}`}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white rounded-xl transition-all shadow-lg shadow-green-500/25 hover:shadow-xl min-h-[44px]"
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-success hover:bg-success-dark text-white rounded-xl transition-all shadow-lg hover:shadow-xl min-h-[44px]"
           >
             <CheckCircle className="w-4 h-4" />
             <span className="font-medium text-sm">
@@ -114,7 +114,7 @@ export default function StepNavigation({
       </div>
 
       {/* Step List */}
-      <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 max-h-48 lg:max-h-none lg:flex-1 overflow-y-auto">
+      <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl shadow-lg border border-silver/50 dark:border-stone/20 max-h-48 lg:max-h-none lg:flex-1 overflow-y-auto">
         <div className="p-2">
           {steps.map((step, index) => {
             const stepTitle =
@@ -144,14 +144,14 @@ export default function StepNavigation({
             return isDisabled ? (
               <div
                 key={step.id}
-                className="block p-2.5 mb-1.5 rounded-lg bg-gray-50/50 dark:bg-gray-700/30 opacity-50 cursor-not-allowed"
+                className="block p-2.5 mb-1.5 rounded-lg bg-neutral-100/50 dark:bg-neutral-800/30 opacity-50 cursor-not-allowed"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400">
+                  <div className="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold bg-neutral-300 dark:bg-neutral-700 text-stone dark:text-silver">
                     {index + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate text-gray-500 dark:text-gray-500">
+                    <p className="text-xs font-medium truncate text-stone dark:text-stone">
                       {stepTitle}
                     </p>
                   </div>
@@ -167,7 +167,7 @@ export default function StepNavigation({
                     ? "border-2"
                     : isCompleted
                       ? "bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 border border-green-200/50 dark:border-green-800/50"
-                      : "bg-gray-50/50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50 border border-transparent"
+                      : "bg-neutral-100/50 dark:bg-neutral-800/30 hover:bg-neutral-200 dark:hover:bg-neutral-700/50 border border-transparent"
                 }`}
                 style={
                   isActive
@@ -185,7 +185,7 @@ export default function StepNavigation({
                         ? "text-white"
                         : isCompleted
                           ? "bg-green-600 dark:bg-green-500 text-white"
-                          : "bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400"
+                          : "bg-neutral-300 dark:bg-neutral-700 text-stone dark:text-silver"
                     }`}
                     style={
                       isActive ? { backgroundColor: primaryColor } : undefined
@@ -204,7 +204,7 @@ export default function StepNavigation({
                           ? ""
                           : isCompleted
                             ? "text-green-800 dark:text-green-300"
-                            : "text-gray-900 dark:text-gray-200"
+                            : "text-charcoal dark:text-silver"
                       }`}
                       style={isActive ? { color: primaryColor } : undefined}
                     >

@@ -183,22 +183,22 @@ export function AssemblyFormModal({
     >
       <div
         ref={modalRef}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+        className="bg-papyrus dark:bg-charcoal rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-silver/30 dark:border-stone/20"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-silver/30 dark:border-stone/20 bg-neutral-100/50 dark:bg-neutral-800/30">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-              <Package className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 rounded-lg bg-charcoal/10 dark:bg-papyrus/10">
+              <Package className="w-5 h-5 text-charcoal dark:text-papyrus" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-xl font-bold text-charcoal dark:text-papyrus">
                 {mode === "create"
                   ? "Add New Assembly"
                   : `Edit Assembly: ${formData.id}`}
               </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-sm text-stone dark:text-silver">
                 {mode === "create"
                   ? "Create a new assembly with details"
                   : "Update assembly information"}
@@ -207,12 +207,12 @@ export function AssemblyFormModal({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
             disabled={isSubmitting}
             type="button"
             aria-label="Close modal"
           >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            <X className="w-5 h-5 text-stone dark:text-silver" />
           </button>
         </div>
 
@@ -233,7 +233,7 @@ export function AssemblyFormModal({
 
             {/* Assembly ID */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                 Assembly ID <span className="text-red-500">*</span>
               </label>
               <input
@@ -242,16 +242,16 @@ export function AssemblyFormModal({
                 onChange={(e) =>
                   handleChange("id", e.target.value.toUpperCase())
                 }
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                  bg-white dark:bg-gray-900 text-gray-900 dark:text-white font-mono
-                  placeholder-gray-400 dark:placeholder-gray-500
-                  focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
-                  transition-all duration-200 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                  bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus font-mono
+                  placeholder-stone/50 dark:placeholder-silver/50
+                  focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
+                  transition-all duration-200 disabled:bg-neutral-100 dark:disabled:bg-neutral-800 disabled:cursor-not-allowed"
                 placeholder="BC-001"
                 required
                 disabled={mode === "edit"}
               />
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              <p className="mt-2 text-sm text-stone dark:text-silver">
                 {mode === "edit"
                   ? "Assembly ID cannot be changed"
                   : "Format: XX-000 (e.g., BC-001, WC-002)"}
@@ -260,39 +260,39 @@ export function AssemblyFormModal({
 
             {/* Name (English & Arabic) - Side by Side */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                 Assembly Name <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
                     English
                   </label>
                   <input
                     type="text"
                     value={formData.name.en}
                     onChange={(e) => handleChange("name.en", e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                      bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                      placeholder-gray-400 dark:placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                       transition-all duration-200"
                     placeholder='2-Door Base 36"'
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
                     Arabic (عربي)
                   </label>
                   <input
                     type="text"
                     value={formData.name.ar}
                     onChange={(e) => handleChange("name.ar", e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                      bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-right
-                      placeholder-gray-400 dark:placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus text-right
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                       transition-all duration-200"
                     placeholder="خزانة أرضية بابين 36"
                     dir="rtl"
@@ -305,15 +305,15 @@ export function AssemblyFormModal({
             {/* Category & Estimated Time - Side by Side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Category <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.category}
                   onChange={(e) => handleChange("category", e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                    bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                    focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                  className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                    bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                    focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                     transition-all duration-200"
                   required
                   title="Category"
@@ -326,11 +326,11 @@ export function AssemblyFormModal({
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                   Estimated Time (minutes)
                 </label>
                 <div className="relative">
-                  <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
+                  <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone dark:text-silver" />
                   <input
                     type="number"
                     value={formData.estimatedTime}
@@ -340,10 +340,10 @@ export function AssemblyFormModal({
                         parseInt(e.target.value) || 0,
                       )
                     }
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                      bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                      placeholder-gray-400 dark:placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                       transition-all duration-200"
                     placeholder="30"
                     min="0"
@@ -354,12 +354,12 @@ export function AssemblyFormModal({
 
             {/* Description (English & Arabic) - Side by Side */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-charcoal dark:text-silver mb-2">
                 Description
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
                     English
                   </label>
                   <textarea
@@ -367,17 +367,17 @@ export function AssemblyFormModal({
                     onChange={(e) =>
                       handleChange("description.en", e.target.value)
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                      bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                      placeholder-gray-400 dark:placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                       transition-all duration-200 resize-none"
                     placeholder="Assembly description..."
                     rows={3}
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1.5">
+                  <label className="block text-xs text-stone dark:text-silver mb-1.5">
                     Arabic (عربي)
                   </label>
                   <textarea
@@ -385,10 +385,10 @@ export function AssemblyFormModal({
                     onChange={(e) =>
                       handleChange("description.ar", e.target.value)
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                      bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-right
-                      placeholder-gray-400 dark:placeholder-gray-500
-                      focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500
+                    className="w-full px-4 py-3 rounded-xl border border-silver/50 dark:border-stone/30 
+                      bg-white dark:bg-neutral-900 text-charcoal dark:text-papyrus text-right
+                      placeholder-stone/50 dark:placeholder-silver/50
+                      focus:outline-none focus:ring-2 focus:ring-charcoal/30 dark:focus:ring-papyrus/30 focus:border-charcoal/50 dark:focus:border-papyrus/50
                       transition-all duration-200 resize-none"
                     placeholder="وصف التجميع..."
                     dir="rtl"
@@ -420,13 +420,13 @@ export function AssemblyFormModal({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-silver/30 dark:border-stone/20 bg-neutral-100/50 dark:bg-neutral-800/30">
             <button
               type="button"
               onClick={onClose}
               className="px-4 py-2.5 rounded-xl font-medium text-sm
-                text-gray-700 dark:text-gray-300
-                hover:bg-gray-200 dark:hover:bg-gray-700
+                text-stone dark:text-silver
+                hover:bg-neutral-200 dark:hover:bg-neutral-700
                 transition-all duration-200"
               disabled={isSubmitting}
             >
@@ -435,10 +435,10 @@ export function AssemblyFormModal({
             <button
               type="submit"
               className="px-6 py-2.5 rounded-xl font-medium text-sm
-                bg-gradient-to-r from-blue-500 to-indigo-600 text-white
-                hover:from-blue-600 hover:to-indigo-700
-                shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40
-                transition-all duration-300
+                bg-charcoal dark:bg-papyrus text-papyrus dark:text-charcoal
+                hover:bg-neutral-800 dark:hover:bg-white
+                shadow-lg
+                transition-all duration-200
                 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >

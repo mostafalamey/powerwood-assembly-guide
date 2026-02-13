@@ -7,7 +7,120 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.0.0] - 2026-02-13 - Project Complete 🎉
+
+### 🎨 Added - "Neutral Papyrus" Design Language (2026-02-13)
+
+Comprehensive visual redesign implementing the "Neutral Papyrus" design system across the entire application — both public-facing pages and admin panel.
+
+**Design System:**
+
+- Created [DESIGN_LANGUAGE.md](docs/DESIGN_LANGUAGE.md) — full design specification document (725 lines)
+- Defined 5-color neutral palette: Papyrus (#F6F2EE), Silver (#CACBCD), Pewter (#B3B9C1), Stone (#77726E), Charcoal (#323841)
+- Added semantic status colors: success, error, warning, info (muted tones)
+- Defined accent color system: sky (assemblies), emerald (create actions), violet (visual editor/QR), amber (categories/time), rose (branding)
+- Extended neutral shade scale (50–950) in Tailwind config
+- Updated CSS custom properties in globals.css (foreground/background RGB, scrollbar colors)
+
+**Public Pages — Full Restyle:**
+
+- Homepage: Papyrus background, neutral header, glassmorphic QR card, neutral category grid
+- Category listing: Neutral cards with silver borders, charcoal/papyrus text hierarchy
+- Assembly detail: Neutral stat cards, warm step list items with hover transitions
+- Step viewer: Papyrus canvas bg, neutral control buttons, neutral step sidebar
+- 404 page: Neutral palette buttons and text
+
+**Admin Panel — Full Restyle:**
+
+- Dashboard: Charcoal welcome banner, tinted stat card icons (sky/violet/emerald/amber), neutral quick action cards
+- Login page: Papyrus background, charcoal/papyrus inverted button, neutral input focus rings
+- Assemblies list: Neutral glassmorphic cards, category tag pills with amber accent
+- Categories list: Neutral cards with amber accent icons
+- QR codes: Violet accent for QR theme, neutral selection checkboxes
+- Steps management: Emerald Add button, sky Copy button, purple Visual Editor gradient, sky step number badges
+- Admin sidebar: Neutral nav items, charcoal/papyrus active state inversion, tinted section icons
+
+**Modals — Unified Style:**
+
+- `AssemblyFormModal`: Glassmorphic with sky header icon accent
+- `CategoryFormModal`: Glassmorphic with amber header icon accent
+- `FileUploadField`: Neutral drag-drop zones, charcoal/papyrus upload button
+
+**Shared Components:**
+
+- `Header.tsx`: Papyrus background with subtle blur, neutral text colors
+- `ToastProvider`: Neutral toast styling with charcoal/papyrus scheme
+- `LoadingSpinner`: Neutral spinner colors
+- `AdminLayout`: Neutral sidebar with tinted section icons
+
+**Brand Assets:**
+
+- Updated `Logo.svg`: Charcoal-to-stone gradient fill replacing blue, papyrus lettering
+- Updated `favicon.svg`: Matching gradient treatment
+- Updated `BrandingContext` defaults to use Neutral Papyrus tokens
+
+**Tailwind Config Changes:**
+
+- Added papyrus, silver, pewter, stone, charcoal as top-level colors
+- Extended neutral palette (50–950) mapped to Papyrus-to-Charcoal scale
+- Added semantic colors (success, error, warning, info) with light/dark/bg variants
+- Remapped primary alias to neutral scale for backward compatibility
+
+### 🔧 Added - UX Consistency Improvements (2026-02-13)
+
+**Modal-Based Workflows:**
+
+- Dashboard "Add New Assembly" now opens `AssemblyFormModal` instead of navigating to a dedicated page
+- Step add/edit now uses new `StepFormModal` instead of navigating to separate pages
+- All create/edit operations across the admin use modals for consistent UX
+
+**New Component — StepFormModal:**
+
+- Created `components/admin/StepFormModal.tsx` (595 lines)
+- Bilingual title and description inputs (English + Arabic)
+- Duration field with clock icon
+- Drag-and-drop audio upload zones for English and Arabic narration
+- Animation info note directing to Visual Editor
+- Portal-rendered with escape key close, body scroll lock, focus management
+- Styled with Neutral Papyrus palette + accent colors
+
+**Removed Redundancy:**
+
+- Removed QR Codes button from assemblies page header (already accessible via sidebar tab)
+- Deleted `components/admin/CabinetFormModal.tsx` — legacy component with zero usage
+
+**Files added:**
+
+- `components/admin/StepFormModal.tsx` — Step create/edit modal
+- `docs/DESIGN_LANGUAGE.md` — Neutral Papyrus design language specification
+
+**Files deleted:**
+
+- `components/admin/CabinetFormModal.tsx` — Unused legacy modal from old "Cabinet" system
+
+**Files modified (20+):**
+
+- `tailwind.config.js` — Neutral Papyrus color tokens
+- `styles/globals.css` — CSS custom properties, scrollbar colors
+- `public/Logo.svg` — Charcoal gradient logo
+- `public/favicon.svg` — Matching gradient favicon
+- `pages/index.tsx` — Homepage full restyle
+- `pages/categories/[category].tsx` — Category page restyle
+- `pages/assembly/[id].tsx` — Assembly detail restyle
+- `pages/assembly/[id]/step/[stepId].tsx` — Step viewer restyle
+- `pages/admin/login.tsx` — Login page restyle
+- `pages/admin/index.tsx` — Dashboard restyle + AssemblyFormModal integration
+- `pages/admin/qr-codes.tsx` — QR codes page restyle
+- `pages/admin/categories/index.tsx` — Categories admin restyle
+- `pages/admin/assemblies/index.tsx` — Assemblies list restyle + QR button removal
+- `pages/admin/assemblies/[id]/edit.tsx` — Edit page restyle
+- `pages/admin/assemblies/[id]/steps/index.tsx` — Steps page accent colors + StepFormModal wiring
+- `pages/admin/assemblies/[id]/steps/new.tsx` — Restyle
+- `pages/admin/assemblies/[id]/steps/authoring.tsx` — Restyle
+- `components/admin/AdminLayout.tsx` — Sidebar neutral redesign
+- `components/admin/ToastProvider.tsx` — Neutral toast styling
+- `components/admin/CategoryFormModal.tsx` — Neutral palette
+- `components/admin/LoadingSpinner.tsx` — Neutral spinner
 
 ### ✨ Added - Admin UI/UX Overhaul (2026-02-13)
 

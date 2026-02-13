@@ -111,9 +111,9 @@ export default function QRCodesPage() {
 
       {/* Print-only version */}
       <div className="hidden print:block">
-        <div className="text-center py-6 border-b-2 border-gray-800 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">PWAssemblyGuide</h1>
-          <p className="text-sm text-gray-600 mt-2">Assembly Guide QR Codes</p>
+        <div className="text-center py-6 border-b-2 border-charcoal mb-8">
+          <h1 className="text-3xl font-bold text-charcoal">PWAssemblyGuide</h1>
+          <p className="text-sm text-stone mt-2">Assembly Guide QR Codes</p>
         </div>
 
         {/* Print QR Codes Grid */}
@@ -123,7 +123,7 @@ export default function QRCodesPage() {
             return (
               <div
                 key={assembly.id}
-                className="border border-gray-800 rounded-lg p-6 text-center"
+                className="border border-charcoal rounded-lg p-6 text-center"
               >
                 <div className="bg-white p-4 rounded-lg inline-block mb-4">
                   <QRCode
@@ -134,10 +134,10 @@ export default function QRCodesPage() {
                     includeMargin={true}
                   />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1 text-lg">
+                <h3 className="font-semibold text-charcoal mb-1 text-lg">
                   {assembly.name.en}
                 </h3>
-                <p className="text-sm text-gray-600">{assembly.id}</p>
+                <p className="text-sm text-stone">{assembly.id}</p>
               </div>
             );
           })}
@@ -149,16 +149,16 @@ export default function QRCodesPage() {
         <AdminLayout title="QR Codes">
           <div className="p-6">
             {/* Header Card */}
-            <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-6 mb-6">
+            <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-6 mb-6">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                  <QrCode className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 rounded-xl bg-violet-500/15 dark:bg-violet-400/15 flex items-center justify-center shadow-lg">
+                  <QrCode className="w-6 h-6 text-violet-600 dark:text-violet-400" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <h2 className="text-lg font-semibold text-charcoal dark:text-papyrus">
                     QR Code Generator
                   </h2>
-                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-stone dark:text-silver mt-1">
                     Generate and print QR codes for assembly guides. Users can
                     scan these codes to access instructions directly on their
                     mobile devices.
@@ -168,7 +168,7 @@ export default function QRCodesPage() {
             </div>
 
             {loading ? (
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-12 text-center">
+              <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-12 text-center">
                 <LoadingSpinner
                   size="lg"
                   message="Loading assemblies..."
@@ -178,19 +178,19 @@ export default function QRCodesPage() {
             ) : (
               <>
                 {/* Actions Bar */}
-                <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
+                <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
                   <div className="flex items-center gap-4">
                     <button
                       onClick={toggleAll}
-                      className="px-4 py-2 rounded-xl text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                      className="px-4 py-2 rounded-xl text-sm font-medium text-charcoal dark:text-papyrus hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                     >
                       {selectedAssemblies.size === assemblies.length
                         ? "Deselect All"
                         : "Select All"}
                     </button>
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-100 dark:bg-gray-700/50">
-                      <CheckSquare className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-neutral-100 dark:bg-neutral-800/50">
+                      <CheckSquare className="w-4 h-4 text-stone dark:text-silver" />
+                      <span className="text-sm font-medium text-charcoal dark:text-silver">
                         {selectedAssemblies.size} of {assemblies.length}{" "}
                         selected
                       </span>
@@ -199,10 +199,10 @@ export default function QRCodesPage() {
                   <button
                     onClick={printSelected}
                     disabled={selectedAssemblies.size === 0}
-                    className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium
-                      hover:from-blue-600 hover:to-indigo-700 
+                    className="px-5 py-2.5 text-white bg-violet-500
+                      hover:bg-violet-600 rounded-xl font-medium
                       disabled:opacity-50 disabled:cursor-not-allowed 
-                      shadow-lg shadow-blue-500/30 hover:shadow-xl
+                      shadow-lg shadow-violet-500/25 hover:shadow-xl hover:shadow-violet-500/35
                       transition-all duration-200 flex items-center gap-2"
                   >
                     <Printer className="w-4 h-4" />
@@ -219,20 +219,20 @@ export default function QRCodesPage() {
                     return (
                       <div
                         key={assembly.id}
-                        className={`bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border overflow-hidden transition-all duration-300 ${
+                        className={`bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border overflow-hidden transition-all duration-300 ${
                           isSelected
-                            ? "border-blue-500 dark:border-blue-400 shadow-xl shadow-blue-500/20"
-                            : "border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50"
+                            ? "border-charcoal dark:border-papyrus shadow-xl shadow-charcoal/10 dark:shadow-papyrus/10"
+                            : "border-silver/50 dark:border-stone/20 shadow-xl"
                         } ${!isSelected ? "print:hidden" : ""}`}
                       >
                         {/* Selection Checkbox - Hidden in print */}
-                        <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 print:hidden">
+                        <div className="p-4 border-b border-silver/30 dark:border-stone/20 print:hidden">
                           <label className="flex items-center gap-3 cursor-pointer group">
                             <div
                               className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
                                 isSelected
-                                  ? "bg-gradient-to-r from-blue-500 to-indigo-600 border-blue-500"
-                                  : "border-gray-300 dark:border-gray-600 group-hover:border-blue-400"
+                                  ? "bg-charcoal dark:bg-papyrus border-charcoal dark:border-papyrus"
+                                  : "border-silver dark:border-stone group-hover:border-charcoal dark:group-hover:border-papyrus"
                               }`}
                             >
                               {isSelected && (
@@ -245,7 +245,7 @@ export default function QRCodesPage() {
                               onChange={() => toggleAssembly(assembly.id)}
                               className="sr-only"
                             />
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <span className="text-sm font-medium text-charcoal dark:text-silver">
                               Include in print
                             </span>
                           </label>
@@ -263,13 +263,13 @@ export default function QRCodesPage() {
                             />
                           </div>
 
-                          <h3 className="font-semibold text-gray-900 dark:text-white text-lg mb-1">
+                          <h3 className="font-semibold text-charcoal dark:text-papyrus text-lg mb-1">
                             {assembly.name.en}
                           </h3>
-                          <span className="inline-block px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm font-mono text-gray-600 dark:text-gray-400 mb-3">
+                          <span className="inline-block px-3 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm font-mono text-stone dark:text-silver mb-3">
                             {assembly.id}
                           </span>
-                          <p className="text-xs text-gray-500 dark:text-gray-500 font-mono break-all px-2 mb-4">
+                          <p className="text-xs text-pewter dark:text-stone font-mono break-all px-2 mb-4">
                             {url}
                           </p>
 
@@ -280,8 +280,8 @@ export default function QRCodesPage() {
                                 downloadQRCode(assembly.id, assembly.name.en)
                               }
                               className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl
-                                bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 
-                                hover:bg-gray-200 dark:hover:bg-gray-600 
+                                bg-neutral-100 dark:bg-neutral-800 text-charcoal dark:text-silver 
+                                hover:bg-neutral-200 dark:hover:bg-neutral-700 
                                 transition-colors flex items-center justify-center gap-2"
                             >
                               <Download className="w-4 h-4" />
@@ -291,8 +291,8 @@ export default function QRCodesPage() {
                               href={`/assembly/${assembly.id}`}
                               target="_blank"
                               className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl
-                                bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 
-                                hover:bg-blue-100 dark:hover:bg-blue-900/50 
+                                bg-neutral-100 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus 
+                                hover:bg-neutral-200 dark:hover:bg-neutral-700 
                                 transition-colors flex items-center justify-center gap-2"
                             >
                               <ExternalLink className="w-4 h-4" />
@@ -306,22 +306,22 @@ export default function QRCodesPage() {
                 </div>
 
                 {assemblies.length === 0 && (
-                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/50 dark:border-gray-700/50 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-12 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center mx-auto mb-4">
-                      <QrCode className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                  <div className="bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border border-silver/50 dark:border-stone/20 shadow-xl p-12 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-violet-500/15 dark:bg-violet-400/15 flex items-center justify-center mx-auto mb-4">
+                      <QrCode className="w-8 h-8 text-violet-500 dark:text-violet-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-semibold text-charcoal dark:text-papyrus">
                       No assemblies yet
                     </h3>
-                    <p className="mt-2 text-gray-500 dark:text-gray-400">
+                    <p className="mt-2 text-stone dark:text-silver">
                       Create assemblies to generate QR codes.
                     </p>
                     <Link
                       href="/admin/assemblies"
                       className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 
-                        bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium
-                        hover:from-blue-600 hover:to-indigo-700 
-                        shadow-lg shadow-blue-500/30 hover:shadow-xl
+                        text-white bg-emerald-500 rounded-xl font-medium
+                        hover:bg-emerald-600
+                        shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35
                         transition-all duration-200"
                     >
                       <ArrowRight className="w-5 h-5" />
