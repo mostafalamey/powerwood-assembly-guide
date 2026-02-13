@@ -1,4 +1,23 @@
-import { Assembly } from "@/types/assembly";
+const fs = require("fs");
+const path = require("path");
+
+/**
+ * Auto-generate assemblies-loader.ts based on actual assembly files
+ * This keeps the loader in sync with the file system
+ */
+
+const assembliesDir = path.join(__dirname, "..", "data", "assemblies");
+const loaderPath = path.join(__dirname, "..", "data", "assemblies-loader.ts");
+
+// Get all assembly JSON files
+const files = fs.readdirSync(assembliesDir).filter((f) => f.endsWith(".json"));
+const assemblyIds = files.map((f) => f.replace(".json", ""));
+
+console.log(`Found ${files.length} assembly file(s):`);
+assemblyIds.forEach((id) => console.log(`  - ${id}`));
+
+// Generate the loader file content
+const loaderContent = `import { Assembly } from "@/types/assembly";
 
 // Import the index file (metadata only)
 import assembliesIndex from "./assemblies-index.json";
@@ -8,8 +27,12 @@ import assembliesIndex from "./assemblies-index.json";
 // AUTO-GENERATED - DO NOT EDIT MANUALLY
 // Run: npm run generate:loader to regenerate this file
 const assemblyFiles: Record<string, () => Promise<{ default: Assembly }>> = {
-  "BU-1D-600": () =>
-    import("./assemblies/BU-1D-600.json").then((m) => m as any),
+${assemblyIds
+  .map(
+    (id) =>
+      `  "${id}": () => import("./assemblies/${id}.json").then((m) => m as any),`,
+  )
+  .join("\n")}
 };
 
 /**
@@ -38,10 +61,14 @@ export function getAssembly(assemblyId: string): Assembly | null {
     try {
       // AUTO-GENERATED SWITCH STATEMENT
       switch (assemblyId) {
-        case "BU-1D-600":
-          const BU_1D_600Data = require("./assemblies/BU-1D-600.json");
-          steps = BU_1D_600Data.steps || [];
-          break;
+${assemblyIds
+  .map(
+    (id) => `        case "${id}":
+          const ${id.replace(/-/g, "_")}Data = require("./assemblies/${id}.json");
+          steps = ${id.replace(/-/g, "_")}Data.steps || [];
+          break;`,
+  )
+  .join("\n")}
         default:
           steps = [];
       }
@@ -93,3 +120,10 @@ export function getAllAssembliesWithSteps(): { assemblies: Assembly[] } {
 
   return { assemblies };
 }
+`;
+
+// Write the loader file
+fs.writeFileSync(loaderPath, loaderContent, "utf8");
+
+console.log("\n✅ Generated assemblies-loader.ts");
+console.log(`   ${assemblyIds.length} assembly import(s) added`);

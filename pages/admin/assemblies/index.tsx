@@ -31,6 +31,9 @@ import {
   FolderPlus,
   FolderTree,
   GripVertical,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import LoadingSpinner from "../../../components/admin/LoadingSpinner";
 
@@ -94,6 +97,22 @@ export default function AssembliesListPage() {
     null,
   );
   const [isDragActive, setIsDragActive] = useState(false);
+  const [sortOrders, setSortOrders] = useState<Record<string, "asc" | "desc">>(
+    () => {
+      // Initialize from localStorage
+      if (typeof window !== "undefined") {
+        const saved = localStorage.getItem("assemblies_sort_orders");
+        if (saved) {
+          try {
+            return JSON.parse(saved);
+          } catch (e) {
+            console.error("Failed to parse saved sort orders", e);
+          }
+        }
+      }
+      return {};
+    },
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -101,6 +120,16 @@ export default function AssembliesListPage() {
     fetchAssemblys();
     fetchCategories();
   }, []);
+
+  // Save sort orders to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== "undefined" && Object.keys(sortOrders).length > 0) {
+      localStorage.setItem(
+        "assemblies_sort_orders",
+        JSON.stringify(sortOrders),
+      );
+    }
+  }, [sortOrders]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -485,6 +514,23 @@ export default function AssembliesListPage() {
     return categories.find((cat) => cat.id === categoryId);
   };
 
+  const toggleSortOrder = (categoryId: string) => {
+    setSortOrders((prev) => ({
+      ...prev,
+      [categoryId]: prev[categoryId] === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  const getSortIcon = (categoryId: string) => {
+    const order = sortOrders[categoryId];
+    if (!order) return <ArrowUpDown className="w-4 h-4 opacity-50" />;
+    return order === "asc" ? (
+      <ArrowUp className="w-4 h-4" />
+    ) : (
+      <ArrowDown className="w-4 h-4" />
+    );
+  };
+
   return (
     <AuthGuard>
       <Head>
@@ -560,7 +606,7 @@ export default function AssembliesListPage() {
             <div className="space-y-8">
               {categories.map((category) => {
                 const assembliesInCategory = assemblyGroups[category.id] || [];
-                const filteredInCategory = assembliesInCategory.filter(
+                let filteredInCategory = assembliesInCategory.filter(
                   (assembly) =>
                     assembly.id
                       .toLowerCase()
@@ -572,6 +618,15 @@ export default function AssembliesListPage() {
                       .toLowerCase()
                       .includes(searchTerm.toLowerCase()),
                 );
+
+                // Sort by ID if sort order is set
+                const sortOrder = sortOrders[category.id];
+                if (sortOrder) {
+                  filteredInCategory = [...filteredInCategory].sort((a, b) => {
+                    const comparison = a.id.localeCompare(b.id);
+                    return sortOrder === "asc" ? comparison : -comparison;
+                  });
+                }
 
                 const isDropTarget = dragOverCategoryId === category.id;
 
@@ -652,8 +707,14 @@ export default function AssembliesListPage() {
                                 <th className="px-4 py-3 text-left text-xs font-semibold text-stone dark:text-silver uppercase tracking-wider">
                                   Thumbnail
                                 </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-stone dark:text-silver uppercase tracking-wider">
-                                  ID
+                                <th className="px-4 py-3 text-left">
+                                  <button
+                                    onClick={() => toggleSortOrder(category.id)}
+                                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone dark:text-silver uppercase tracking-wider hover:text-charcoal dark:hover:text-papyrus transition-colors"
+                                  >
+                                    ID
+                                    {getSortIcon(category.id)}
+                                  </button>
                                 </th>
                                 <th className="px-4 py-3 text-left text-xs font-semibold text-stone dark:text-silver uppercase tracking-wider">
                                   Name (EN)

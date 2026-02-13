@@ -109,35 +109,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $originalName = basename($file['name']);
         $originalExt = pathinfo($originalName, PATHINFO_EXTENSION);
         
-        if ($requestedFilename) {
-            $safeName = basename($requestedFilename);
-            $hasExt = pathinfo($safeName, PATHINFO_EXTENSION) !== '';
-            $uploadFilename = $hasExt ? $safeName : $safeName . '.' . $originalExt;
+        // Determine target directory and filename
+        $uploadFilename = '';
+        $fullTargetDir = '';
+        
+        if ($replacePath) {
+            // When replacePath is provided, use it to determine the directory and filename
+            $normalizedReplacePath = normalizeUploadPath($replacePath);
+            if (!$normalizedReplacePath) {
+                sendError('Invalid replacePath', 400);
+            }
+            
+            $fullTargetDir = dirname($normalizedReplacePath);
+            $existingFilename = basename($normalizedReplacePath);
+            $hasExt = pathinfo($existingFilename, PATHINFO_EXTENSION) !== '';
+            $uploadFilename = $hasExt ? $existingFilename : $existingFilename . '.' . $originalExt;
+            
+            // Delete existing file if it exists
+            if (file_exists($normalizedReplacePath)) {
+                if (!unlink($normalizedReplacePath)) {
+                    sendError('Failed to delete existing file', 500);
+                }
+            }
         } else {
-            $baseName = pathinfo($originalName, PATHINFO_FILENAME);
-            $timestamp = time();
-            $uploadFilename = $baseName . '-' . $timestamp . '.' . $originalExt;
+            // Use directory parameter for target location
+            if ($requestedFilename) {
+                $safeName = basename($requestedFilename);
+                $hasExt = pathinfo($safeName, PATHINFO_EXTENSION) !== '';
+                $uploadFilename = $hasExt ? $safeName : $safeName . '.' . $originalExt;
+            } else {
+                $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+                $timestamp = time();
+                $uploadFilename = $baseName . '-' . $timestamp . '.' . $originalExt;
+            }
+            
+            // Create target directory (in public folder)
+            $fullTargetDir = UPLOAD_DIR . '/' . $directory;
         }
         
-        // Create target directory (in public folder)
-        $fullTargetDir = UPLOAD_DIR . '/' . $directory;
+        // Create target directory if it doesn't exist
         if (!is_dir($fullTargetDir)) {
             if (!mkdir($fullTargetDir, 0755, true)) {
-                sendError('Failed to create directory: ' . $directory, 500);
+                sendError('Failed to create directory', 500);
             }
         }
         
         $targetPath = $fullTargetDir . '/' . $uploadFilename;
-        $publicPath = '/' . $directory . '/' . $uploadFilename;
-
-        if ($replacePath && $replacePath !== $publicPath) {
-            $existingPath = normalizeUploadPath($replacePath);
-            if ($existingPath && file_exists($existingPath)) {
-                if (!unlink($existingPath)) {
-                    sendError('Failed to delete existing file', 500);
-                }
-            }
-        }
+        
+        // Calculate public path relative to UPLOAD_DIR
+        $relativePath = str_replace(UPLOAD_DIR, '', $targetPath);
+        $publicPath = '/' . ltrim(str_replace('\\', '/', $relativePath), '/');
         
         // Move uploaded file
         if (!move_uploaded_file($file['tmp_name'], $targetPath)) {

@@ -12,6 +12,7 @@ import {
   Download,
   ExternalLink,
   ArrowRight,
+  FolderTree,
 } from "lucide-react";
 import LoadingSpinner from "../../components/admin/LoadingSpinner";
 
@@ -26,8 +27,17 @@ interface Assembly {
   image?: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+  nameAr: string;
+  description?: string;
+  descriptionAr?: string;
+}
+
 export default function QRCodesPage() {
   const [assemblies, setAssemblies] = useState<Assembly[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedAssemblies, setSelectedAssemblies] = useState<Set<string>>(
     new Set(),
@@ -40,6 +50,7 @@ export default function QRCodesPage() {
       setBaseUrl(window.location.origin);
     }
     fetchAssemblies();
+    fetchCategories();
   }, []);
 
   const fetchAssemblies = async () => {
@@ -61,6 +72,18 @@ export default function QRCodesPage() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch("/api/categories");
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data.categories || []);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
     }
   };
 
@@ -103,6 +126,24 @@ export default function QRCodesPage() {
     selectedAssemblies.has(c.id),
   );
 
+  // Group assemblies by category and sort by ID
+  const assemblyGroups: Record<string, Assembly[]> = {};
+  assemblies.forEach((assembly) => {
+    if (!assemblyGroups[assembly.category]) {
+      assemblyGroups[assembly.category] = [];
+    }
+    assemblyGroups[assembly.category].push(assembly);
+  });
+
+  // Sort assemblies within each category by ID
+  Object.keys(assemblyGroups).forEach((categoryId) => {
+    assemblyGroups[categoryId].sort((a, b) => a.id.localeCompare(b.id));
+  });
+
+  const getCategoryData = (categoryId: string): Category | undefined => {
+    return categories.find((cat) => cat.id === categoryId);
+  };
+
   return (
     <AuthGuard>
       <Head>
@@ -116,32 +157,48 @@ export default function QRCodesPage() {
           <p className="text-sm text-stone mt-2">Assembly Guide QR Codes</p>
         </div>
 
-        {/* Print QR Codes Grid */}
-        <div className="grid grid-cols-2 gap-8 px-8">
-          {selectedAssembliesList.map((assembly) => {
-            const url = `${baseUrl}/assembly/${assembly.id}`;
-            return (
-              <div
-                key={assembly.id}
-                className="border border-charcoal rounded-lg p-6 text-center"
-              >
-                <div className="bg-white p-4 rounded-lg inline-block mb-4">
-                  <QRCode
-                    id={`qr-print-${assembly.id}`}
-                    value={url}
-                    size={200}
-                    level="H"
-                    includeMargin={true}
-                  />
-                </div>
-                <h3 className="font-semibold text-charcoal mb-1 text-lg">
-                  {assembly.name.en}
-                </h3>
-                <p className="text-sm text-stone">{assembly.id}</p>
+        {/* Print QR Codes by Category */}
+        {categories.map((category) => {
+          const assembliesInCategory = assemblyGroups[category.id] || [];
+          const selectedInCategory = assembliesInCategory.filter((a) =>
+            selectedAssemblies.has(a.id),
+          );
+
+          if (selectedInCategory.length === 0) return null;
+
+          return (
+            <div key={category.id} className="mb-12">
+              <h2 className="text-2xl font-bold text-charcoal mb-6 px-8">
+                {category.name}
+              </h2>
+              <div className="grid grid-cols-3 gap-6 px-8">
+                {selectedInCategory.map((assembly) => {
+                  const url = `${baseUrl}/assembly/${assembly.id}`;
+                  return (
+                    <div
+                      key={assembly.id}
+                      className="border border-charcoal rounded-lg p-4 text-center"
+                    >
+                      <div className="bg-white p-3 rounded-lg inline-block mb-3">
+                        <QRCode
+                          id={`qr-print-${assembly.id}`}
+                          value={url}
+                          size={140}
+                          level="H"
+                          includeMargin={true}
+                        />
+                      </div>
+                      <h3 className="font-semibold text-charcoal mb-1 text-base">
+                        {assembly.name.en}
+                      </h3>
+                      <p className="text-sm text-stone">{assembly.id}</p>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Screen-only version */}
@@ -210,95 +267,131 @@ export default function QRCodesPage() {
                   </button>
                 </div>
 
-                {/* QR Codes Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {assemblies.map((assembly) => {
-                    const url = `${baseUrl}/assembly/${assembly.id}`;
-                    const isSelected = selectedAssemblies.has(assembly.id);
+                {/* QR Codes by Category */}
+                <div className="space-y-8">
+                  {categories.map((category) => {
+                    const assembliesInCategory =
+                      assemblyGroups[category.id] || [];
+
+                    if (assembliesInCategory.length === 0) return null;
 
                     return (
-                      <div
-                        key={assembly.id}
-                        className={`bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-2xl border overflow-hidden transition-all duration-300 ${
-                          isSelected
-                            ? "border-charcoal dark:border-papyrus shadow-xl shadow-charcoal/10 dark:shadow-papyrus/10"
-                            : "border-silver/50 dark:border-stone/20 shadow-xl"
-                        } ${!isSelected ? "print:hidden" : ""}`}
-                      >
-                        {/* Selection Checkbox - Hidden in print */}
-                        <div className="p-4 border-b border-silver/30 dark:border-stone/20 print:hidden">
-                          <label className="flex items-center gap-3 cursor-pointer group">
-                            <div
-                              className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all ${
-                                isSelected
-                                  ? "bg-charcoal dark:bg-papyrus border-charcoal dark:border-papyrus"
-                                  : "border-silver dark:border-stone group-hover:border-charcoal dark:group-hover:border-papyrus"
-                              }`}
-                            >
-                              {isSelected && (
-                                <Check className="w-3 h-3 text-white" />
-                              )}
-                            </div>
-                            <input
-                              type="checkbox"
-                              checked={isSelected}
-                              onChange={() => toggleAssembly(assembly.id)}
-                              className="sr-only"
-                            />
-                            <span className="text-sm font-medium text-charcoal dark:text-silver">
-                              Include in print
-                            </span>
-                          </label>
+                      <div key={category.id} className="space-y-4">
+                        {/* Category Header */}
+                        <div className="flex items-center gap-3 pb-3 border-b-2 border-silver/50 dark:border-stone/20">
+                          <div className="p-2 rounded-lg bg-amber-500/15 dark:bg-amber-400/15">
+                            <FolderTree className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                          </div>
+                          <div>
+                            <h2 className="text-lg font-bold text-charcoal dark:text-papyrus">
+                              {category.name}
+                            </h2>
+                            <p className="text-sm text-stone dark:text-silver">
+                              {assembliesInCategory.length}{" "}
+                              {assembliesInCategory.length === 1
+                                ? "assembly"
+                                : "assemblies"}
+                            </p>
+                          </div>
                         </div>
 
-                        {/* QR Code Display */}
-                        <div className="p-6 text-center">
-                          <div className="bg-white p-4 rounded-xl inline-block mb-4 shadow-inner">
-                            <QRCode
-                              id={`qr-${assembly.id}`}
-                              value={url}
-                              size={180}
-                              level="H"
-                              includeMargin={true}
-                            />
-                          </div>
+                        {/* QR Codes Grid - Smaller cards */}
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                          {assembliesInCategory.map((assembly) => {
+                            const url = `${baseUrl}/assembly/${assembly.id}`;
+                            const isSelected = selectedAssemblies.has(
+                              assembly.id,
+                            );
 
-                          <h3 className="font-semibold text-charcoal dark:text-papyrus text-lg mb-1">
-                            {assembly.name.en}
-                          </h3>
-                          <span className="inline-block px-3 py-1 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-sm font-mono text-stone dark:text-silver mb-3">
-                            {assembly.id}
-                          </span>
-                          <p className="text-xs text-pewter dark:text-stone font-mono break-all px-2 mb-4">
-                            {url}
-                          </p>
+                            return (
+                              <div
+                                key={assembly.id}
+                                className={`bg-white/75 dark:bg-charcoal/75 backdrop-blur-xl rounded-xl border overflow-hidden transition-all duration-300 ${
+                                  isSelected
+                                    ? "border-charcoal dark:border-papyrus shadow-lg shadow-charcoal/10 dark:shadow-papyrus/10"
+                                    : "border-silver/50 dark:border-stone/20 shadow-md"
+                                } ${!isSelected ? "print:hidden" : ""}`}
+                              >
+                                {/* Selection Checkbox - Hidden in print */}
+                                <div className="p-2 border-b border-silver/30 dark:border-stone/20 print:hidden">
+                                  <label className="flex items-center gap-2 cursor-pointer group">
+                                    <div
+                                      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                                        isSelected
+                                          ? "bg-charcoal dark:bg-papyrus border-charcoal dark:border-papyrus"
+                                          : "border-silver dark:border-stone group-hover:border-charcoal dark:group-hover:border-papyrus"
+                                      }`}
+                                    >
+                                      {isSelected && (
+                                        <Check className="w-2.5 h-2.5 text-white dark:text-charcoal" />
+                                      )}
+                                    </div>
+                                    <input
+                                      type="checkbox"
+                                      checked={isSelected}
+                                      onChange={() =>
+                                        toggleAssembly(assembly.id)
+                                      }
+                                      className="sr-only"
+                                    />
+                                    <span className="text-xs font-medium text-charcoal dark:text-silver">
+                                      Print
+                                    </span>
+                                  </label>
+                                </div>
 
-                          {/* Actions - Hidden in print */}
-                          <div className="flex gap-2 print:hidden">
-                            <button
-                              onClick={() =>
-                                downloadQRCode(assembly.id, assembly.name.en)
-                              }
-                              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl
-                                bg-neutral-100 dark:bg-neutral-800 text-charcoal dark:text-silver 
-                                hover:bg-neutral-200 dark:hover:bg-neutral-700 
-                                transition-colors flex items-center justify-center gap-2"
-                            >
-                              <Download className="w-4 h-4" />
-                              PNG
-                            </button>
-                            <Link
-                              href={`/assembly/${assembly.id}`}
-                              target="_blank"
-                              className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl
-                                bg-neutral-100 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus 
-                                hover:bg-neutral-200 dark:hover:bg-neutral-700 
-                                transition-colors flex items-center justify-center gap-2"
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              Test
-                            </Link>
-                          </div>
+                                {/* QR Code Display - Smaller */}
+                                <div className="p-3 text-center">
+                                  <div className="bg-white p-2 rounded-lg inline-block mb-2 shadow-inner">
+                                    <QRCode
+                                      id={`qr-${assembly.id}`}
+                                      value={url}
+                                      size={120}
+                                      level="H"
+                                      includeMargin={true}
+                                    />
+                                  </div>
+
+                                  <h3 className="font-semibold text-charcoal dark:text-papyrus text-sm mb-1 truncate px-1">
+                                    {assembly.name.en}
+                                  </h3>
+                                  <span className="inline-block px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-xs font-mono text-stone dark:text-silver mb-2">
+                                    {assembly.id}
+                                  </span>
+
+                                  {/* Actions - Hidden in print */}
+                                  <div className="flex gap-1 print:hidden">
+                                    <button
+                                      onClick={() =>
+                                        downloadQRCode(
+                                          assembly.id,
+                                          assembly.name.en,
+                                        )
+                                      }
+                                      className="flex-1 px-2 py-1.5 text-xs font-medium rounded-lg
+                                        bg-neutral-100 dark:bg-neutral-800 text-charcoal dark:text-silver 
+                                        hover:bg-neutral-200 dark:hover:bg-neutral-700 
+                                        transition-colors flex items-center justify-center gap-1"
+                                      title="Download PNG"
+                                    >
+                                      <Download className="w-3 h-3" />
+                                    </button>
+                                    <Link
+                                      href={`/assembly/${assembly.id}`}
+                                      target="_blank"
+                                      className="flex-1 px-2 py-1.5 text-xs font-medium rounded-lg
+                                        bg-neutral-100 dark:bg-neutral-800/50 text-charcoal dark:text-papyrus 
+                                        hover:bg-neutral-200 dark:hover:bg-neutral-700 
+                                        transition-colors flex items-center justify-center gap-1"
+                                      title="Test QR Code"
+                                    >
+                                      <ExternalLink className="w-3 h-3" />
+                                    </Link>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     );
@@ -350,15 +443,20 @@ export default function QRCodesPage() {
               }
 
               /* Ensure print grid displays properly */
-              .grid.grid-cols-2 {
+              .grid.grid-cols-3 {
                 display: grid !important;
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 2rem !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 1.5rem !important;
               }
 
               /* Clean borders and spacing */
               * {
                 color: black !important;
+              }
+
+              /* Page breaks */
+              .mb-12 {
+                page-break-inside: avoid;
               }
             }
           `}</style>

@@ -192,7 +192,7 @@ export default function StepManagementPage() {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type", "audio");
-    formData.append("path", filePath);
+    formData.append("replacePath", filePath);
 
     const token = localStorage.getItem("admin_token");
     const res = await fetch("/api/upload", {
@@ -294,30 +294,23 @@ export default function StepManagementPage() {
       1,
       Math.min(copyInsertIndex, steps.length + 1),
     );
+    // Preserve the original audio URLs from the source step
+    // Audio belongs to the step content, not the assembly
     const copiedStep: Step = {
       ...sourceStep,
-      audioUrl: sourceStep.audioUrl
-        ? {
-            en: getAudioPublicPathForLocale("en", insertIndex.toString()),
-            ar: getAudioPublicPathForLocale("ar", insertIndex.toString()),
-          }
-        : undefined,
+      audioUrl: sourceStep.audioUrl, // Keep original audio URLs
     };
 
     const updatedSteps = [...steps];
     updatedSteps.splice(insertIndex - 1, 0, copiedStep);
 
+    // Renumber steps but preserve audio URLs
     const renumberedSteps = updatedSteps.map((step, idx) => {
       const nextStepId = (idx + 1).toString();
       return {
         ...step,
         id: nextStepId,
-        audioUrl: step.audioUrl
-          ? {
-              en: getAudioPublicPathForLocale("en", nextStepId),
-              ar: getAudioPublicPathForLocale("ar", nextStepId),
-            }
-          : undefined,
+        // Keep original audioUrl - don't regenerate paths during renumbering
       };
     });
 

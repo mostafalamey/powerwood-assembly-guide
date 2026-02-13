@@ -31,10 +31,10 @@ export default function CategoryPage() {
 
         if (response.ok) {
           const allCabinets = await response.json();
-          // Filter by category
-          const filtered = allCabinets.filter(
-            (cab: Assembly) => cab.category === category,
-          );
+          // Filter by category and sort by ID
+          const filtered = allCabinets
+            .filter((cab: Assembly) => cab.category === category)
+            .sort((a: Assembly, b: Assembly) => a.id.localeCompare(b.id));
           setCabinets(filtered);
         }
       } catch (error) {

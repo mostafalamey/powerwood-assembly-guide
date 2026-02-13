@@ -77,7 +77,9 @@ export async function loadAnnotationModel(type: string): Promise<THREE.Group> {
 
   // Load the GLB file
   const loader = getLoader();
-  const path = `/models/annotations/${type}.glb`;
+  // Add cache-busting timestamp to ensure updated models are loaded
+  const cacheBuster = new Date().getTime();
+  const path = `/models/annotations/${type}.glb?v=${cacheBuster}`;
 
   return new Promise((resolve, reject) => {
     loader.load(

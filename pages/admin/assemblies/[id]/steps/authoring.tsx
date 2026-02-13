@@ -74,10 +74,34 @@ export default function StepAuthoringPage() {
   const [transformMode, setTransformMode] = useState<
     "translate" | "rotate" | "scale"
   >("translate");
-  const [translationSnapEnabled, setTranslationSnapEnabled] = useState(true);
-  const [rotationSnapEnabled, setRotationSnapEnabled] = useState(true);
-  const [translationSnapValue, setTranslationSnapValue] = useState(0.1); // 10cm default
-  const [rotationSnapValue, setRotationSnapValue] = useState(15); // 15 degrees default
+  const [translationSnapEnabled, setTranslationSnapEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("authoring_translationSnapEnabled");
+      return saved !== null ? saved === "true" : true;
+    }
+    return true;
+  });
+  const [rotationSnapEnabled, setRotationSnapEnabled] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("authoring_rotationSnapEnabled");
+      return saved !== null ? saved === "true" : true;
+    }
+    return true;
+  });
+  const [translationSnapValue, setTranslationSnapValue] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("authoring_translationSnapValue");
+      return saved !== null ? parseFloat(saved) : 0.1;
+    }
+    return 0.1;
+  }); // 10cm default
+  const [rotationSnapValue, setRotationSnapValue] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("authoring_rotationSnapValue");
+      return saved !== null ? parseFloat(saved) : 15;
+    }
+    return 15;
+  }); // 15 degrees default
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(5); // 5 seconds default
   const [isPlaying, setIsPlaying] = useState(false);
@@ -152,6 +176,43 @@ export default function StepAuthoringPage() {
   useEffect(() => {
     selectedObjectsRef.current = selectedObjects;
   }, [selectedObjects]);
+
+  // Save snap settings to localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "authoring_translationSnapEnabled",
+        translationSnapEnabled.toString(),
+      );
+    }
+  }, [translationSnapEnabled]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "authoring_rotationSnapEnabled",
+        rotationSnapEnabled.toString(),
+      );
+    }
+  }, [rotationSnapEnabled]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "authoring_translationSnapValue",
+        translationSnapValue.toString(),
+      );
+    }
+  }, [translationSnapValue]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "authoring_rotationSnapValue",
+        rotationSnapValue.toString(),
+      );
+    }
+  }, [rotationSnapValue]);
 
   const objectKeyframesById = useMemo(() => {
     const map = new Map<string, ObjectKeyframe[]>();
